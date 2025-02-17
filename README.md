@@ -2,6 +2,7 @@
 
 Welcome to **BookHaven**, an advanced online library store designed to simplify and streamline the borrowing and purchasing of books. With a clean, modern interface, this platform offers a smooth user experience for both customers and administrators to manage their books, sales, and customer interactions.
 
+
 ## Features
 
 - **Book Inventory Management**: Track available books, including their genre, author, price, and availability.
@@ -14,6 +15,7 @@ Welcome to **BookHaven**, an advanced online library store designed to simplify 
 
 ## Tech Stack
 
+
 ### Frontend:
 - **React**: For building the user interface.
 - **TypeScript**: Ensuring type safety and maintainability across the app.
@@ -21,7 +23,9 @@ Welcome to **BookHaven**, an advanced online library store designed to simplify 
 - **Ant Design**: For UI components that enhance the user experience.
 - **React Redux**: For global state management and handling complex application state.
 - **Axios**: For Handling API Calls.
-- 
+- **Image Storage**: Cloudinary.
+
+  
 ### Backend:
 - **C# Web API**: RESTful APIs to handle all business logic.
 - **SQL Server (MSSQL)**: For managing database and storing all related data for books, customers, and transactions.
@@ -38,4 +42,5 @@ Welcome to **BookHaven**, an advanced online library store designed to simplify 
 - **Genres**: Categories for organizing books based on their genres.
 
 
-**Feel Free to explore the Repo :)**
+## End of README
+This README.md provides a structured overview of your project, including authentication details, which are key for any developer working with your BookHaven repository. Adjust the links and any specific configurations as needed!
