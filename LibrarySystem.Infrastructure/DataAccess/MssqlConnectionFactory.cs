@@ -6,7 +6,7 @@ public class MssqlConnectionFactory(string connectionString) : IMssqlConnectionF
     private readonly string _connectionString = connectionString;
     public async Task<IDbConnection> CreateConnection()
     {
-        SqlConnection connection = new SqlConnection(_connectionString);
+        SqlConnection connection = new (_connectionString);
         await connection.OpenAsync();
         return connection;
     }
