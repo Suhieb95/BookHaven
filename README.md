@@ -1,4 +1,4 @@
-# BookHaven: Online Library Management System
+# BookHaven: Online Library Store
 
 Welcome to **BookHaven**, an advanced online library management system designed to simplify and streamline the borrowing and purchasing of books. With a clean, modern interface, this platform offers a smooth user experience for both customers and administrators to manage their books, sales, and customer interactions.
 
@@ -9,7 +9,6 @@ Welcome to **BookHaven**, an advanced online library management system designed 
 - **Sales Management**: Keep records of book sales, with detailed information on each transaction.
 - **Customer Accounts**: Users can register, log in, and view their borrowing history and current borrowed books.
 - **Book Recommendations**: Suggest books based on customers' borrowing history and preferences.
-- **Inventory Updates**: Automatic updates on book stock after borrowing or sales.
 
 ## Tech Stack
 
@@ -34,15 +33,3 @@ Welcome to **BookHaven**, an advanced online library management system designed 
 - **Authors**: Authors of books, with birth dates and other details.
 - **Genres**: Categories for organizing books based on their genres.
 
-## Installation
-
-### Prerequisites:
-- Node.js (for the frontend)
-- .NET 8 (for the backend)
-- SQL Server (for the database)
-
-### Clone the Repository:
-
-```bash
-git clone https://github.com/your-username/BookHaven.git
-cd BookHaven
