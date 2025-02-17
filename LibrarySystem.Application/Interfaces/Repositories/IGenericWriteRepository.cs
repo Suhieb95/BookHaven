@@ -1,4 +1,4 @@
-namespace InventoryManagement.Application.Interfaces.Repositories;
+namespace LibrarySystem.Application.Interfaces.Repositories;
 
 public interface IGenericWriteRepository<T, U, P> where T : class
 {

@@ -1,4 +1,4 @@
-namespace InventoryManagement.Application.Interfaces.Repositories;
+namespace LibrarySystem.Application.Interfaces.Repositories;
 
 public interface IGenericReadRepository<T, U> where T : class
 {
