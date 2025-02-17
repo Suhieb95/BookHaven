@@ -14,7 +14,7 @@ public static class DependencyInjection
         services.AddHealthChecks().AddCheck<DatabaseHealthCheck>("Database");
         services.AddLimiter(configuration);
         services.AddSqlServerDB(configuration, isDev);
-        services.AddAuth(configuration);
+        services.AddAuthentication(configuration);
         services.AddRequestTimeouts(options =>
                                   {
                                       options.AddPolicy("default", new RequestTimeoutPolicy
@@ -28,7 +28,7 @@ public static class DependencyInjection
                                       }
                                       });
                                   });
-                                  
+
         return services;
     }
 }
