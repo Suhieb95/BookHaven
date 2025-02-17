@@ -53,9 +53,9 @@ internal static class WebApplicationExtentions
         // application.AddBackgroundJobs();
 
         application.MapControllers();
-        application.MapStaticAssets();
-        application.UseDefaultFiles();
-        application.UseStaticFiles();
+        // application.MapStaticAssets();
+        // application.UseDefaultFiles();
+        // application.UseStaticFiles();
 
 
         return application;
