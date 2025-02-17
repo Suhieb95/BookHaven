@@ -1,6 +1,6 @@
 # BookHaven: Online Library Store
 
-Welcome to **BookHaven**, an advanced online library management system designed to simplify and streamline the borrowing and purchasing of books. With a clean, modern interface, this platform offers a smooth user experience for both customers and administrators to manage their books, sales, and customer interactions.
+Welcome to **BookHaven**, an advanced online library store designed to simplify and streamline the borrowing and purchasing of books. With a clean, modern interface, this platform offers a smooth user experience for both customers and administrators to manage their books, sales, and customer interactions.
 
 ## Features
 
