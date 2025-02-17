@@ -33,3 +33,7 @@ Welcome to **BookHaven**, an advanced online library store designed to simplify 
 - **Authors**: Authors of books, with birth dates and other details.
 - **Genres**: Categories for organizing books based on their genres.
 
+#### Authentication:
+- JWT (JSON Web Tokens)
+- Cookie-based session management
+
