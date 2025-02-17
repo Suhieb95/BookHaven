@@ -9,6 +9,8 @@ Welcome to **BookHaven**, an advanced online library store designed to simplify 
 - **Sales Management**: Keep records of book sales, with detailed information on each transaction.
 - **Customer Accounts**: Users can register, log in, and view their borrowing history and current borrowed books.
 - **Book Recommendations**: Suggest books based on customers' borrowing history and preferences.
+- **User Authentication**: Secure login and registration using JWT and cookie-based sessions.
+- **Search & Filter**: Search books by title, author, genre, etc.
 
 ## Tech Stack
 
@@ -18,10 +20,12 @@ Welcome to **BookHaven**, an advanced online library store designed to simplify 
 - **Tailwind CSS**: For a responsive, customizable design.
 - **Ant Design**: For UI components that enhance the user experience.
 - **React Redux**: For global state management and handling complex application state.
-
+- **Axios**: For Handling API Calls.
+- 
 ### Backend:
 - **C# Web API**: RESTful APIs to handle all business logic.
 - **SQL Server (MSSQL)**: For managing database and storing all related data for books, customers, and transactions.
+- **Authentication**: JWT (JSON Web Tokens), Cookie-based session management.
 
 ### Database Schema
 
@@ -33,7 +37,4 @@ Welcome to **BookHaven**, an advanced online library store designed to simplify 
 - **Authors**: Authors of books, with birth dates and other details.
 - **Genres**: Categories for organizing books based on their genres.
 
-#### Authentication:
-- JWT (JSON Web Tokens)
-- Cookie-based session management
 
