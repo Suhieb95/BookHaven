@@ -2,7 +2,10 @@ using FluentValidation;
 using FluentValidation.AspNetCore;
 using LibrarySystem.API;
 using LibrarySystem.API.Common;
+using LibrarySystem.API.Handlers;
+using LibrarySystem.Application;
 using LibrarySystem.Infrastructure.DependencyInjections;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Versioning;
@@ -13,7 +16,9 @@ builder.Configuration.SetBasePath(Directory.GetCurrentDirectory())
     .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: false, reloadOnChange: true)
     .AddEnvironmentVariables();
 
-builder.Services.AddInfrastructure(builder.Configuration, builder.Environment.IsDevelopment());
+builder.Services.AddInfrastructure(builder.Configuration, builder.Environment.IsDevelopment())
+                .AddApplication(builder.Configuration);
+                
 builder.Services.AddControllers();
 builder.Services.AddOpenApi();
 builder.Services.Configure<ForwardedHeadersOptions>(options =>
@@ -35,11 +40,14 @@ builder.Services.AddFluentValidationAutoValidation()
                 .AddFluentValidationClientsideAdapters();
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddValidatorsFromAssemblyContaining<IAssemblyMarker>();
+// builder.Services.AddControllers(options => options.Filters.Add<JwtValidationFilter>());
+// builder.Services.AddScoped<LastLoginFilter>();
 builder.Services.AddRouting(opt =>
 {
     opt.LowercaseUrls = true; // lowercase routes 
     opt.LowercaseQueryStrings = true; // query string keys are automatically converted to lowercase
 });
+builder.Services.AddSingleton<IAuthorizationHandler, PermissionAuthoriztionHandler>();
 
 var app = builder.Build();
 {
