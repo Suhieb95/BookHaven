@@ -1,6 +1,10 @@
 namespace LibrarySystem.API.Common.Constants;
 internal static class ApiEndPoints
 {
-    private const string Base = "/api/v1";
-    private const string BaseController = "/api/v1/[controller]";
+    internal const string BaseController = "/api/v1/[controller]";
+    internal static class Auth
+    {
+        private const string Authentication = "/auth";
+        internal const string RefreshToken = Authentication + "/refresh-token";
+    }
 }

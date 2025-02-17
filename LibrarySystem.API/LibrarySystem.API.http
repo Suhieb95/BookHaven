@@ -1,6 +1,6 @@
-@LibrarySystem.API_HostAddress = http://localhost:5057
+@host = http://localhost:5057
 
-GET {{LibrarySystem.API_HostAddress}}/weatherforecast/
+GET {{host}}/weatherforecast/
 Accept: application/json
 
 ###
