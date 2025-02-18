@@ -1,3 +1,5 @@
+using CloudinaryDotNet;
+using LibrarySystem.Domain.Entities;
 using LibrarySystem.Infrastructure.DataAccess;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Timeouts;
@@ -14,6 +16,7 @@ public static class DependencyInjection
         services.AddHealthChecks().AddCheck<DatabaseHealthCheck>("Database");
         services.AddLimiter(configuration);
         services.AddSqlServerDB(configuration, isDev);
+        services.AddCloudinary(configuration);
         services.AddAuthentication(configuration);
         services.AddRequestTimeouts(options =>
                                   {
@@ -28,6 +31,20 @@ public static class DependencyInjection
                                       }
                                       });
                                   });
+
+        return services;
+    }
+    private static IServiceCollection AddCloudinary(this IServiceCollection services, IConfiguration configuration)
+    {
+        CloudinarySettings cloudinarySettings = configuration.GetSection(CloudinarySettings.SectionName).Get<CloudinarySettings>()!;
+        Account acc = new(
+                cloudinarySettings.CloudName,
+                cloudinarySettings.ApiKey,
+                cloudinarySettings.ApiSecret
+            );
+
+        Cloudinary cloudinary = new(acc);
+        services.AddSingleton(cloudinary);
 
         return services;
     }
