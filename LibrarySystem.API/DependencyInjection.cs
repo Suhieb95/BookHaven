@@ -3,7 +3,7 @@ using FluentValidation.AspNetCore;
 using LibrarySystem.API.Common;
 using LibrarySystem.API.Filters;
 using LibrarySystem.API.Handlers;
-using LibrarySystem.Application;
+using LibrarySystem.Application.DependencyInjection;
 using LibrarySystem.Infrastructure.DependencyInjections;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.Features;
@@ -29,7 +29,6 @@ internal static class DependencyInjection
         services.AddApiVerison();
         services.AddValidation();
         services.ConfigureIP();
-
         services.AddOpenApi();
         services.AddEndpointsApiExplorer();
         services.AddSwaggerGen();

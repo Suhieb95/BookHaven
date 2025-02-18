@@ -1,0 +1,12 @@
+using LibrarySystem.Application.Interfaces.Services;
+using LibrarySystem.Infrastructure.Services;
+using Microsoft.Extensions.DependencyInjection;
+namespace LibrarySystem.Infrastructure.DependencyInjections;
+internal static class ServiceDependencyInjection
+{
+    internal static IServiceCollection AddServices(this IServiceCollection services)
+    {
+        services.AddScoped<IBookService, BookService>();
+        return services;
+    }
+}

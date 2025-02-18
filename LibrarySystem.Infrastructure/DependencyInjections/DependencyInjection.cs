@@ -14,9 +14,11 @@ public static class DependencyInjection
     {
         ArgumentNullException.ThrowIfNull(services);
         services.AddHealthChecks().AddCheck<DatabaseHealthCheck>("Database");
+        services.Configure<RefreshJwtSettings>(configuration.GetSection(RefreshJwtSettings.SectionName));
         services.AddLimiter(configuration);
         services.AddSqlServerDB(configuration, isDev);
         services.AddCloudinary(configuration);
+        services.AddServices();
         services.AddAuthentication(configuration);
         services.AddRequestTimeouts(options =>
                                   {

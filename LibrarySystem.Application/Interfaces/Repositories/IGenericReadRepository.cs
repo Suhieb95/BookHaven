@@ -2,14 +2,14 @@ namespace LibrarySystem.Application.Interfaces.Repositories;
 
 public interface IGenericReadRepository<T, U> where T : class
 {
-    Task<T?> GetByIdAsync(U id);
-    Task<List<T>> GetAllAsync();
+    Task<T?> GetById(U id);
+    Task<List<T>> GetAll();
 }
 public interface IGenericReadWithParamRepository<T, P> where T : class
 {
-    Task<T> GetAllAsync(P param);
+    Task<T> GetAll(P param);
 }
 public interface IGenericReadByIdRepository<T, U> where T : class?
 {
-    Task<T> GetByIdAsync(U id);
+    Task<T> GetById(U id);
 }

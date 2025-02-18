@@ -1,7 +1,7 @@
+using LibrarySystem.Application.Books;
 using Microsoft.AspNetCore.Mvc;
-
 namespace LibrarySystem.API.Controllers;
-public class Book : BaseController
+public class BookController : BaseController
 {
     [HttpGet]
     public async Task<IActionResult> GetBooks()

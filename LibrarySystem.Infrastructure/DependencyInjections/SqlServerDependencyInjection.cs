@@ -19,6 +19,4 @@ internal static class SqlServerDependencyInjection
         services.AddScoped<IMssqlDbTransaction, SqlDataAccess>();
         return services;
     }
-
-
 }
