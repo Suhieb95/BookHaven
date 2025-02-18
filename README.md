@@ -10,6 +10,7 @@ Welcome to **BookHaven**, an advanced online library store designed to simplify 
 - **Sales Management**: Keep records of book sales, with detailed information on each transaction.
 - **Customer Accounts**: Users can register, log in, and view their borrowing history and current borrowed books.
 - **Book Recommendations**: Suggest books based on customers' borrowing history and preferences.
+- **Top Books Sold**: Suggest books based on Most sold books.
 - **User Authentication**: Secure login and registration using JWT and cookie-based sessions.
 - **Search & Filter**: Search books by title, author, genre, etc.
 
