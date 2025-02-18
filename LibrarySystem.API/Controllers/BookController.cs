@@ -7,6 +7,7 @@ public class BookController : BaseController
     [HttpGet]
     public async Task<IActionResult> GetBooks()
     {
+        await Task.CompletedTask;
         return Ok();
     }
 }
