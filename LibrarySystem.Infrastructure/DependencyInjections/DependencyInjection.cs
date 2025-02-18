@@ -33,7 +33,6 @@ public static class DependencyInjection
                                       }
                                       });
                                   });
-
         return services;
     }
     private static IServiceCollection AddCloudinary(this IServiceCollection services, IConfiguration configuration)

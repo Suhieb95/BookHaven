@@ -13,7 +13,6 @@ namespace LibrarySystem.API.Controllers;
 [ApiVersion("1.0")]
 [EnableRateLimiting("StandardLimiterPolicy")]
 [RequestTimeout("default")]
-// [Authorize]
 public partial class BaseController : ControllerBase
 {
     protected IActionResult Problem(Error error)

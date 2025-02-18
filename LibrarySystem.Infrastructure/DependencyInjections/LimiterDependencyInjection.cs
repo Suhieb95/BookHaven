@@ -1,5 +1,4 @@
 using System.Threading.RateLimiting;
-using InventoryManagement.Domain.Entities;
 using LibrarySystem.Domain.Entities;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;

@@ -47,21 +47,20 @@ public static class Extensions
 
         return default;
     }
-    // public static TokenValidationParameters ValidateJwtToken(JwtSettingsBase jwtSettings) =>
-    //     new()
-    //     {
-    //         ValidateIssuer = true,
-    //         ValidateAudience = true,
-    //         ValidateLifetime = true,
-    //         ValidateIssuerSigningKey = true,
-    //         RequireExpirationTime = true,
-    //         ValidIssuer = jwtSettings.Issuer,
-    //         ValidAudience = jwtSettings.Audience,
-    //         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.Secret)),
-    //         ClockSkew = TimeSpan.Zero
-    //     };
+    public static TokenValidationParameters ValidateJwtToken(JwtSettingsBase jwtSettings) =>
+        new()
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            RequireExpirationTime = true,
+            ValidIssuer = jwtSettings.Issuer,
+            ValidAudience = jwtSettings.Audience,
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.Secret)),
+            ClockSkew = TimeSpan.Zero
+        };
 
-    // public static bool IsEmptyList<T>(ICollection<T> list) => !list.Any(); //false == false => true
-    public static bool IsEmptyList<T>(ICollection<T> list) => list.Count == 0;
+    public static bool IsEmptyList<T>(ICollection<T> list) => list.Count == 0; //false == false => true
     public static bool IsNotEmptyList<T>(ICollection<T> list) => list.Count > 0;
 }

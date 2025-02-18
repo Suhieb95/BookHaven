@@ -21,27 +21,26 @@ internal static class AuthDependencyInjection
         services.AddSingleton<IDateTimeProvider, DateTimeProvider>();
         services.AddScoped<IIdentityService, IdentityService>();
         services.AddScoped<IRefreshTokenValidator, RefreshTokenValidator>();
-
         services.AddJwtTokenAuthentication(configuration);
+
         return services;
     }
     private static IServiceCollection AddJwtTokenAuthentication(this IServiceCollection services, IConfiguration configuration)
     {
-        // ArgumentNullException.ThrowIfNull(services);
+        ArgumentNullException.ThrowIfNull(services);
 
-        // var jwtSettings = new JwtSettings();
-        // configuration.Bind(JwtSettings.SectionName, jwtSettings);
-        // services.AddSingleton(Options.Create(jwtSettings));
+        var jwtSettings = new JwtSettings();
+        configuration.Bind(JwtSettings.SectionName, jwtSettings);
+        services.AddSingleton(Options.Create(jwtSettings));
 
-        // services.AddAuthentication(opt =>
-        // {
-        //     opt.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-        //     opt.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-        // })
-        // .AddJwtBearer(opt =>
-        // {
-        //     opt.TokenValidationParameters = ValidateJwtToken(jwtSettings);
-        // });
+        services.AddAuthentication(opt =>
+        {
+            opt.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+            opt.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+        }).AddJwtBearer(opt =>
+        {
+            opt.TokenValidationParameters = ValidateJwtToken(jwtSettings);
+        });
 
         return services;
     }

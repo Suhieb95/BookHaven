@@ -29,8 +29,8 @@ public class JwtValidationFilter(IOptions<JwtSettings> jwtSettings) : IActionFil
         try
         {
             var tokenHandler = new JwtSecurityTokenHandler();
-            // var validationParameters = ValidateJwtToken(_jwtSettings);
-            // tokenHandler.ValidateToken(jwtToken, validationParameters, out _);
+            var validationParameters = ValidateJwtToken(_jwtSettings);
+            tokenHandler.ValidateToken(jwtToken, validationParameters, out _);
         }
         catch
         {

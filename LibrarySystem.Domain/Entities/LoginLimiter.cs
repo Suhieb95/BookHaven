@@ -1,6 +1,6 @@
 using LibrarySystem.Domain.BaseModels;
 
-namespace InventoryManagement.Domain.Entities;
+namespace LibrarySystem.Domain.Entities;
 
 public class LoginLimiter : LimiterSettings
 {
