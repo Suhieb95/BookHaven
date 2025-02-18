@@ -1,6 +1,6 @@
 using LibrarySystem.Application.Books;
 using Microsoft.Extensions.DependencyInjection;
-namespace LibrarySystem.Application.DependencyInjection;
+namespace LibrarySystem.Application.DependencyInjection.DependencyInjection;
 internal static class ServiceDependencyInjection
 {
     internal static IServiceCollection AddServices(this IServiceCollection services)

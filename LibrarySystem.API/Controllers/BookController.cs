@@ -1,4 +1,5 @@
 using LibrarySystem.Application.Books;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 namespace LibrarySystem.API.Controllers;
 public class BookController : BaseController

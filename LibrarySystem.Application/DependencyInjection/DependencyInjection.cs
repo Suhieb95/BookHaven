@@ -3,7 +3,7 @@ using LibrarySystem.Application.Books;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-namespace LibrarySystem.Application.DependencyInjection;
+namespace LibrarySystem.Application.DependencyInjection.DependencyInjection;
 public static class DependencyInjection
 {
     public static IServiceCollection AddApplication(this IServiceCollection services, IConfiguration configuration)
