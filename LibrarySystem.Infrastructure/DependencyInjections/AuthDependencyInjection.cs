@@ -17,7 +17,7 @@ internal static class AuthDependencyInjection
         ArgumentNullException.ThrowIfNull(services);
 
         services.AddSingleton<IRefreshTokenCookieSetter, RefreshTokenCookieSetter>();
-        services.AddScoped<IJwtTokenService, JwtTokenService>();
+        services.AddScoped<IJwtTokenGenerator, JwtTokenGenerator>();
         services.AddSingleton<IDateTimeProvider, DateTimeProvider>();
         services.AddScoped<IIdentityService, IdentityService>();
         services.AddScoped<IRefreshTokenValidator, RefreshTokenValidator>();

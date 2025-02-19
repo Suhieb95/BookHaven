@@ -1,4 +1,4 @@
-namespace LibrarySystem.Domain.BaseModels.User;
+namespace LibrarySystem.Domain.DTOs.BaseModels;
 public abstract class LoginRequestBase(string emailAddress, string password)
 {
     public string EmailAddress { get; } = emailAddress;

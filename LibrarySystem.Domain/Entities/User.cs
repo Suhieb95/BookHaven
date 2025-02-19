@@ -1,10 +1,10 @@
 using LibrarySystem.Domain.BaseModels.User;
 
 namespace LibrarySystem.Domain.Entities;
-public class User(string emailAddress, string userName, string imagePath) : PersonBase(emailAddress, userName, imagePath)
+public class User : PersonBase, IPersonEntity
 {
-    public Guid Id { get; set; }
+    public string Password { get; set; } = default!;
     public bool IsActive { get; set; }
-    public DateTime LastLogin { get; set; }
+    public DateTime? LastLogin { get; set; }
     public DateTime CreatedAt { get; set; }
-};
+}

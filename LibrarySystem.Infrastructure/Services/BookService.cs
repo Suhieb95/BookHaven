@@ -6,7 +6,7 @@ using LibrarySystem.Domain.Specification;
 namespace LibrarySystem.Infrastructure.Services;
 public class BookService(ISqlDataAccess _sqlDataAccess) : IBookService
 {
-    public async Task<PaginatedResponse<Book>> GetAll(PaginationParam param, CancellationToken? cancellationToken = null, Specification? specification = null)
+    public async Task<PaginatedResponse<Book>> GetAll(PaginationParam param, CancellationToken? cancellationToken = null)
     {
         (List<Book> books, PaginationDetails? paginationDetails) = await _sqlDataAccess.FetchListAndSingleAsync<Book, PaginationDetails>
              ("SPGetBooks", cancellationToken, param, CommandType.StoredProcedure);

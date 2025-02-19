@@ -7,6 +7,7 @@ internal static class ServiceDependencyInjection
     internal static IServiceCollection AddServices(this IServiceCollection services)
     {
         services.AddScoped<IBookService, BookService>();
+        services.AddScoped<ICustomerService, CustomerService>();
         return services;
     }
 }

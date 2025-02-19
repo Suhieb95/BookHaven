@@ -1,7 +1,16 @@
 namespace LibrarySystem.Domain.BaseModels.User;
-public abstract class PersonBase(string emailAddress, string userName, string? imageurl)
+public abstract class PersonBase
 {
-    public string EmailAddress { get; } = emailAddress;
-    public string UserName { get; } = userName;
-    public string? ImageUrl { get; } = imageurl;
+    public PersonBase() { }
+    public PersonBase(string emailAddress, string userName, string? imageUrl, Guid id)
+    {
+        EmailAddress = emailAddress;
+        UserName = userName;
+        ImageUrl = imageUrl;
+        Id = id;
+    }
+    public Guid Id { get; set; }
+    public string EmailAddress { get; set; } = default!;
+    public string UserName { get; set; } = default!;
+    public string? ImageUrl { get; set; }
 };

@@ -3,7 +3,7 @@ using FluentValidation.AspNetCore;
 using LibrarySystem.API.Common;
 using LibrarySystem.API.Filters;
 using LibrarySystem.API.Handlers;
-using LibrarySystem.Application.DependencyInjection.DependencyInjection;
+using LibrarySystem.Application.DependencyInjection;
 using LibrarySystem.Infrastructure.DependencyInjections;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.Features;

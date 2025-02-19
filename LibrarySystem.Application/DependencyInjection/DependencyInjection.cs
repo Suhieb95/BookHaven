@@ -3,7 +3,7 @@ using LibrarySystem.Application.Books;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-namespace LibrarySystem.Application.DependencyInjection.DependencyInjection;
+namespace LibrarySystem.Application.DependencyInjection;
 public static class DependencyInjection
 {
     public static IServiceCollection AddApplication(this IServiceCollection services, IConfiguration configuration)
@@ -11,6 +11,7 @@ public static class DependencyInjection
         ArgumentNullException.ThrowIfNull(services);
         services.AddSingleton<IAuthorizationPolicyProvider, PermissionAuthorizationPolicyProvider>();
         services.AddScoped<IBookApplicationService, BookApplicationService>();
+        services.AddServices();
         return services;
     }
 }

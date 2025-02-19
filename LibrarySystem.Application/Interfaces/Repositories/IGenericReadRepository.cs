@@ -9,7 +9,7 @@ public interface IGenericReadRepository<T, U> where T : class
 }
 public interface IGenericReadWithParamRepository<T, P> where T : class
 {
-    Task<T> GetAll(P param, CancellationToken? cancellationToken = null, Specification? specification = null);
+    Task<T> GetAll(P param, CancellationToken? cancellationToken = null);
 }
 public interface IGenericReadByIdRepository<T, U> where T : class?
 {

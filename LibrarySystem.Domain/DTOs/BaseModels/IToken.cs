@@ -1,4 +1,4 @@
-namespace LibrarySystem.Domain.BaseModels.User;
+namespace LibrarySystem.Domain.DTOs.BaseModels;
 
 public interface IToken
 {

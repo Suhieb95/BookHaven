@@ -4,11 +4,11 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LibrarySystem.API.Controllers;
+
 [AllowAnonymous]
 public class BookController(IBookApplicationService _bookApplicationService) : BaseController
 {
     [HttpGet]
-    // [HasPermission(Permission.Read, EntityName.Books)]
     public async Task<IActionResult> GetBooks([FromQuery] PaginationParam param, CancellationToken cancellationToken)
     {
         var result = await _bookApplicationService.GetBooks(param, cancellationToken);
@@ -17,7 +17,6 @@ public class BookController(IBookApplicationService _bookApplicationService) : B
                       onFailure: Problem);
     }
     [HttpGet(Books.GetById)]
-    // [HasPermission(Permission.Read, EntityName.Books)]
     public async Task<IActionResult> GetById(int id, CancellationToken cancellationToken)
     {
         var result = await _bookApplicationService.GetBookById(id, cancellationToken);
