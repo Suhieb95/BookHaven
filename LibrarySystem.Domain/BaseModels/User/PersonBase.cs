@@ -1,4 +1,4 @@
-namespace LibrarySystem.Domain.DTOs.BaseModels;
+namespace LibrarySystem.Domain.BaseModels.User;
 public abstract class PersonBase(string emailAddress, string userName, string? imageurl)
 {
     public string EmailAddress { get; } = emailAddress;

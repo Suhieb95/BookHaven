@@ -8,5 +8,5 @@ public interface ISqlDataAccess
     Task SaveData<P>(string storedProcedure, P? parameters = default, CommandType? commandType = null, CancellationToken? cancellationToken = null);
     Task<(List<T1>, List<T2>)> FetchTwoListsAsync<T1, T2>(string sql, CancellationToken? cancellationToken = null, object? param = default, CommandType? commandType = null);
     Task<(T1?, List<T2>)> FetchSingleAndListAsync<T1, T2>(string sql, CancellationToken? cancellationToken = null, object? param = default, CommandType? commandType = null);
-    Task<(List<T1>, T2?)> FetchListAndSingleAsync<T1, T2>(string sql, CancellationToken? cancellationToken = null, object? param = default, CommandType? commandType = null);
+    Task<(List<T1>, T2?)> FetchListAndSingleAsync<T1, T2>(string sql, CancellationToken? cancellationToken = null, dynamic? param = default, CommandType? commandType = null);
 }

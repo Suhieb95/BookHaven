@@ -1,4 +1,4 @@
-using LibrarySystem.Domain.DTOs.BaseModels;
+using LibrarySystem.Domain.BaseModels.User;
 
 namespace LibrarySystem.Domain.DTOs.Customers;
 

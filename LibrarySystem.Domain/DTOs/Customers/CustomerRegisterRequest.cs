@@ -1,4 +1,5 @@
-using LibrarySystem.Domain.DTOs.BaseModels;
+
+using LibrarySystem.Domain.BaseModels.User;
 
 namespace LibrarySystem.Domain.DTOs.Customers;
 public class CustomerRegisterRequest(string emailAddress, string password, string userName) : RegisterRequestBase(emailAddress, password, userName);

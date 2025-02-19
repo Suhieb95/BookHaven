@@ -1,6 +1,6 @@
-using LibrarySystem.Domain.DTOs.BaseModels;
+using LibrarySystem.Domain.BaseModels.User;
 
-namespace LibrarySystem.Domain.DTOs.Customers;
+namespace LibrarySystem.Domain.Entities;
 
 public class Customer(string emailAddress, string userName, string imagePath) : PersonBase(emailAddress, userName, imagePath)
 {

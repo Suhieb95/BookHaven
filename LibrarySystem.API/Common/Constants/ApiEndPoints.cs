@@ -7,4 +7,8 @@ internal static class ApiEndPoints
         private const string Authentication = "/auth";
         internal const string RefreshToken = Authentication + "/refresh-token";
     }
+    internal class Books
+    {
+        internal const string GetById = BaseController + "/{id}";
+    }
 }

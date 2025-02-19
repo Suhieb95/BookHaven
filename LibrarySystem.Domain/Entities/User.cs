@@ -1,6 +1,6 @@
-using LibrarySystem.Domain.DTOs.BaseModels;
+using LibrarySystem.Domain.BaseModels.User;
 
-namespace LibrarySystem.Domain.DTOs.Users;
+namespace LibrarySystem.Domain.Entities;
 public class User(string emailAddress, string userName, string imagePath) : PersonBase(emailAddress, userName, imagePath)
 {
     public Guid Id { get; set; }

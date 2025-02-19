@@ -63,4 +63,5 @@ public static class Extensions
 
     public static bool IsEmptyList<T>(ICollection<T> list) => list.Count == 0; //false == false => true
     public static bool IsNotEmptyList<T>(ICollection<T> list) => list.Count > 0;
+  
 }
