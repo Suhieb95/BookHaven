@@ -16,7 +16,7 @@ public class BookApplicationService(IBookService _bookService) : IBookApplicatio
     }
     public async Task<Result<PaginatedResponse<Book>>> GetBooks(PaginationParam param, CancellationToken? cancellationToken = null)
     {
-        PaginatedResponse<Book>? res = await _bookService.GetAll(new GetBooksSpecification(param), cancellationToken);
+        PaginatedResponse<Book>? res = await _bookService.GetAll(param, cancellationToken);
         return Result<PaginatedResponse<Book>>.Success(res);
     }
 }

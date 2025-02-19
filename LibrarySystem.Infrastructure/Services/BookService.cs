@@ -6,19 +6,18 @@ using LibrarySystem.Domain.Specification;
 namespace LibrarySystem.Infrastructure.Services;
 public class BookService(ISqlDataAccess _sqlDataAccess) : IBookService
 {
-    public async Task<PaginatedResponse<Book>> GetAll(Specification? specification = null, CancellationToken? cancellationToken = null)
+    public async Task<PaginatedResponse<Book>> GetAll(PaginationParam param, CancellationToken? cancellationToken = null, Specification? specification = null)
     {
-        var p = specification?.Parameters;
-        var result = await _sqlDataAccess.FetchListAndSingleAsync<Book, PaginationDetails>
-             (specification?.ToSql(), cancellationToken, p, CommandType.StoredProcedure);
+        (List<Book> books, PaginationDetails? paginationDetails) = await _sqlDataAccess.FetchListAndSingleAsync<Book, PaginationDetails>
+             ("SPGetBooks", cancellationToken, param, CommandType.StoredProcedure);
 
         PaginatedResponse<Book> response = new()
         {
-            Data = result.Item1,
-            PaginationDetails = result.Item2
+            Data = books,
+            PaginationDetails = paginationDetails!
         };
 
-        response.SetTotalPage(p!.PageSize, result.Item2.NoOfRecords);
+        response.SetTotalPage(param.PageSize);
         return response;
     }
     public async Task<Book?> GetById(int id, CancellationToken? cancellationToken = null, Specification? specification = null)

@@ -14,26 +14,31 @@ public static class DependencyInjection
     {
         ArgumentNullException.ThrowIfNull(services);
         services.AddHealthChecks().AddCheck<DatabaseHealthCheck>("Database");
-        services.Configure<RefreshJwtSettings>(configuration.GetSection(RefreshJwtSettings.SectionName));
+        services.ConfigureOptions(configuration);
         services.AddLimiter(configuration);
         services.AddSqlServerDB(configuration, isDev);
         services.AddCloudinary(configuration);
         services.AddServices();
         services.AddAuthentication(configuration);
         services.AddRequestTimeouts(options =>
-                                  {
-                                      options.AddPolicy("default", new RequestTimeoutPolicy
-                                      {
-                                          Timeout = TimeSpan.FromSeconds(10),
-                                          TimeoutStatusCode = StatusCodes.Status408RequestTimeout,
-                                          WriteTimeoutResponse = async (context) =>
-                                      {
-                                          context.Response.StatusCode = StatusCodes.Status408RequestTimeout;
-                                          await context.Response.WriteAsync("Request Timed out.");
-                                      }
-                                      });
-                                  });
+        {
+            options.AddPolicy("default", new RequestTimeoutPolicy
+            {
+                Timeout = TimeSpan.FromSeconds(10),
+                TimeoutStatusCode = StatusCodes.Status408RequestTimeout,
+                WriteTimeoutResponse = async (context) =>
+                {
+                    context.Response.StatusCode = StatusCodes.Status408RequestTimeout;
+                    await context.Response.WriteAsync("Request Timed out.");
+                }
+            });
+        });
         return services;
+    }
+    private static void ConfigureOptions(this IServiceCollection services, IConfiguration configuration)
+    {
+        services.Configure<RefreshJwtSettings>(configuration.GetSection(RefreshJwtSettings.SectionName));
+        services.Configure<ApiKeys>(configuration.GetSection(nameof(ApiKeys)));
     }
     private static IServiceCollection AddCloudinary(this IServiceCollection services, IConfiguration configuration)
     {
