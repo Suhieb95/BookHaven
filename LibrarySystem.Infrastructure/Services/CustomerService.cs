@@ -11,11 +11,9 @@ public class CustomerService(ISqlDataAccess _sqlDataAccess) : ICustomerService
     public async Task<Guid> Add(CustomerRegisterRequest request)
     {
         const string Sql = "SPCreateCustomer";
-        Guid id = Guid.NewGuid();
-
         var param = new
         {
-            Id = id,
+            Id = Guid.NewGuid(),
             request.UserName,
             request.EmailAddress,
             request.Password,
@@ -23,8 +21,8 @@ public class CustomerService(ISqlDataAccess _sqlDataAccess) : ICustomerService
             IsVerified = false
         };
 
-        await _sqlDataAccess.SaveData<int>(Sql, param, StoredProcedure);
-        return id;
+        Guid res = await _sqlDataAccess.SaveData<Guid>(Sql, param, StoredProcedure);
+        return res;
     }
     public async Task Delete(Guid id)
         => await _sqlDataAccess.SaveData("DELETE FROM Customers WHERE Id = @Id", new { Id = id });
