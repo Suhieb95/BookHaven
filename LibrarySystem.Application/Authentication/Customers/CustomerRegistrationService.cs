@@ -18,24 +18,26 @@ public class CustomerRegistrationService(ICustomerService _customerService, IJwt
 
         request.Password = _passwordHasher.Hash(request.Password);
         Guid result = await _customerService.Add(request);
-        await SendEmailConfirmationToken(request, result, cancellationToken);
+        await SendEmailConfirmationToken(request.EmailAddress, result, cancellationToken);
 
         return Result<bool>.Success(true);
     }
-    private async Task SendEmailConfirmationToken(CustomerRegisterRequest request, Guid result, CancellationToken? cancellationToken)
+    private async Task SendEmailConfirmationToken(string emailAddress, Guid result, CancellationToken? cancellationToken)
     {
-        Customer? currentUser = (await _customerService.GetAll(new GetCustomerByEmailAddress(request.EmailAddress), cancellationToken)).FirstOrDefault();
-        if (!currentUser?.HasValidEmailConfirmationToken() ?? false)
+        var res = await _customerService.GetAll(new GetCustomerByEmailAddress(emailAddress), cancellationToken);
+        Customer? currentUser = res.FirstOrDefault();
+        if (currentUser != null && currentUser.HasValidEmailConfirmationToken())
             return;
 
         EmailConfirmationResult emailConfirmation = _jwtTokenGenerator.GenerateEmailConfirmationToken(result);
         await _customerService.SaveEmailConfirmationToken(emailConfirmation);
-        await SendConfirmationEmail(request.EmailAddress, result);
+        await SendConfirmationEmail(emailAddress, result);
     }
     private async Task<bool> IsEmailAddressInUse(string emailAddress, CancellationToken? cancellationToken)
     {
         var res = await _customerService.GetAll(new GetCustomerByEmailAddress(emailAddress), cancellationToken);
-        if (res.FirstOrDefault() != null)
+        Customer? currentUser = res.FirstOrDefault();
+        if (currentUser != null && currentUser.IsActive)
             return true;
 
         return false;
@@ -52,7 +54,7 @@ public class CustomerRegistrationService(ICustomerService _customerService, IJwt
 
         EmailRequest email = new(
            to,
-           "Complete Registeration",
+           "Complete Registration",
             mailText
         );
         await _emailSender.SendEmail(email);
