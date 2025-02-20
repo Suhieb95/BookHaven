@@ -21,6 +21,7 @@ internal static class AuthDependencyInjection
         services.AddSingleton<IDateTimeProvider, DateTimeProvider>();
         services.AddScoped<IIdentityService, IdentityService>();
         services.AddScoped<IRefreshTokenValidator, RefreshTokenValidator>();
+        services.AddScoped<IPasswordHasher, PasswordHasher>();
         services.AddJwtTokenAuthentication(configuration);
 
         return services;

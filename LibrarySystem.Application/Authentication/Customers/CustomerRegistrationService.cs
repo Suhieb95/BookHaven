@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Options;
 
 namespace LibrarySystem.Application.Authentication.Customers;
-public class CustomerRegistrationService(ICustomerService _customerService, IJwtTokenGenerator _jwtTokenGenerator, IEmailService _emailSender, IOptions<EmailSettings> _emailSettings, IWebHostEnvironment _env) : ICustomerRegistrationService
+public class CustomerRegistrationService(ICustomerService _customerService, IJwtTokenGenerator _jwtTokenGenerator, IEmailService _emailSender, IOptions<EmailSettings> _emailSettings, IWebHostEnvironment _env, IPasswordHasher _passwordHasher) : ICustomerRegistrationService
 {
     private readonly EmailSettings _emailSettings = _emailSettings.Value;
     public async Task<Result<bool>> Register(CustomerRegisterRequest request, CancellationToken? cancellationToken = null)
@@ -16,13 +16,18 @@ public class CustomerRegistrationService(ICustomerService _customerService, IJwt
         if (await IsEmailAddressInUse(request.EmailAddress, cancellationToken))
             return Result<bool>.Failure(new Error("Email Address exists, Please Login.", BadRequest, "Email Address Exists"));
 
+        request.Password = _passwordHasher.Hash(request.Password);
         Guid result = await _customerService.Add(request);
-        await SendEmailConfirmationToken(request, result);
+        await SendEmailConfirmationToken(request, result, cancellationToken);
 
         return Result<bool>.Success(true);
     }
-    private async Task SendEmailConfirmationToken(CustomerRegisterRequest request, Guid result)
+    private async Task SendEmailConfirmationToken(CustomerRegisterRequest request, Guid result, CancellationToken? cancellationToken)
     {
+        Customer? currentUser = (await _customerService.GetAll(new GetCustomerByEmailAddress(request.EmailAddress), cancellationToken)).FirstOrDefault();
+        if (!currentUser?.HasValidEmailConfirmationToken() ?? false)
+            return;
+
         EmailConfirmationResult emailConfirmation = _jwtTokenGenerator.GenerateEmailConfirmationToken(result);
         await _customerService.SaveEmailConfirmationToken(emailConfirmation);
         await SendConfirmationEmail(request.EmailAddress, result);

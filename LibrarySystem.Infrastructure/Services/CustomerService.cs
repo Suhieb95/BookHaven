@@ -17,7 +17,7 @@ public class CustomerService(ISqlDataAccess _sqlDataAccess) : ICustomerService
             request.UserName,
             request.EmailAddress,
             request.Password,
-            IsActive = false,
+            IsActive = true,
             IsVerified = false
         };
 
