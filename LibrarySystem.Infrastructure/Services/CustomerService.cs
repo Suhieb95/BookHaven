@@ -66,13 +66,7 @@ public class CustomerService(ISqlDataAccess _sqlDataAccess) : ICustomerService
         };
         await _sqlDataAccess.SaveData(Sql, param);
     }
-    public async Task UpdatePassowordResetToken(Guid id)
-    {
-        const string Sql = @"UPDATE Customers SET VerifyEmailTokenExpiry = NULL, VerifyEmailToken = NULL
-                                    WHERE Id = @Id";
-        await _sqlDataAccess.SaveData(Sql, new { Id = id });
-    }
-    public async Task UpdateEmailConfirmationToken(PasswordChangeRequest passwordChangeRequest)
+    public async Task UpdatePassowordResetToken(PasswordChangeRequest passwordChangeRequest)
     {
         const string Sql = @"UPDATE Customers SET PasswordResetTokenExpiry = NULL, PasswordResetToken = NULL, Password = @Password
                                     WHERE Id = @UserId";
@@ -82,5 +76,11 @@ public class CustomerService(ISqlDataAccess _sqlDataAccess) : ICustomerService
             passwordChangeRequest.Password,
         };
         await _sqlDataAccess.SaveData(Sql, param);
+    }
+    public async Task UpdateEmailConfirmationToken(Guid id)
+    {
+        const string Sql = @"UPDATE Customers SET VerifyEmailTokenExpiry = NULL, VerifyEmailToken = NULL, 
+                            IsActive = 1, IsVerified = 1 WHERE Id = @Id";
+        await _sqlDataAccess.SaveData(Sql, new { Id = id });
     }
 }

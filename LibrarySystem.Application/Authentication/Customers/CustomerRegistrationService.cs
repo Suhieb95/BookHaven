@@ -22,9 +22,21 @@ public class CustomerRegistrationService(ICustomerService _customerService, IJwt
 
         return Result<bool>.Success(true);
     }
+    public async Task<Result<bool>> ConfirmEmailAddress(Guid id, CancellationToken? cancellationToken = null)
+    {
+        List<Customer>? res = await _customerService.GetAll(new GetCustomerById(id), cancellationToken);
+        Customer? currentUser = res.FirstOrDefault();
+        if (currentUser != null && currentUser.HasValidEmailConfirmationToken())
+        {
+            await _customerService.UpdateEmailConfirmationToken(id);
+            return Result<bool>.Success(true);
+        }
+
+        return Result<bool>.Failure(new Error("Token Has Expired.", BadRequest, "Invalid Token"));
+    }
     private async Task SendEmailConfirmationToken(string emailAddress, Guid result, CancellationToken? cancellationToken)
     {
-        var res = await _customerService.GetAll(new GetCustomerByEmailAddress(emailAddress), cancellationToken);
+        List<Customer>? res = await _customerService.GetAll(new GetCustomerByEmailAddress(emailAddress), cancellationToken);
         Customer? currentUser = res.FirstOrDefault();
         if (currentUser != null && currentUser.HasValidEmailConfirmationToken())
             return;
@@ -35,7 +47,7 @@ public class CustomerRegistrationService(ICustomerService _customerService, IJwt
     }
     private async Task<bool> IsEmailAddressInUse(string emailAddress, CancellationToken? cancellationToken)
     {
-        var res = await _customerService.GetAll(new GetCustomerByEmailAddress(emailAddress), cancellationToken);
+        List<Customer> res = await _customerService.GetAll(new GetCustomerByEmailAddress(emailAddress), cancellationToken);
         Customer? currentUser = res.FirstOrDefault();
         if (currentUser != null && currentUser.IsActive)
             return true;

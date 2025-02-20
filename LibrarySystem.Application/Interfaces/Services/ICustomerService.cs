@@ -9,6 +9,6 @@ public interface ICustomerService : IGenericReadWithParamRepository<List<Custome
 {
     Task SaveEmailConfirmationToken(EmailConfirmationResult emailConfirmationResult);
     Task SavePassowordResetToken(ResetPasswordResult passwordResult);
-    Task UpdatePassowordResetToken(Guid id);
-    Task UpdateEmailConfirmationToken(PasswordChangeRequest passwordChangeRequest);
+    Task UpdatePassowordResetToken(PasswordChangeRequest passwordChangeRequest);
+    Task UpdateEmailConfirmationToken(Guid id);
 }
