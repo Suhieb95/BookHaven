@@ -47,16 +47,8 @@ internal static class WebApplicationExtentions
         application.UseAuthentication();
         application.UseAuthorization();
 
-        // if (isDevelopment)
-        //     AddHangfire(application, configuration);
-
-        // application.AddBackgroundJobs();
-
         application.MapControllers();
-        // application.MapStaticAssets();
-        // application.UseDefaultFiles();
-        // application.UseStaticFiles();
-
+        application.MapStaticAssets();
 
         return application;
     }

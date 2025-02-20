@@ -39,6 +39,7 @@ public static class DependencyInjection
     {
         services.Configure<RefreshJwtSettings>(configuration.GetSection(RefreshJwtSettings.SectionName));
         services.Configure<ApiKeys>(configuration.GetSection(nameof(ApiKeys)));
+        services.Configure<EmailSettings>(configuration.GetSection(EmailSettings.SectionName));
     }
     private static IServiceCollection AddCloudinary(this IServiceCollection services, IConfiguration configuration)
     {

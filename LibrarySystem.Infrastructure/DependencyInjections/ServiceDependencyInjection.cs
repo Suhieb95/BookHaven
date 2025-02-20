@@ -1,3 +1,4 @@
+using InventoryManagement.Infrastructure.Services.EmailService;
 using LibrarySystem.Application.Interfaces.Services;
 using LibrarySystem.Infrastructure.Services;
 using Microsoft.Extensions.DependencyInjection;
@@ -8,6 +9,7 @@ internal static class ServiceDependencyInjection
     {
         services.AddScoped<IBookService, BookService>();
         services.AddScoped<ICustomerService, CustomerService>();
+        services.AddScoped<IEmailService, EmailService>();
         return services;
     }
 }

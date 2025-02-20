@@ -8,6 +8,7 @@ using LibrarySystem.Domain.BaseModels.User;
 using LibrarySystem.Domain.DTOs.Auth;
 using LibrarySystem.Domain.Entities;
 using LibrarySystem.Domain.Enums;
+using LibrarySystem.Domain.Exceptions.UserExceptions;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 
@@ -25,6 +26,9 @@ public class JwtTokenGenerator : IJwtTokenGenerator
     }
     public async Task<string> GenerateAccessToken(PersonBase person, PersonType personType)
     {
+        if (person is null)
+            throw new JwtTokenExpception();
+
         var signingCredentials = new SigningCredentials(new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtSettings.Secret)), SecurityAlgorithms.HmacSha256);
 
         var claims = new List<Claim>{
@@ -54,6 +58,9 @@ public class JwtTokenGenerator : IJwtTokenGenerator
     }
     public string GenerateRefreshToken(PersonBase person)
     {
+        if (person is null)
+            throw new JwtTokenExpception();
+
         var signingCredentials = new SigningCredentials(new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_refreshJwtSettings.Secret)), SecurityAlgorithms.HmacSha256);
 
         var claims = new[]{

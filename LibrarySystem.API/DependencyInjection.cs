@@ -34,6 +34,7 @@ internal static class DependencyInjection
         services.AddSwaggerGen();
         services.AddHttpContextAccessor();
         services.AddControllers(options => options.Filters.Add<JwtValidationFilter>());
+
         // builder.Services.AddScoped<LastLoginFilter>();
         services.AddRouting(opt =>
         {

@@ -8,11 +8,11 @@ namespace LibrarySystem.API.Controllers;
 public class CustomerController(ICustomerRegisterationService _customerRegisterationService) : BaseController
 {
     [HttpPost]
-    public async Task<IActionResult> Get(CustomerRegisterRequest registerRequest, CancellationToken cancellationToken)
+    public async Task<IActionResult> Add(CustomerRegisterRequest request)
     {
-        var result = await _customerRegisterationService.Register(registerRequest, cancellationToken);
+        var result = await _customerRegisterationService.Register(request);
         return result.Map(
-            onSuccess: Ok,
+            onSuccess: _ => Ok(new { Message = "Please Check your inbox." }),
             onFailure: Problem
             );
     }
