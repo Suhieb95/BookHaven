@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace LibrarySystem.API.Controllers;
 [AllowAnonymous]
-public class CustomerController(ICustomerRegisterationService _customerRegisterationService) : BaseController
+public class CustomerController(ICustomerRegistrationService _customerRegisterationService) : BaseController
 {
     [HttpPost]
     public async Task<IActionResult> Add(CustomerRegisterRequest request)

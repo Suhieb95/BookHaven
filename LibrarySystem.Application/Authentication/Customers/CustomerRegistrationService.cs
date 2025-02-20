@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Options;
 
 namespace LibrarySystem.Application.Authentication.Customers;
-public class CustomerRegisterationService(ICustomerService _customerService, IJwtTokenGenerator _jwtTokenGenerator, IEmailService _emailSender, IOptions<EmailSettings> _emailSettings, IWebHostEnvironment _env) : ICustomerRegisterationService
+public class CustomerRegistrationService(ICustomerService _customerService, IJwtTokenGenerator _jwtTokenGenerator, IEmailService _emailSender, IOptions<EmailSettings> _emailSettings, IWebHostEnvironment _env) : ICustomerRegistrationService
 {
     private readonly EmailSettings _emailSettings = _emailSettings.Value;
     public async Task<Result<bool>> Register(CustomerRegisterRequest request, CancellationToken? cancellationToken = null)
@@ -17,11 +17,15 @@ public class CustomerRegisterationService(ICustomerService _customerService, IJw
             return Result<bool>.Failure(new Error("Email Address exists, Please Login.", BadRequest, "Email Address Exists"));
 
         Guid result = await _customerService.Add(request);
-        EmailConfirmationResult emailConfirmation = _jwtTokenGenerator.GenerateEmailConfirmationToken(result);
-        await _customerService.SaveConfirmationToken(emailConfirmation);
-        await SendConfirmationEmail(request.EmailAddress, result);
+        await SendEmailConfirmationToken(request, result);
 
         return Result<bool>.Success(true);
+    }
+    private async Task SendEmailConfirmationToken(CustomerRegisterRequest request, Guid result)
+    {
+        EmailConfirmationResult emailConfirmation = _jwtTokenGenerator.GenerateEmailConfirmationToken(result);
+        await _customerService.SaveEmailConfirmationToken(emailConfirmation);
+        await SendConfirmationEmail(request.EmailAddress, result);
     }
     private async Task<bool> IsEmailAddressInUse(string emailAddress, CancellationToken? cancellationToken)
     {
@@ -43,7 +47,7 @@ public class CustomerRegisterationService(ICustomerService _customerService, IJw
 
         EmailRequest email = new(
            to,
-           "Complete Registeration",    
+           "Complete Registeration",
             mailText
         );
         await _emailSender.SendEmail(email);

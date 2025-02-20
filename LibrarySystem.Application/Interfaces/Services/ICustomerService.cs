@@ -7,5 +7,8 @@ using LibrarySystem.Domain.Specification;
 namespace LibrarySystem.Application.Interfaces.Services;
 public interface ICustomerService : IGenericReadWithParamRepository<List<Customer>, Specification>, IGenericWriteRepository<CustomerRegisterRequest, CustomerUpdateRequest, Guid>
 {
-    Task SaveConfirmationToken(EmailConfirmationResult emailConfirmationResult);
+    Task SaveEmailConfirmationToken(EmailConfirmationResult emailConfirmationResult);
+    Task SavePassowordResetToken(ResetPasswordResult passwordResult);
+    Task UpdatePassowordResetToken(Guid id);
+    Task UpdateEmailConfirmationToken(PasswordChangeRequest passwordChangeRequest);
 }
