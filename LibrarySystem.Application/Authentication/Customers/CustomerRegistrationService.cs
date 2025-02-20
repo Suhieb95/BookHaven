@@ -27,13 +27,14 @@ public class CustomerRegistrationService(ICustomerService _customerService, IJwt
     {
         List<Customer>? res = await _customerService.GetAll(new GetCustomerById(id), cancellationToken);
         Customer? currentUser = res.FirstOrDefault();
-        if (currentUser != null && currentUser.HasValidEmailConfirmationToken())
-        {
-            await _customerService.UpdateEmailConfirmationToken(id, cancellationToken);
-            return Result<bool>.Success(true);
-        }
+        if (currentUser == null)
+            return Result<bool>.Failure(new Error("User Doesn't Exists.", BadRequest, "Invalid User"));
 
-        return Result<bool>.Failure(new Error("Token Has Expired.", BadRequest, "Invalid Token"));
+        if (!currentUser.HasValidEmailConfirmationToken())
+            return Result<bool>.Failure(new Error("Token Has Expired.", BadRequest, "Invalid Token"));
+
+        await _customerService.UpdateEmailConfirmationToken(id, cancellationToken);
+        return Result<bool>.Success(true);
     }
     private async Task SendEmailConfirmationToken(string emailAddress, Guid result, CancellationToken? cancellationToken)
     {
