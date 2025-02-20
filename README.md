@@ -44,4 +44,4 @@ Welcome to **BookHaven**, an advanced online library store designed to simplify 
 
 
 ## End of README
-This README.md provides a structured overview of your project, including authentication details, which are key for any developer working with your BookHaven repository. Adjust the links and any specific configurations as needed!
+This README.md provides a structured overview of your project, including authentication details, which are key for any developer working with BookHaven repository. Adjust the links and any specific configurations as needed!
