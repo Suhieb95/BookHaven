@@ -14,5 +14,8 @@ public enum EntityName
     Borrowings = 10,
     BooksSalesDetails = 11,
     Customers = 12,
-    RestPasswordApprovals = 13
+    UserRestPasswordApprovals = 13,
+    Payments = 14,
+    BookComments = 15,
+    BookImages = 16
 }
