@@ -5,14 +5,15 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Timeouts;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 
 namespace LibrarySystem.Infrastructure.DependencyInjections;
-
 public static class DependencyInjection
 {
     public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration, bool isDev)
     {
         ArgumentNullException.ThrowIfNull(services);
+
         services.AddHealthChecks().AddCheck<DatabaseHealthCheck>("Database");
         services.ConfigureOptions(configuration);
         services.AddLimiter(configuration);
@@ -37,22 +38,23 @@ public static class DependencyInjection
     }
     private static void ConfigureOptions(this IServiceCollection services, IConfiguration configuration)
     {
+        ArgumentNullException.ThrowIfNull(services);
+
         services.Configure<RefreshJwtSettings>(configuration.GetSection(RefreshJwtSettings.SectionName));
         services.Configure<ApiKeys>(configuration.GetSection(nameof(ApiKeys)));
         services.Configure<EmailSettings>(configuration.GetSection(EmailSettings.SectionName));
     }
     private static IServiceCollection AddCloudinary(this IServiceCollection services, IConfiguration configuration)
     {
+        ArgumentNullException.ThrowIfNull(services);
+
         CloudinarySettings cloudinarySettings = configuration.GetSection(CloudinarySettings.SectionName).Get<CloudinarySettings>()!;
-        Account acc = new(
-                cloudinarySettings.CloudName,
-                cloudinarySettings.ApiKey,
-                cloudinarySettings.ApiSecret
-            );
-
-        Cloudinary cloudinary = new(acc);
-        services.AddSingleton(cloudinary);
-
+        Account cloudinaryAccount = new(
+            cloudinarySettings.CloudName,
+            cloudinarySettings.ApiKey,
+            cloudinarySettings.ApiSecret);
+            
+        services.AddSingleton(Options.Create(cloudinaryAccount));
         return services;
     }
 }

@@ -17,17 +17,20 @@ public class CustomerRegistrationService(ICustomerService _customerService, IJwt
         if (await IsEmailAddressInUse(request.EmailAddress, cancellationToken))
             return Result<bool>.Failure(new Error("Email Address exists, Please Login.", BadRequest, "Email Address Exists"));
 
-        request.Password = _passwordHasher.Hash(request.Password);
+        HashPassword(request);
         Guid result = await _customerService.Add(request, cancellationToken);
         await SendEmailConfirmationToken(request.EmailAddress, result, cancellationToken);
 
         return Result<bool>.Success(true);
     }
+    private void HashPassword(CustomerRegisterRequest request)
+       => request.Password = _passwordHasher.Hash(request.Password);
+
     public async Task<Result<bool>> ConfirmEmailAddress(Guid id, CancellationToken? cancellationToken = null)
     {
         List<Customer>? res = await _customerService.GetAll(new GetCustomerById(id), cancellationToken);
         Customer? currentUser = res.FirstOrDefault();
-        if (currentUser == null)
+        if (currentUser is null)
             return Result<bool>.Failure(new Error("User Doesn't Exists.", BadRequest, "Invalid User"));
 
         if (!currentUser.HasValidEmailConfirmationToken())
@@ -51,7 +54,7 @@ public class CustomerRegistrationService(ICustomerService _customerService, IJwt
     {
         List<Customer> res = await _customerService.GetAll(new GetCustomerByEmailAddress(emailAddress), cancellationToken);
         Customer? currentUser = res.FirstOrDefault();
-        if (currentUser != null && currentUser.IsActive)
+        if (currentUser is { IsActive: true })
             return true;
 
         return false;
@@ -59,18 +62,14 @@ public class CustomerRegistrationService(ICustomerService _customerService, IJwt
     private async Task SendConfirmationEmail(string to, Guid id)
     {
         string? filePath = Path.Combine(_env.WebRootPath, "Templates", "EmailConfirmation.html");
-        var str = new StreamReader(filePath);
+        StreamReader? str = new(filePath);
         string? mailText = str.ReadToEnd();
         str.Close();
 
         mailText = mailText.Replace("[url]", _emailSettings.EmailConfirmationURL + id.ToString())
                            .Replace("[year]", DateTime.Today.Year.ToString());
 
-        EmailRequest email = new(
-           to,
-           "Complete Registration",
-            mailText
-        );
+        EmailRequest email = new(to, "Complete Registration", mailText);
         await _emailSender.SendEmail(email);
     }
 }

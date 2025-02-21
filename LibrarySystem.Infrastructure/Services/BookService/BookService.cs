@@ -3,13 +3,13 @@ using LibrarySystem.Application.Interfaces.Services;
 using LibrarySystem.Domain.DTOs;
 using LibrarySystem.Domain.Entities;
 using LibrarySystem.Domain.Specification;
-namespace LibrarySystem.Infrastructure.Services;
+namespace LibrarySystem.Infrastructure.Services.BookService;
 public class BookService(ISqlDataAccess _sqlDataAccess) : IBookService
 {
     public async Task<PaginatedResponse<Book>> GetAll(PaginationParam param, CancellationToken? cancellationToken = null)
     {
         (List<Book> books, PaginationDetails? paginationDetails) = await _sqlDataAccess.FetchListAndSingleAsync<Book, PaginationDetails>
-             ("SPGetBooks", cancellationToken, param, CommandType.StoredProcedure);
+             ("SPGetBooks", cancellationToken, param, StoredProcedure);
 
         PaginatedResponse<Book> response = new()
         {
@@ -22,7 +22,7 @@ public class BookService(ISqlDataAccess _sqlDataAccess) : IBookService
     }
     public async Task<Book?> GetById(int id, CancellationToken? cancellationToken = null, Specification? specification = null)
     {
-        var res = await _sqlDataAccess.LoadData<Book>("SPGetBookById", new { Id = id }, CommandType.StoredProcedure, cancellationToken);
+        var res = await _sqlDataAccess.LoadData<Book>("SPGetBookById", new { Id = id }, StoredProcedure, cancellationToken);
         return res.FirstOrDefault();
     }
 }

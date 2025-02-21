@@ -1,3 +1,4 @@
+using LibrarySystem.Application.Interfaces;
 using LibrarySystem.Application.Interfaces.Database;
 using LibrarySystem.Application.Interfaces.Services;
 using LibrarySystem.Domain.DTOs.Auth;
@@ -5,15 +6,15 @@ using LibrarySystem.Domain.DTOs.Customers;
 using LibrarySystem.Domain.Entities;
 using LibrarySystem.Domain.Specification;
 
-namespace LibrarySystem.Infrastructure.Services;
-public class CustomerService(ISqlDataAccess _sqlDataAccess) : ICustomerService
+namespace LibrarySystem.Infrastructure.Services.CustomerService;
+public class CustomerService(ISqlDataAccess _sqlDataAccess, IDateTimeProvider _dateTimeProvider) : ICustomerService
 {
     public async Task<Guid> Add(CustomerRegisterRequest request, CancellationToken? cancellationToken)
     {
         const string Sql = "SPCreateCustomer";
         var param = new
         {
-            Id = Guid.NewGuid(),
+            Id = Guid.CreateVersion7(_dateTimeProvider.UtcNow),
             request.UserName,
             request.EmailAddress,
             request.Password,
