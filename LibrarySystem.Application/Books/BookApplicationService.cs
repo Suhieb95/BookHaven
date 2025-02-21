@@ -1,5 +1,6 @@
 using LibrarySystem.Application.Interfaces.Services;
 using LibrarySystem.Domain.DTOs;
+using LibrarySystem.Domain.DTOs.Books;
 using LibrarySystem.Domain.Entities;
 
 namespace LibrarySystem.Application.Books;
@@ -13,10 +14,10 @@ public class BookApplicationService(IBookService _bookService) : IBookApplicatio
 
         return Result<Book>.Success(res);
     }
-    public async Task<Result<PaginatedResponse<Book>>> GetBooks(PaginationParam param, CancellationToken? cancellationToken = null)
+    public async Task<Result<PaginatedResponse<BookResponse>>> GetBooks(PaginationParam param, CancellationToken? cancellationToken = null)
     {
-        PaginatedResponse<Book>? res = await _bookService.GetAll(param, cancellationToken);
-        return Result<PaginatedResponse<Book>>.Success(res);
+        PaginatedResponse<BookResponse>? res = await _bookService.GetAll(param, cancellationToken);
+        return Result<PaginatedResponse<BookResponse>>.Success(res);
     }
 }
 

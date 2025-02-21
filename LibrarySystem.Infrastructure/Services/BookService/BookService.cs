@@ -1,23 +1,32 @@
 using LibrarySystem.Application.Interfaces.Database;
 using LibrarySystem.Application.Interfaces.Services;
 using LibrarySystem.Domain.DTOs;
+using LibrarySystem.Domain.DTOs.Books;
 using LibrarySystem.Domain.Entities;
 using LibrarySystem.Domain.Specification;
 namespace LibrarySystem.Infrastructure.Services.BookService;
 public class BookService(ISqlDataAccess _sqlDataAccess) : IBookService
 {
-    public async Task<PaginatedResponse<Book>> GetAll(PaginationParam param, CancellationToken? cancellationToken = null)
+    public async Task<PaginatedResponse<BookResponse>> GetAll(PaginationParam param, CancellationToken? cancellationToken = null)
     {
-        (List<Book> books, PaginationDetails? paginationDetails) = await _sqlDataAccess.FetchListAndSingleAsync<Book, PaginationDetails>
+        (List<BookResponse> books, PaginationDetails? paginationDetails) = await _sqlDataAccess.FetchListAndSingleAsync<BookResponse, PaginationDetails>
              ("SPGetBooks", cancellationToken, param, StoredProcedure);
 
-        PaginatedResponse<Book> response = new()
+        PaginatedResponse<BookResponse> response = new()
         {
             Data = books,
             PaginationDetails = paginationDetails!
         };
 
         response.SetTotalPage(param.PageSize);
+
+        const string Sql = "SELECT ImageUrl FROM BookImages WHERE BookId = @Id";
+        foreach (BookResponse book in books)
+        {
+            var bookImages = await _sqlDataAccess.LoadData<string>(Sql, new { Id = book.Id });
+            book.ImageUrl = [.. bookImages];
+        }
+
         return response;
     }
     public async Task<Book?> GetById(int id, CancellationToken? cancellationToken = null, Specification? specification = null)
