@@ -8,5 +8,5 @@ public interface IFileService
     Task<FileUploadResult[]> Upload(List<IFormFile> files);
     Task<bool> Delete(string publicId);
     Task<string?> GetFile(string publicId);
-    Task<string?[]> GetFiles(string?[] publicIds);
+    Task<string[]?> GetFiles(string[] publicIds);
 }

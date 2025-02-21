@@ -4,7 +4,7 @@ using LibrarySystem.Domain.DTOs.Books;
 using LibrarySystem.Domain.Entities;
 
 namespace LibrarySystem.Application.Books;
-public class BookApplicationService(IBookService _bookService) : IBookApplicationService
+public class BookApplicationService(IBookService _bookService, IFileService _fileService) : IBookApplicationService
 {
     public async Task<Result<Book>> GetBookById(int id, CancellationToken? cancellationToken = null)
     {
@@ -17,6 +17,13 @@ public class BookApplicationService(IBookService _bookService) : IBookApplicatio
     public async Task<Result<PaginatedResponse<BookResponse>>> GetBooks(PaginationParam param, CancellationToken? cancellationToken = null)
     {
         PaginatedResponse<BookResponse>? res = await _bookService.GetAll(param, cancellationToken);
+
+        if (res.Data?.Count == 0)
+            return Result<PaginatedResponse<BookResponse>>.Success(res);
+
+        foreach (BookResponse book in res.Data!)
+            book.ImageUrl = await _fileService.GetFiles(book.ImageUrl!);
+
         return Result<PaginatedResponse<BookResponse>>.Success(res);
     }
 }
