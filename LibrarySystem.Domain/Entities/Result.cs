@@ -12,4 +12,3 @@ public sealed class Result<T>
     public static Result<T> Failure(Error error) => new(error);
     public TResult Map<TResult>(Func<T, TResult> onSuccess, Func<Error, TResult> onFailure) => IsSuccess ? onSuccess(Data!) : onFailure(Error!);
 }
-

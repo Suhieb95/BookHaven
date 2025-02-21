@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Options;
 using System.IdentityModel.Tokens.Jwt;
 using static LibrarySystem.Application.Helpers.Extensions;
-using static LibrarySystem.API.Common.Constants.ApiEndPoints;
 
 namespace LibrarySystem.API.Filters;
 public class JwtValidationFilter(IOptions<JwtSettings> jwtSettings) : IActionFilter

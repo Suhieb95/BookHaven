@@ -18,7 +18,8 @@ public partial class BaseController : ControllerBase
 {
     protected IActionResult Problem(Error error)
     {
-        string statusCodeWithSpaces = MyRegex().Replace(string.IsNullOrEmpty(error.Title)
+        string statusCodeWithSpaces = MyRegex().Replace(
+                                    string.IsNullOrEmpty(error.Title)
                                     ? error.StatusCode.ToString()
                                     : error.Title!, " $1");
 

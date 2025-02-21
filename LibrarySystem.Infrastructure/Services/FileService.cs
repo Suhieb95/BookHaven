@@ -34,13 +34,13 @@ public class FileService : IFileService
         GetResourceResult? getResult = await _cloudinary.GetResourceAsync(publicId);
         return getResult.SecureUrl;
     }
-    public async Task<string[]?> GetFiles(string[] publicIds)
+    public async Task<string?[]?> GetFiles(string[] publicIds)
     {
-        if (publicIds.Length == 0 || publicIds is null)
+        if (publicIds is null)
             return [];
 
-        IEnumerable<Task<string>>? res = publicIds.Select(GetFile!);
-        string[]? result = await Task.WhenAll(res);
+        IEnumerable<Task<string?>> res = publicIds.Select(GetFile);
+        string?[]? result = await Task.WhenAll(res);
         return result;
     }
     public async Task<FileUploadResult> Upload(IFormFile file)

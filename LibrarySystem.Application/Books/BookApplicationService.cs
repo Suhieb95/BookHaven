@@ -22,9 +22,12 @@ public class BookApplicationService(IBookService _bookService, IFileService _fil
             return Result<PaginatedResponse<BookResponse>>.Success(res);
 
         foreach (BookResponse book in res.Data!)
-            book.ImageUrl = await _fileService.GetFiles(book.ImageUrl!);
+        {
+            if (book.ImageUrl is null) continue;
+            var images = await _fileService.GetFiles(book.ImageUrl)!;
+            book.ImageUrl = images!;
+        }
 
         return Result<PaginatedResponse<BookResponse>>.Success(res);
     }
 }
-

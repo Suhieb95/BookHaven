@@ -23,7 +23,7 @@ public class BookService(ISqlDataAccess _sqlDataAccess) : IBookService
         const string Sql = "SELECT ImageUrl FROM BookImages WHERE BookId = @Id";
         foreach (BookResponse book in books)
         {
-            List<string> bookImages = await _sqlDataAccess.LoadData<string>(Sql, new { Id = book.Id });
+            List<string> bookImages = await _sqlDataAccess.LoadData<string>(Sql, new { book.Id });
             if (bookImages.Count == 0) continue;
             book.ImageUrl = [.. bookImages];
         }
