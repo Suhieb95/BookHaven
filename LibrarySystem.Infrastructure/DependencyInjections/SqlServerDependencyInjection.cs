@@ -14,7 +14,7 @@ internal static class SqlServerDependencyInjection
         string connectionString = configuration.GetSection(ConnectionString.SectionName).GetValue<string>(
                    isDev ? ConnectionString.LocalConnection : ConnectionString.ProductionConnection)!;
 
-        services.AddScoped<IMssqlConnectionFactory>(_ => new MssqlConnectionFactory(connectionString!));
+        services.AddScoped<IMssqlConnectionFactory>(sp => new MssqlConnectionFactory(connectionString!));
         services.AddScoped<ISqlDataAccess, SqlDataAccess>();
         services.AddScoped<IMssqlDbTransaction, SqlDataAccess>();
         return services;

@@ -4,7 +4,9 @@ namespace LibrarySystem.Application.Interfaces.Services;
 
 public interface IFileService
 {
-    Task<PhotoUploadResult> Upload(IFormFile file);
-    Task<PhotoUploadResult[]> Upload(List<IFormFile> files);
-    Task<string?> Delete(string publicId);
+    Task<FileUploadResult> Upload(IFormFile file);
+    Task<FileUploadResult[]> Upload(List<IFormFile> files);
+    Task<bool> Delete(string publicId);
+    Task<string?> GetFile(string filePath);
+    Task<string?[]> GetFiles(string?[] filespath);
 }

@@ -14,7 +14,8 @@ public static class DependencyInjection
     {
         ArgumentNullException.ThrowIfNull(services);
 
-        services.AddHealthChecks().AddCheck<DatabaseHealthCheck>("Database");
+        services.AddHealthChecks()
+                .AddCheck<DatabaseHealthCheck>("Database");
         services.ConfigureOptions(configuration);
         services.AddLimiter(configuration);
         services.AddSqlServerDB(configuration, isDev);

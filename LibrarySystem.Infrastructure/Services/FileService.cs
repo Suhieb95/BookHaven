@@ -15,16 +15,36 @@ public class FileService : IFileService
     {
         _account = account.Value;
         _cloudinary = new(_account);
+        _cloudinary.Api.Secure = true;
     }
-    public async Task<string?> Delete(string publicId)
+    public async Task<bool> Delete(string publicId)
     {
+        if (string.IsNullOrEmpty(publicId))
+            return false;
+
         DeletionParams? deletionParams = new(publicId);
-        var res = await _cloudinary.DestroyAsync(deletionParams);
-        return res.Result == "ok" ? res.Result : null;
+        DeletionResult? res = await _cloudinary.DestroyAsync(deletionParams);
+        return res.Result == "ok";
     }
-    public async Task<PhotoUploadResult> Upload(IFormFile file)
+    public async Task<string?> GetFile(string filePath)
     {
-        var uploadResult = new ImageUploadResult();
+        if (string.IsNullOrEmpty(filePath))
+            return null;
+
+        GetResourceResult? getResult = await _cloudinary.GetResourceAsync(filePath);
+        return getResult.SecureUrl;
+    }
+    public async Task<string?[]> GetFiles(string?[] filePaths)
+    {
+        if (filePaths.Length == 0 || filePaths is null)
+            return [];
+
+        IEnumerable<Task<string?>>? res = filePaths.Select(GetFile!);
+        string?[]? result = await Task.WhenAll(res);
+        return result;
+    }
+    public async Task<FileUploadResult> Upload(IFormFile file)
+    {
         if (file.Length == 0)
             throw new EmptyFileException();
 
@@ -33,26 +53,24 @@ public class FileService : IFileService
         {
             File = new FileDescription(file.FileName, str),
             Transformation = new Transformation()
-                    .Height(500)
-                    .Width(500)
-                    .Crop("fill")
-                    .Gravity("face")
+            .Height(500)
+            .Width(500)
+            .Crop("fill")
+            .Gravity("face")
         };
-
-        uploadResult = await _cloudinary.UploadAsync(uploadParam);
-
+        UploadResult? uploadResult = await _cloudinary.UploadAsync(uploadParam);
         if (uploadResult.Error != null)
             throw new FileUploadException();
 
-        return new PhotoUploadResult(uploadResult.SecureUrl.AbsoluteUri, uploadResult.PublicId);
+        return new FileUploadResult(uploadResult.SecureUrl.AbsoluteUri, uploadResult.PublicId);
     }
-    public async Task<PhotoUploadResult[]> Upload(List<IFormFile> files)
+    public async Task<FileUploadResult[]> Upload(List<IFormFile> files)
     {
-        if (files.Count == 0)
+        if (files.Count == 0 || files is null)
             return [];
 
-        var upload = files.Select(Upload);
-        PhotoUploadResult[]? uploadResult = await Task.WhenAll(upload);
+        IEnumerable<Task<FileUploadResult>>? upload = files.Select(Upload);
+        FileUploadResult[]? uploadResult = await Task.WhenAll(upload);
         return uploadResult;
     }
 }
