@@ -14,7 +14,7 @@ public class FileService : IFileService
     public FileService(IOptions<Account> account)
     {
         _account = account.Value;
-        _cloudinary = new(_account);
+        _cloudinary = new Cloudinary(_account);
         _cloudinary.Api.Secure = true;
     }
     public async Task<bool> Delete(string publicId)
@@ -26,20 +26,20 @@ public class FileService : IFileService
         DeletionResult? res = await _cloudinary.DestroyAsync(deletionParams);
         return res.Result == "ok";
     }
-    public async Task<string?> GetFile(string filePath)
+    public async Task<string?> GetFile(string publicId)
     {
-        if (string.IsNullOrEmpty(filePath))
+        if (string.IsNullOrEmpty(publicId))
             return null;
 
-        GetResourceResult? getResult = await _cloudinary.GetResourceAsync(filePath);
+        GetResourceResult? getResult = await _cloudinary.GetResourceAsync(publicId);
         return getResult.SecureUrl;
     }
-    public async Task<string?[]> GetFiles(string?[] filePaths)
+    public async Task<string?[]> GetFiles(string?[] publicIds)
     {
-        if (filePaths.Length == 0 || filePaths is null)
+        if (publicIds.Length == 0 || publicIds is null)
             return [];
 
-        IEnumerable<Task<string?>>? res = filePaths.Select(GetFile!);
+        IEnumerable<Task<string?>>? res = publicIds.Select(GetFile!);
         string?[]? result = await Task.WhenAll(res);
         return result;
     }
@@ -53,8 +53,6 @@ public class FileService : IFileService
         {
             File = new FileDescription(file.FileName, str),
             Transformation = new Transformation()
-            .Height(500)
-            .Width(500)
             .Crop("fill")
             .Gravity("face")
         };
