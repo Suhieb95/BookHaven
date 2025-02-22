@@ -62,7 +62,7 @@ public class FileService : IFileService
 
         return new FileUploadResult(uploadResult.SecureUrl.AbsoluteUri, uploadResult.PublicId);
     }
-    public async Task<FileUploadResult[]> Upload(List<IFormFile> files)
+    public async Task<FileUploadResult[]> Upload(IFormFileCollection files)
     {
         if (files.Count == 0 || files is null)
             return [];

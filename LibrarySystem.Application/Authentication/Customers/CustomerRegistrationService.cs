@@ -24,7 +24,7 @@ public class CustomerRegistrationService(ICustomerService _customerService, IJwt
         return Result<bool>.Success(true);
     }
     private void HashPassword(CustomerRegisterRequest request)
-       => request.Password = _passwordHasher.Hash(request.Password);
+       => request.SetPassword(_passwordHasher.Hash(request.Password));
 
     public async Task<Result<bool>> ConfirmEmailAddress(Guid id, CancellationToken? cancellationToken = null)
     {
