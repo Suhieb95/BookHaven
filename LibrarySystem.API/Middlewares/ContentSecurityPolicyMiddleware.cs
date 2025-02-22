@@ -3,7 +3,6 @@ internal class ContentSecurityPolicyMiddleware(RequestDelegate _next)
 {
     public async Task Invoke(HttpContext context)
     {
-        context.Response.Headers.Append("X-Frame-Options", "DENY");
         // context.Response.Headers.Append("Content-Security-Policy", "default-src 'self'; connect-src 'self' https://mydom.runasp.net;");
         context.Response.Headers.Append("Content-Security-Policy", "frame-ancestors 'none'");
         // Remove unwanted headers
