@@ -23,9 +23,6 @@ public class CustomerRegistrationService(ICustomerService _customerService, IJwt
 
         return Result<bool>.Success(true);
     }
-    private void HashPassword(CustomerRegisterRequest request)
-       => request.SetPassword(_passwordHasher.Hash(request.Password));
-
     public async Task<Result<bool>> ConfirmEmailAddress(Guid id, CancellationToken? cancellationToken = null)
     {
         List<Customer>? res = await _customerService.GetAll(new GetCustomerById(id), cancellationToken);
@@ -39,6 +36,8 @@ public class CustomerRegistrationService(ICustomerService _customerService, IJwt
         await _customerService.UpdateEmailConfirmationToken(id, cancellationToken);
         return Result<bool>.Success(true);
     }
+    private void HashPassword(CustomerRegisterRequest request)
+       => request.SetPassword(_passwordHasher.Hash(request.Password));
     private async Task SendEmailConfirmationToken(string emailAddress, Guid result, CancellationToken? cancellationToken)
     {
         List<Customer>? res = await _customerService.GetAll(new GetCustomerByEmailAddress(emailAddress), cancellationToken);
