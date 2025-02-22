@@ -3,7 +3,7 @@ using LibrarySystem.Domain.DTOs.Auth;
 using LibrarySystem.Domain.DTOs.Customers;
 using LibrarySystem.Infrastructure.Parameters.Customers;
 
-namespace LibrarySystem.Infrastructure.Mappings;
+namespace LibrarySystem.Infrastructure.Mappings.Customers;
 internal static class Mappings
 {
     internal static UpdateCustomerParameters ToParameter(this CustomerUpdateRequest request)

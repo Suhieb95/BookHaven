@@ -5,6 +5,8 @@ using LibrarySystem.Domain.DTOs.Auth;
 using LibrarySystem.Domain.DTOs.Customers;
 using LibrarySystem.Domain.Entities;
 using LibrarySystem.Domain.Specification;
+using LibrarySystem.Infrastructure.Mappings.Customers;
+using LibrarySystem.Infrastructure.Parameters.Customers;
 namespace LibrarySystem.Infrastructure.Services.CustomerService;
 public class CustomerService(ISqlDataAccess _sqlDataAccess, IDateTimeProvider _dateTimeProvider) : ICustomerService
 {
@@ -23,7 +25,6 @@ public class CustomerService(ISqlDataAccess _sqlDataAccess, IDateTimeProvider _d
     }
     public async Task<List<Customer>> GetAll(Specification specification, CancellationToken? cancellationToken = null)
         => await _sqlDataAccess.LoadData<Customer>(specification.ToSql(), specification.Parameters, cancellationToken: cancellationToken);
-
     public async Task SaveEmailConfirmationToken(EmailConfirmationResult emailConfirmationResult, CancellationToken? cancellationToken)
     {
         const string Sql = @"UPDATE Customers SET VerifyEmailTokenExpiry = @VerifyEmailTokenExpiry, VerifyEmailToken = @VerifyEmailToken
