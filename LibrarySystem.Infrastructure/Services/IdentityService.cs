@@ -1,5 +1,5 @@
 using System.Security.Claims;
-using LibrarySystem.Application.Interfaces;
+using LibrarySystem.Application.Interfaces.Services;
 using Microsoft.AspNetCore.Http;
 
 namespace LibrarySystem.Infrastructure.Services;

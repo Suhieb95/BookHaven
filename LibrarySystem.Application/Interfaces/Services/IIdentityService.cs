@@ -1,4 +1,4 @@
-namespace LibrarySystem.Application.Interfaces;
+namespace LibrarySystem.Application.Interfaces.Services;
 public interface IIdentityService
 {
     Guid? GetCurrentLoggedInUser();

@@ -1,4 +1,4 @@
-namespace LibrarySystem.Domain.DTOs.Books;
+    namespace LibrarySystem.Domain.DTOs.Books;
 public class BookPaginationParam : PaginationParam
 {
     public BookPaginationParam() : base()

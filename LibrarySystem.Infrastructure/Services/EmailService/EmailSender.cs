@@ -8,7 +8,7 @@ using LibrarySystem.Domain.DTOs;
 using LibrarySystem.Domain.Entities;
 using LibrarySystem.Application.Interfaces.Services;
 
-namespace InventoryManagement.Infrastructure.Services.EmailService;
+namespace LibrarySystem.Infrastructure.Services.EmailService;
 public class EmailService(IOptions<EmailSettings> emailSettings) : IEmailService
 {
     private readonly EmailSettings _emailSettings = emailSettings.Value;

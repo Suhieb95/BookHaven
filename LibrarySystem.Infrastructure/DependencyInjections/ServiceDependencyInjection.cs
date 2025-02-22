@@ -1,8 +1,8 @@
-using InventoryManagement.Infrastructure.Services.EmailService;
 using LibrarySystem.Application.Interfaces.Services;
 using LibrarySystem.Infrastructure.Services;
 using LibrarySystem.Infrastructure.Services.BookService;
 using LibrarySystem.Infrastructure.Services.CustomerService;
+using LibrarySystem.Infrastructure.Services.EmailService;
 using Microsoft.Extensions.DependencyInjection;
 namespace LibrarySystem.Infrastructure.DependencyInjections;
 internal static class ServiceDependencyInjection
