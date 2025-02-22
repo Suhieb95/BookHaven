@@ -1,5 +1,5 @@
 namespace LibrarySystem.Domain.Enums;
-public enum PaymentMethod
+public enum PaymentMethod : byte
 {
     Card = 1,
     Cash = 2,

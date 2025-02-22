@@ -1,6 +1,6 @@
 namespace LibrarySystem.Domain.Enums;
 
-public enum PaymentStatus
+public enum PaymentStatus : byte
 {
     Approved = 1,
     Processing = 2,

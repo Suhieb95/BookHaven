@@ -1,5 +1,5 @@
 namespace LibrarySystem.Domain.Enums;
-public enum Permission
+public enum Permission : byte
 {
     Read = 1,
     Delete = 2,

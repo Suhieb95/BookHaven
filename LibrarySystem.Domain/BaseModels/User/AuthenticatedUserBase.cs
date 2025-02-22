@@ -4,5 +4,5 @@ namespace LibrarySystem.Domain.BaseModels.User;
 public abstract class AuthenticatedUserBase(string emailAddress, string userName, string token, Guid id)
  : PersonBase(emailAddress, userName, id), IToken
 {
-    public string Token { get; init; } = token;
+    public string Token { get; protected init; } = token;
 };

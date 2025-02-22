@@ -1,6 +1,6 @@
 namespace LibrarySystem.Domain.Enums;
 
-public enum EntityName
+public enum EntityName : byte
 {
     Authors = 1,
     Books = 2,

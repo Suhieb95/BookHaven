@@ -1,5 +1,5 @@
 namespace LibrarySystem.Domain.Enums;
-public enum PersonType
+public enum PersonType : byte
 {
     Customer,
     InternalUser
