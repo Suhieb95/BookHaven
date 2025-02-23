@@ -2,7 +2,7 @@ namespace LibrarySystem.API.Common.Constants;
 internal static class ApiEndPoints
 {
     internal const string BaseController = "/api/v1/[controller]";
-    internal static class Auth
+    internal class Auth
     {
         private const string Authentication = "/auth";
         internal const string RefreshToken = Authentication + "/refresh-token";
@@ -11,8 +11,13 @@ internal static class ApiEndPoints
     {
         internal const string GetById = BaseController + "/{id}";
     }
-    internal static class Customers
+    internal class Customers
     {
         internal const string ConfirmEmailAddress = BaseController + "/confirm-email/{id}";
+        internal const string Register = BaseController + "/register";
+        internal const string Login = BaseController + "/login";
+        internal const string ChangePassword = BaseController + "/change-password";
+        internal const string VerifyResetPasswordToken = BaseController + "/verify-password-reset-token";
+        internal const string ResetPasswordRequest = BaseController + "/reset-password-request";
     }
 }

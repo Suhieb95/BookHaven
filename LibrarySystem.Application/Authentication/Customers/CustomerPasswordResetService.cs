@@ -49,7 +49,7 @@ public class CustomerPasswordResetService(IUnitOfWork _unitOfWork, IOptions<Emai
     }
     private async Task NotifyCustomer(string to, CancellationToken? cancellationToken)
     {
-        string templatePath = Path.Combine("Templates", "SuccessTemplate.html");
+        string templatePath = Path.Combine(_env.WebRootPath, "Templates", "SuccessTemplate.html");
         StreamReader str = new(templatePath);
         string content = await str.ReadToEndAsync();
         str.Close();

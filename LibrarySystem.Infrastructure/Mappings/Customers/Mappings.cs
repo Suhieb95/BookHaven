@@ -21,7 +21,7 @@ internal static class Mappings
           UserName = request.UserName,
           EmailAddress = request.EmailAddress,
           Password = request.Password,
-          IsActive = true,
+          IsActive = false,
           IsVerified = false
       };
     internal static EmailConfirmationTokenParameters ToParameter(this EmailConfirmationResult result)
@@ -35,13 +35,13 @@ internal static class Mappings
      => new()
      {
          EmailAddress = passwordResult.EmailAddress,
-         PasswordResetToken = passwordResult.PasswordResetToken,
-         PasswordResetTokenExpiry = passwordResult.PasswordResetTokenExpiry
+         ResetPasswordToken = passwordResult.PasswordResetToken,
+         ResetPasswordTokenExpiry = passwordResult.PasswordResetTokenExpiry
      };
     internal static PasswordChangeParameters ToParameter(this PasswordChangeRequest passwordChangeRequest)
       => new()
       {
-          UserId = passwordChangeRequest.UserId,
+          Id = passwordChangeRequest.UserId,
           Password = passwordChangeRequest.Password
       };
 }

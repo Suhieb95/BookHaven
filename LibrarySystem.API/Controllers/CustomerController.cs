@@ -1,18 +1,55 @@
 using LibrarySystem.Application.Authentication.Customers;
+using LibrarySystem.Domain.DTOs.Auth;
 using LibrarySystem.Domain.DTOs.Customers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LibrarySystem.API.Controllers;
 [AllowAnonymous]
-public class CustomerController(ICustomerRegistrationService _customerRegisterationService) : BaseController
+public class CustomerController(ICustomerRegistrationService _customerRegisterationService, ICustomerPasswordResetService _customerPasswordResetService, ICustomerLoginService _customerLoginService) : BaseController
 {
-    [HttpPost]
+    [HttpPost(Customers.Register)]
     public async Task<IActionResult> Add(CustomerRegisterRequest request, CancellationToken cancellationToken)
     {
         var result = await _customerRegisterationService.Register(request, cancellationToken);
         return result.Map(
             onSuccess: _ => Ok(new { Message = "Please Check your inbox." }),
+            onFailure: Problem
+            );
+    }
+    [HttpPost(Customers.Login)]
+    public async Task<IActionResult> Login(CustomerLoginRequest request, CancellationToken cancellationToken)
+    {
+        var result = await _customerLoginService.Login(request, cancellationToken);
+        return result.Map(
+            onSuccess: Ok,
+            onFailure: Problem
+            );
+    }
+    [HttpPut(Customers.ChangePassword)]
+    public async Task<IActionResult> ChangePassword(PasswordChangeRequest passwordChangeRequest, CancellationToken cancellationToken)
+    {
+        var result = await _customerPasswordResetService.ChangePassword(passwordChangeRequest, cancellationToken);
+        return result.Map(
+            onSuccess: _ => NoContent(),
+            onFailure: Problem
+            );
+    }
+    [HttpPost(Customers.ResetPasswordRequest)]
+    public async Task<IActionResult> ResetPasswordRequest([FromQuery] string emailAddress, CancellationToken cancellationToken)
+    {
+        var result = await _customerPasswordResetService.ResetPassword(emailAddress, cancellationToken);
+        return result.Map(
+            onSuccess: _ => Ok(new { Message = "Please Check your inbox." }),
+            onFailure: Problem
+            );
+    }
+    [HttpGet(Customers.VerifyResetPasswordToken)]
+    public async Task<IActionResult> VerifyResetPasswordToken([FromQuery] Guid id, CancellationToken cancellationToken)
+    {
+        var result = await _customerPasswordResetService.VerifyToken(id, cancellationToken);
+        return result.Map(
+            onSuccess: _ => Ok(new { Message = "You may Reset Your password Now." }),
             onFailure: Problem
             );
     }
