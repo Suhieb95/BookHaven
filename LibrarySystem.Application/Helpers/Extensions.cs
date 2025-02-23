@@ -60,8 +60,12 @@ public static class Extensions
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.Secret)),
             ClockSkew = TimeSpan.Zero
         };
-
-    public static bool IsEmptyList<T>(ICollection<T> list) => list.Count == 0; //false == false => true
+    public static bool IsValidImageFormat(string path)
+    {
+        string[] allowedFormats = [".png", ".jpeg", ".gif", "jpg"];
+        return allowedFormats.Contains(Path.GetExtension(path).ToLowerInvariant()); // Extract file extension using GetExtension
+    }
+    public static bool IsEmptyList<T>(ICollection<T> list) => list.Count == 0;
     public static bool IsNotEmptyList<T>(ICollection<T> list) => list.Count > 0;
-  
+
 }
