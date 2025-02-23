@@ -23,6 +23,7 @@ public static class DependencyInjection
         services.AddSqlServerDB(configuration, isDev);
         services.AddCloudinary(configuration);
         services.AddServices();
+        services.AddRedis(configuration);
         services.AddAuthentication(configuration);
         services.AddHttpClient();
         services.AddScoped<IIPApiClient, IPApiClient>();

@@ -4,4 +4,5 @@ public class ConnectionString
     public const string SectionName = "ConnectionStrings";
     public const string LocalConnection = "LocalSqlConnection";
     public const string ProductionConnection = "SqlConnection";
+    public const string RedisConnection = "Redis";
 }
