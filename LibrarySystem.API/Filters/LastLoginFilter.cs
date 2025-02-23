@@ -9,14 +9,18 @@ public class LastLoginFilter(IUnitOfWork _unitOfWork) : Attribute, IAsyncResultF
 {
     public async Task OnResultExecutionAsync(ResultExecutingContext context, ResultExecutionDelegate next)
     {
-        ResultExecutedContext? result = await next();
+        // Inspect the result before continuing execution
+        IActionResult? result = context.Result;
 
-        if (result.Result is OkObjectResult okObj)
+        if (result is OkObjectResult okObj)
         {
             AuthenticatedUserBase? res = (AuthenticatedUserBase?)okObj.Value;
             if (res is not null)
                 await _unitOfWork.Users.LastLogin(res.EmailAddress, res.PersonType);
         }
+
+        // Continue with the result execution after your logic
+        await next();
     }
 }
 

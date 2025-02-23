@@ -1,4 +1,3 @@
-using LibrarySystem.Domain.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
@@ -23,7 +22,7 @@ public class JwtValidationFilter(IOptions<JwtSettings> jwtSettings) : IActionFil
                         !authHeader.ToString().StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase))
             return;
 
-        string jwtToken = authHeader.ToString()["Bearer ".Length..].Trim();
+        string jwtToken = authHeader.ToString()["Bearer ".Length..].Trim(); // Remove the "Bearer " part From the token.
 
         try
         {
