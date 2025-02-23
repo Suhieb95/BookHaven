@@ -8,7 +8,7 @@ public class BookApplicationService(IUnitOfWork _iUnitOfWork, IFileService _file
 {
     public async Task<Result<Book>> GetBookById(int id, CancellationToken? cancellationToken = null)
     {
-        var res = await _iUnitOfWork.BookService.GetById(id, cancellationToken);
+        var res = await _iUnitOfWork.Books.GetById(id, cancellationToken);
         if (res is null)
             return Result<Book>.Failure(new Error("Book Doesn't Exists.", NotFound, "Not Found"));
 
@@ -16,7 +16,7 @@ public class BookApplicationService(IUnitOfWork _iUnitOfWork, IFileService _file
     }
     public async Task<Result<PaginatedResponse<BookResponse>>> GetBooks(PaginationParam param, CancellationToken? cancellationToken = null)
     {
-        PaginatedResponse<BookResponse>? res = await _iUnitOfWork.BookService.GetAll(param, cancellationToken);
+        PaginatedResponse<BookResponse>? res = await _iUnitOfWork.Books.GetAll(param, cancellationToken);
 
         if (res.Data?.Count == 0)
             return Result<PaginatedResponse<BookResponse>>.Success(res);

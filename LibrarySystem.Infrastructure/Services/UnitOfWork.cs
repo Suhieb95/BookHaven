@@ -6,18 +6,12 @@ using LibrarySystem.Infrastructure.Services.Books;
 using LibrarySystem.Infrastructure.Services.Customers;
 
 namespace LibrarySystem.Infrastructure.Services;
-public class UnitOfWork : IUnitOfWork
+internal class UnitOfWork(ISqlDataAccess sqlDataAccess, IDateTimeProvider dateTimeProvider) : IUnitOfWork
 {
-    private readonly ISqlDataAccess _sqlDataAccess;
-    private readonly IDateTimeProvider _dateTimeProvider;
-    public UnitOfWork(ISqlDataAccess sqlDataAccess, IDateTimeProvider dateTimeProvider)
-    {
-        _sqlDataAccess = sqlDataAccess;
-        _dateTimeProvider = dateTimeProvider;
+    private readonly ISqlDataAccess _sqlDataAccess = sqlDataAccess;
+    private readonly IDateTimeProvider _dateTimeProvider = dateTimeProvider;
 
-        CustomerService = new CustomerService(_sqlDataAccess, _dateTimeProvider);
-        BookService = new BookService(_sqlDataAccess);
-    }
-    public ICustomerService CustomerService { get; }
-    public IBookService BookService { get; }
+    // Data Access Services
+    public ICustomerService Customers => new CustomerService(_sqlDataAccess, _dateTimeProvider);
+    public IBookService Books => new BookService(_sqlDataAccess);
 }
