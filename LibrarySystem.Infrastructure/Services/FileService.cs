@@ -48,7 +48,7 @@ public class FileService : IFileService
         if (file.Length == 0)
             throw new EmptyFileException();
 
-        using var str = file.OpenReadStream();
+        using Stream? str = file.OpenReadStream();
         var uploadParam = new ImageUploadParams()
         {
             File = new FileDescription(file.FileName, str),
