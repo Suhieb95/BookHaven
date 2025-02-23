@@ -1,7 +1,6 @@
 using LibrarySystem.Application.Interfaces.Services;
 using LibrarySystem.Domain.DTOs;
 using LibrarySystem.Domain.DTOs.Books;
-using LibrarySystem.Domain.Entities;
 
 namespace LibrarySystem.Application.Books;
 public class BookApplicationService(IUnitOfWork _iUnitOfWork, IFileService _fileService) : IBookApplicationService
@@ -14,20 +13,20 @@ public class BookApplicationService(IUnitOfWork _iUnitOfWork, IFileService _file
 
         return Result<Book>.Success(res);
     }
-    public async Task<Result<PaginatedResponse<BookResponse>>> GetBooks(PaginationParam param, CancellationToken? cancellationToken = null)
+    public async Task<Result<PaginatedResponse<BooksResponse>>> GetBooks(PaginationParam param, CancellationToken? cancellationToken = null)
     {
-        PaginatedResponse<BookResponse>? res = await _iUnitOfWork.Books.GetAll(param, cancellationToken);
+        PaginatedResponse<BooksResponse>? res = await _iUnitOfWork.Books.GetAll(param, cancellationToken);
 
         if (res.Data?.Count == 0)
-            return Result<PaginatedResponse<BookResponse>>.Success(res);
+            return Result<PaginatedResponse<BooksResponse>>.Success(res);
 
-        foreach (BookResponse book in res.Data!)
+        foreach (BooksResponse book in res.Data!)
         {
             if (book.ImageUrl is null) continue;
             var images = await _fileService.GetFiles(book.ImageUrl)!;
             book.ImageUrl = images!;
         }
 
-        return Result<PaginatedResponse<BookResponse>>.Success(res);
+        return Result<PaginatedResponse<BooksResponse>>.Success(res);
     }
 }
