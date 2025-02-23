@@ -1,5 +1,2 @@
 namespace LibrarySystem.API.Common;
-public interface IAssemblyMarker
-{
-
-}
+public interface IAssemblyMarker;
