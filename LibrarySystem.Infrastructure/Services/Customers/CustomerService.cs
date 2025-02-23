@@ -6,7 +6,7 @@ using LibrarySystem.Domain.DTOs.Customers;
 using LibrarySystem.Domain.Entities;
 using LibrarySystem.Domain.Specification;
 using LibrarySystem.Infrastructure.Mappings.Customers;
-namespace LibrarySystem.Infrastructure.Services.CustomerService;
+namespace LibrarySystem.Infrastructure.Services.Customers;
 public class CustomerService(ISqlDataAccess _sqlDataAccess, IDateTimeProvider _dateTimeProvider) : ICustomerService
 {
     public async Task<Guid> Add(CustomerRegisterRequest request, CancellationToken? cancellationToken)

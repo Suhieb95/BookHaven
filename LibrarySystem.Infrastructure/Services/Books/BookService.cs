@@ -4,7 +4,7 @@ using LibrarySystem.Domain.DTOs;
 using LibrarySystem.Domain.DTOs.Books;
 using LibrarySystem.Domain.Entities;
 using LibrarySystem.Domain.Specification;
-namespace LibrarySystem.Infrastructure.Services.BookService;
+namespace LibrarySystem.Infrastructure.Services.Books;
 public class BookService(ISqlDataAccess _sqlDataAccess) : IBookService
 {
     public async Task<PaginatedResponse<BookResponse>> GetAll(PaginationParam param, CancellationToken? cancellationToken = null)
