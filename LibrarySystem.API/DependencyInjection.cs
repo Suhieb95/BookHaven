@@ -3,6 +3,7 @@ using FluentValidation.AspNetCore;
 using LibrarySystem.API.Common;
 using LibrarySystem.API.Filters;
 using LibrarySystem.API.Handlers;
+using LibrarySystem.API.Helpers;
 using LibrarySystem.Application.DependencyInjection;
 using LibrarySystem.Infrastructure.DependencyInjections;
 using Microsoft.AspNetCore.Authorization;
@@ -23,7 +24,7 @@ internal static class DependencyInjection
         ConfigurAppSettings(configuration, environmentName);
 
         services.AddInfrastructure(configuration, isDev)
-                .AddApplication(configuration);
+                .AddApplication();
 
         services.SetUploadSize();
         services.AddApiVerison();

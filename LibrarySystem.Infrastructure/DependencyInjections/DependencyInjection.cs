@@ -1,6 +1,8 @@
 using CloudinaryDotNet;
+using LibrarySystem.Application.Interfaces.Services;
 using LibrarySystem.Domain.Entities;
 using LibrarySystem.Infrastructure.DataAccess;
+using LibrarySystem.Infrastructure.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Timeouts;
 using Microsoft.Extensions.Configuration;
@@ -22,6 +24,8 @@ public static class DependencyInjection
         services.AddCloudinary(configuration);
         services.AddServices();
         services.AddAuthentication(configuration);
+        services.AddHttpClient();
+        services.AddScoped<IIPApiClient, IPApiClient>();
         services.AddRequestTimeouts(options =>
         {
             options.AddPolicy("default", new RequestTimeoutPolicy
@@ -44,6 +48,7 @@ public static class DependencyInjection
         services.Configure<RefreshJwtSettings>(configuration.GetSection(RefreshJwtSettings.SectionName));
         services.Configure<ApiKeys>(configuration.GetSection(nameof(ApiKeys)));
         services.Configure<EmailSettings>(configuration.GetSection(EmailSettings.SectionName));
+        services.Configure<IpProvider>(configuration.GetSection(IpProvider.SectionName));
     }
     private static IServiceCollection AddCloudinary(this IServiceCollection services, IConfiguration configuration)
     {
@@ -54,7 +59,7 @@ public static class DependencyInjection
             cloudinarySettings.CloudName,
             cloudinarySettings.ApiKey,
             cloudinarySettings.ApiSecret);
-            
+
         services.AddSingleton(Options.Create(cloudinaryAccount));
         return services;
     }

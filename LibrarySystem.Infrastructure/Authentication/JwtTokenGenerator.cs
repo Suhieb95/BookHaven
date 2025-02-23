@@ -13,18 +13,13 @@ using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 
 namespace LibrarySystem.Infrastructure.Authentication;
-public class JwtTokenGenerator : IJwtTokenGenerator
+public class JwtTokenGenerator(IDateTimeProvider dateTimeProvider, IOptions<JwtSettings> jwtSettings, IOptions<RefreshJwtSettings> refreshJwtSettings)
+     : IJwtTokenGenerator
 {
-    private readonly IDateTimeProvider _dateTimeProvider;
-    private readonly JwtSettings _jwtSettings;
-    private readonly RefreshJwtSettings _refreshJwtSettings;
-    public JwtTokenGenerator(IDateTimeProvider dateTimeProvider, IOptions<JwtSettings> jwtSettings, IOptions<RefreshJwtSettings> refreshJwtSettings)
-    {
-        _dateTimeProvider = dateTimeProvider;
-        _jwtSettings = jwtSettings.Value;
-        _refreshJwtSettings = refreshJwtSettings.Value;
-    }
-    public async Task<string> GenerateAccessToken(PersonBase person, PersonType personType)
+    private readonly IDateTimeProvider _dateTimeProvider = dateTimeProvider;
+    private readonly JwtSettings _jwtSettings = jwtSettings.Value;
+    private readonly RefreshJwtSettings _refreshJwtSettings = refreshJwtSettings.Value;
+    public async Task<string> GenerateAccessToken(PersonBase person, PersonType personType = PersonType.Customer)
     {
         if (person is null)
             throw new JwtTokenExpception();

@@ -1,5 +1,4 @@
 using LibrarySystem.Domain.DTOs.Customers;
-using LibrarySystem.Domain.Entities;
 namespace LibrarySystem.Application.Authentication.Customers;
 public interface ICustomerRegistrationService
 {

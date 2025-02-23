@@ -12,10 +12,10 @@ namespace LibrarySystem.Infrastructure.Services.EmailService;
 public class EmailService(IOptions<EmailSettings> emailSettings) : IEmailService
 {
     private readonly EmailSettings _emailSettings = emailSettings.Value;
-    public async Task SendEmail(EmailRequest email)
-        => await SendEmail(GenerateMimeMessage(email));
+    public async Task SendEmail(EmailRequest email, CancellationToken? cancellationToken)
+        => await SendEmail(GenerateMimeMessage(email), cancellationToken);
 
-    public async Task SendEmailWithAttachment(EmailWithAttachmentRequest request)
+    public async Task SendEmailWithAttachment(EmailWithAttachmentRequest request, CancellationToken? cancellationToken)
     {
         var message = GenerateMimeMessage(EmailRequest.ToDTO(request));
 
@@ -36,7 +36,7 @@ public class EmailService(IOptions<EmailSettings> emailSettings) : IEmailService
         };
 
         message.Body = multipart;
-        await SendEmail(message);
+        await SendEmail(message, cancellationToken);
     }
     private MimeMessage GenerateMimeMessage(EmailRequest emailModel, TextFormat format = TextFormat.Html)
     {
@@ -47,13 +47,14 @@ public class EmailService(IOptions<EmailSettings> emailSettings) : IEmailService
         message.Body = new TextPart(format) { Text = emailModel.Body };
         return message;
     }
-    private async Task SendEmail(MimeMessage message)
+    private async Task SendEmail(MimeMessage message, CancellationToken? cancellationToken)
     {
         using var smtp = new SmtpClient();
-        await smtp.ConnectAsync(_emailSettings.SmtpHost, _emailSettings.SmtpPort, SecureSocketOptions.StartTls);
-        await smtp.AuthenticateAsync(_emailSettings.UserName, _emailSettings.Password);
-        await smtp.SendAsync(message);
-        await smtp.DisconnectAsync(true);
+        CancellationToken ct = cancellationToken ?? CancellationToken.None;
+        await smtp.ConnectAsync(_emailSettings.SmtpHost, _emailSettings.SmtpPort, SecureSocketOptions.StartTls, ct);
+        await smtp.AuthenticateAsync(_emailSettings.UserName, _emailSettings.Password, ct);
+        await smtp.SendAsync(message, ct);
+        await smtp.DisconnectAsync(true, ct);
     }
     private static (string, string) GetFileFormat(IFormFile file)
     {

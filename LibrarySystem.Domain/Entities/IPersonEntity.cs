@@ -6,4 +6,5 @@ public interface IPersonEntity
     bool IsActive { get; }
     DateTime? LastLogin { get; }
     DateTime CreatedAt { get; }
+    string? ImageUrl{ get; }
 }

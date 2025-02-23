@@ -8,6 +8,7 @@ internal static class ServiceDependencyInjection
     {
         services.AddScoped<IBookApplicationService, BookApplicationService>();
         services.AddScoped<ICustomerRegistrationService, CustomerRegistrationService>();
+        services.AddScoped<ICustomerLoginService, CustomerLoginService>();
         return services;
     }
 }
