@@ -42,7 +42,7 @@ public class CustomerRegistrationService(IUnitOfWork _iUnitOfWork, IJwtTokenGene
     {
         List<Customer>? res = await _iUnitOfWork.Customers.GetAll(new GetCustomerByEmailAddress(emailAddress), cancellationToken);
         Customer? currentUser = res.FirstOrDefault();
-        if (currentUser != null && currentUser.HasValidEmailConfirmationToken())
+        if (currentUser is not null && currentUser.HasValidEmailConfirmationToken())
             return;
 
         EmailConfirmationResult emailConfirmation = _jwtTokenGenerator.GenerateEmailConfirmationToken(result);
@@ -53,7 +53,7 @@ public class CustomerRegistrationService(IUnitOfWork _iUnitOfWork, IJwtTokenGene
     {
         List<Customer> res = await _iUnitOfWork.Customers.GetAll(new GetCustomerByEmailAddress(emailAddress), cancellationToken);
         Customer? currentUser = res.FirstOrDefault();
-        if (currentUser is { IsActive: true })
+        if (currentUser is not null and { IsActive: true })
             return true;
 
         return false;

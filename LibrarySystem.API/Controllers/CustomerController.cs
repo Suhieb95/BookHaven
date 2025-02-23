@@ -1,26 +1,30 @@
+using LibrarySystem.API.Filters;
 using LibrarySystem.Application.Authentication.Customers;
 using LibrarySystem.Domain.DTOs.Auth;
 using LibrarySystem.Domain.DTOs.Customers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-
+using Microsoft.AspNetCore.RateLimiting;
 namespace LibrarySystem.API.Controllers;
+
+[EnableRateLimiting("LoginLimiterPolicy")]
 [AllowAnonymous]
 public class CustomerController(ICustomerRegistrationService _customerRegisterationService, ICustomerPasswordResetService _customerPasswordResetService, ICustomerLoginService _customerLoginService) : BaseController
 {
     [HttpPost(Customers.Register)]
     public async Task<IActionResult> Add(CustomerRegisterRequest request, CancellationToken cancellationToken)
     {
-        var result = await _customerRegisterationService.Register(request, cancellationToken);
+        Result<bool>? result = await _customerRegisterationService.Register(request, cancellationToken);
         return result.Map(
             onSuccess: _ => Ok(new { Message = "Please Check your inbox." }),
             onFailure: Problem
             );
     }
+    [ServiceFilter(typeof(LastLoginFilter))]
     [HttpPost(Customers.Login)]
     public async Task<IActionResult> Login(CustomerLoginRequest request, CancellationToken cancellationToken)
     {
-        var result = await _customerLoginService.Login(request, cancellationToken);
+        Result<CustomerLoginResponse>? result = await _customerLoginService.Login(request, cancellationToken);
         return result.Map(
             onSuccess: Ok,
             onFailure: Problem
@@ -29,7 +33,7 @@ public class CustomerController(ICustomerRegistrationService _customerRegisterat
     [HttpPut(Customers.ChangePassword)]
     public async Task<IActionResult> ChangePassword(PasswordChangeRequest passwordChangeRequest, CancellationToken cancellationToken)
     {
-        var result = await _customerPasswordResetService.ChangePassword(passwordChangeRequest, cancellationToken);
+        Result<bool>? result = await _customerPasswordResetService.ChangePassword(passwordChangeRequest, cancellationToken);
         return result.Map(
             onSuccess: _ => NoContent(),
             onFailure: Problem
@@ -38,7 +42,7 @@ public class CustomerController(ICustomerRegistrationService _customerRegisterat
     [HttpPost(Customers.ResetPasswordRequest)]
     public async Task<IActionResult> ResetPasswordRequest([FromQuery] string emailAddress, CancellationToken cancellationToken)
     {
-        var result = await _customerPasswordResetService.ResetPassword(emailAddress, cancellationToken);
+        Result<bool>? result = await _customerPasswordResetService.ResetPassword(emailAddress, cancellationToken);
         return result.Map(
             onSuccess: _ => Ok(new { Message = "Please Check your inbox." }),
             onFailure: Problem
@@ -47,7 +51,7 @@ public class CustomerController(ICustomerRegistrationService _customerRegisterat
     [HttpGet(Customers.VerifyResetPasswordToken)]
     public async Task<IActionResult> VerifyResetPasswordToken([FromQuery] Guid id, CancellationToken cancellationToken)
     {
-        var result = await _customerPasswordResetService.VerifyToken(id, cancellationToken);
+        Result<bool>? result = await _customerPasswordResetService.VerifyToken(id, cancellationToken);
         return result.Map(
             onSuccess: _ => Ok(new { Message = "You may Reset Your password Now." }),
             onFailure: Problem
@@ -56,7 +60,7 @@ public class CustomerController(ICustomerRegistrationService _customerRegisterat
     [HttpPost(Customers.ConfirmEmailAddress)]
     public async Task<IActionResult> ConfirmEmail(Guid id, CancellationToken cancellationToken)
     {
-        var result = await _customerRegisterationService.ConfirmEmailAddress(id, cancellationToken);
+        Result<bool>? result = await _customerRegisterationService.ConfirmEmailAddress(id, cancellationToken);
         return result.Map(
             onSuccess: _ => Ok(new { Message = "Email Address Confirmed, you may Login now." }),
             onFailure: Problem

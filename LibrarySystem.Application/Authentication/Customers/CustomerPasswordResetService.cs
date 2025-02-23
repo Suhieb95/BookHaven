@@ -27,22 +27,22 @@ public class CustomerPasswordResetService(IUnitOfWork _unitOfWork, IOptions<Emai
     public async Task<Result<bool>> ResetPassword(string emailAddress, CancellationToken? cancellationToken)
     {
         Customer? customer = await GetCustomer(new GetCustomerByEmailAddress(emailAddress), cancellationToken);
-        if (customer is null || customer is { IsActive: false })
+        if (customer is null || customer is not null and { IsActive: false })
             return Result<bool>.Failure(new("Customer Doesn't With this Exists.", BadRequest, "Invalid Customer"));
 
         ResetPasswordResult resetPassword = _jwtTokenGenerator.GeneratePasswordResetToken(emailAddress);
         await _unitOfWork.Customers.SavePassowordResetToken(resetPassword, cancellationToken);
-        await SendResetLink(customer.Id, customer.EmailAddress, cancellationToken);
+        await SendResetLink(customer!.Id, customer.EmailAddress, cancellationToken);
 
         return Result<bool>.Success(true);
     }
     public async Task<Result<bool>> VerifyToken(Guid id, CancellationToken? cancellationToken = null)
     {
         Customer? customer = await GetCustomer(new GetCustomerById(id), cancellationToken);
-        if (customer is null || customer is { IsActive: false })
+        if (customer is null || customer is not null and { IsActive: false })
             return Result<bool>.Failure(new("Customer With this Email Address Doesn't Exists.", BadRequest, "Invalid Customer"));
 
-        if (!customer.HasValidRestPasswordToken())
+        if (!customer!.HasValidRestPasswordToken())
             return Result<bool>.Failure(new("Token Has Expired, Please request password change again.", BadRequest, "Invalid Token"));
 
         return Result<bool>.Success(true);

@@ -17,7 +17,7 @@ public class CustomerLoginService(IUnitOfWork _iUnitOfWork, IJwtTokenGenerator _
     public async Task<Result<CustomerLoginResponse>> Login(CustomerLoginRequest request, CancellationToken? cancellationToken)
     {
         Customer? currentUser = await GetUser(request.EmailAddress, cancellationToken);
-        if (currentUser is { IsActive: false })
+        if (currentUser is null || currentUser is not null and { IsActive: false })
             return Result<CustomerLoginResponse>.Failure(new("Invalid Email Address Or Password", BadRequest, "Incorrect Credentials"));
 
         if (IsIncorrectPassowrd(request.Password, currentUser!.Password))

@@ -3,7 +3,6 @@ using FluentValidation.AspNetCore;
 using LibrarySystem.API.Common;
 using LibrarySystem.API.Filters;
 using LibrarySystem.API.Handlers;
-using LibrarySystem.API.Helpers;
 using LibrarySystem.Application.DependencyInjection;
 using LibrarySystem.Infrastructure.DependencyInjections;
 using Microsoft.AspNetCore.Authorization;
@@ -31,12 +30,13 @@ internal static class DependencyInjection
         services.AddValidation();
         services.ConfigureIP();
         services.AddOpenApi();
+        services.AddCorsPolicy(configuration);
         services.AddEndpointsApiExplorer();
         services.AddSwaggerGen();
         services.AddHttpContextAccessor();
         services.AddControllers(options => options.Filters.Add<JwtValidationFilter>());
 
-        // builder.Services.AddScoped<LastLoginFilter>();
+        services.AddScoped<LastLoginFilter>();
         services.AddRouting(opt =>
         {
             opt.LowercaseUrls = true; // lowercase routes 

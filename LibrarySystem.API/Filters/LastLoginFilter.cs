@@ -1,20 +1,22 @@
-// using Microsoft.AspNetCore.Mvc.Filters;
-// namespace LibrarySystem.API.Filters;
-// public class LastLoginFilter : Attribute, IAsyncActionFilter
-// {
-//     private readonly IUserSerivce _userSerivce;
-//     public LastLoginFilter(IUserSerivce userSerivce)
-//        => _userSerivce = userSerivce;
-//     public async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
-//     {
-//         var executedContext = await next();
-//         if (executedContext.Exception == null) // Ensure action executed successfully
-//         {
-//             var email = context.HttpContext.Request.Headers["X-User-Email"].ToString();
+using LibrarySystem.Application.Interfaces.Repositories;
+using LibrarySystem.Domain.BaseModels.User;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Filters;
+namespace LibrarySystem.API.Filters;
 
-//             if (!string.IsNullOrEmpty(email))
-//                 await _userSerivce.LastLogin(Guid.Empty, email, true);
-//         }
-//     }
-// }
+[AttributeUsage(AttributeTargets.Method)]
+public class LastLoginFilter(IUnitOfWork _unitOfWork) : Attribute, IAsyncResultFilter
+{
+    public async Task OnResultExecutionAsync(ResultExecutingContext context, ResultExecutionDelegate next)
+    {
+        ResultExecutedContext? result = await next();
+
+        if (result.Result is OkObjectResult okObj)
+        {
+            AuthenticatedUserBase? res = (AuthenticatedUserBase?)okObj.Value;
+            if (res is not null)
+                await _unitOfWork.Users.LastLogin(res.EmailAddress, res.PersonType);
+        }
+    }
+}
 
