@@ -62,7 +62,7 @@ public class CustomerRegistrationService(IUnitOfWork _iUnitOfWork, IJwtTokenGene
     {
         string? filePath = Path.Combine(_env.WebRootPath, "Templates", "SuccessTemplate.html");
         StreamReader? str = new(filePath);
-        string? mailText = str.ReadToEnd();
+        string? mailText = await str.ReadToEndAsync();
         str.Close();
 
         mailText = mailText.Replace("[msg]", $"Your Email Address Has been Successfully Verified.")
@@ -78,7 +78,7 @@ public class CustomerRegistrationService(IUnitOfWork _iUnitOfWork, IJwtTokenGene
     {
         string? filePath = Path.Combine(_env.WebRootPath, "Templates", "EmailConfirmation.html");
         StreamReader? str = new(filePath);
-        string? mailText = str.ReadToEnd();
+        string? mailText = await str.ReadToEndAsync();
         str.Close();
 
         mailText = mailText.Replace("[url]", _emailSettings.EmailConfirmationURL + id.ToString())

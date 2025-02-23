@@ -18,7 +18,7 @@ internal static class RedisDependencyInjection
         services.AddStackExchangeRedisCache(opt =>
         {
             opt.Configuration = connectionString;
-            opt.InstanceName = "Inventory-Management-";
+            opt.InstanceName = "library-store-";
         });
         return services;
     }

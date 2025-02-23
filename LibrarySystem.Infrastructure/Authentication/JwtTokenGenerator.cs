@@ -72,5 +72,5 @@ public class JwtTokenGenerator(IDateTimeProvider dateTimeProvider, IOptions<JwtS
     public ResetPasswordResult GeneratePasswordResetToken(string emailAddress)
        => new(emailAddress, Convert.ToHexString(RandomNumberGenerator.GetBytes(120)), DateTime.Now.AddMinutes(30));
     public EmailConfirmationResult GenerateEmailConfirmationToken(Guid userId)
-         => new(userId, Convert.ToHexString(RandomNumberGenerator.GetBytes(120)), DateTime.Now.AddMinutes(30));
+         => new(userId, Convert.ToHexString(RandomNumberGenerator.GetBytes(120)), DateTime.Now.AddDays(1));
 }
