@@ -9,7 +9,7 @@ namespace LibrarySystem.API.Filters;
 public class JwtValidationFilter(IOptions<JwtSettings> jwtSettings) : IActionFilter
 {
     private readonly JwtSettings _jwtSettings = jwtSettings.Value;
-    public void OnActionExecuting(ActionExecutingContext context)
+    public void OnActionExecuting(ActionExecutingContext context) // ActionExecutingContext contains information about the current HTTP request, the action that is about to be executed
     {
         bool isAnonymous = context.ActionDescriptor.EndpointMetadata
                .Any(em => em.GetType() == typeof(AllowAnonymousAttribute));
@@ -32,14 +32,15 @@ public class JwtValidationFilter(IOptions<JwtSettings> jwtSettings) : IActionFil
         }
         catch
         {
-            context.Result = new UnauthorizedObjectResult(new ProblemDetails
+            ProblemDetails problem = new()
             {
                 Status = StatusCodes.Status401Unauthorized,
                 Title = "Unauthorized",
                 Detail = "Invalid or expired token.",
                 Type = "https://httpstatuses.com/401",
                 Instance = context.HttpContext?.Request.Path
-            });
+            };
+            context.Result = new UnauthorizedObjectResult(problem);
         }
     }
     public void OnActionExecuted(ActionExecutedContext context) { }
