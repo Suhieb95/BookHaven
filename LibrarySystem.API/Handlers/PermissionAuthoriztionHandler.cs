@@ -4,7 +4,10 @@ using Microsoft.AspNetCore.Authorization;
 namespace LibrarySystem.API.Handlers;
 internal class PermissionAuthoriztionHandler : AuthorizationHandler<PermissionRequirement>
 {
-    // AuthorizationHandlerContext is responsible for evaluating whether a user or principal meets a specific authorization requirement (such as roles, claims, etc.) to perform an action
+    /*
+     AuthorizationHandlerContext is responsible for evaluating whether a user or principal meets a specific authorization requirement (such as roles, claims, etc.) to perform an action.
+     It's used in the middle of the authorization process, before the request is fully authorized or denied
+    */
     protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, PermissionRequirement requirement)
     {
         var permissions = context.User
