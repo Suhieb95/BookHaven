@@ -7,7 +7,7 @@ internal class ContentSecurityPolicyMiddleware(RequestDelegate _next)
         // Logic before calling the next middleware
         context.Response.Headers.Append(
                                     "Content-Security-Policy",
-                                    "default-src 'self'; connect-src 'self'; frame-ancestors 'none'");
+                                    "default-src 'self'; https://bookshaven.runasp.net; connect-src 'self'; frame-ancestors 'none'");
         // Remove unwanted headers
         context.Response.Headers.Remove("Content-Security-Policy-Report-Only");
         await _next(context);
