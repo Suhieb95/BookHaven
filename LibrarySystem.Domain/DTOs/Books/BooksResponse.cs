@@ -18,7 +18,7 @@ public class BooksResponse
         get => _rating;
         set
         {
-            if (value is not null and (< 1 or > 5))
+            if (value is not null and (> 5 or < 1)) // Check for Invalid Rating
                 throw new InvalidBookRatingException();
 
             _rating = value;
