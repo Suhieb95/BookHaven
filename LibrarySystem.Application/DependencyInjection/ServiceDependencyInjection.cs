@@ -1,5 +1,7 @@
 using LibrarySystem.Application.Authentication.Customers;
 using LibrarySystem.Application.Books;
+using LibrarySystem.Application.Genres;
+using LibrarySystem.Application.Interfaces.Services;
 using Microsoft.Extensions.DependencyInjection;
 namespace LibrarySystem.Application.DependencyInjection;
 internal static class ServiceDependencyInjection

@@ -6,4 +6,5 @@ public interface IUnitOfWork
     public ICustomerService Customers { get; }
     public IBookService Books { get; }
     public IUserService Users { get; }
+    public IGenreService Genres { get; }
 }
