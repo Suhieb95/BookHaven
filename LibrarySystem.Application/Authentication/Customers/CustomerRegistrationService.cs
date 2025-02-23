@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Options;
 
 namespace LibrarySystem.Application.Authentication.Customers;
-public class CustomerRegistrationService(IUnitOfWork _iUnitOfWork, IJwtTokenGenerator _jwtTokenGenerator, IEmailService _emailSender
+public class CustomerRegistrationService(IUnitOfWork _iUnitOfWork, IJwtTokenGenerator _jwtTokenGenerator, INotificationService _iNotificationService
     , IOptions<EmailSettings> _emailSettings, IWebHostEnvironment _env, IPasswordHasher _passwordHasher) : ICustomerRegistrationService
 {
     private readonly EmailSettings _emailSettings = _emailSettings.Value;
@@ -69,6 +69,6 @@ public class CustomerRegistrationService(IUnitOfWork _iUnitOfWork, IJwtTokenGene
                            .Replace("[year]", DateTime.Today.Year.ToString());
 
         EmailRequest email = new(to, "Complete Registration", mailText);
-        await _emailSender.SendEmail(email);
+        await _iNotificationService.SendEmail(email);
     }
 }

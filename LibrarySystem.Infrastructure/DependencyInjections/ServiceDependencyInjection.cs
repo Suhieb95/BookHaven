@@ -11,7 +11,8 @@ internal static class ServiceDependencyInjection
         ArgumentNullException.ThrowIfNull(services);
         services.AddScoped<IUnitOfWork, UnitOfWork>();
         services.AddScoped<IEmailService, EmailService>();
+        services.AddScoped<INotificationService, NotificationService>();
         services.AddScoped<IFileService, FileService>();
         return services;
     }
-}
+}   
