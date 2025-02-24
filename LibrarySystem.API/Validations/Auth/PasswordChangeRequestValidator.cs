@@ -1,7 +1,7 @@
 using FluentValidation;
 using LibrarySystem.API.Helpers;
 using LibrarySystem.Domain.DTOs.Auth;
-namespace LibrarySystem.API.Validations.Customers;
+namespace LibrarySystem.API.Validations.Auth;
 public class PasswordChangeRequestValidator : AbstractValidator<PasswordChangeRequest>
 {
     public PasswordChangeRequestValidator()

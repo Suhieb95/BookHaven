@@ -9,7 +9,7 @@ using LibrarySystem.Domain.Enums;
 using LibrarySystem.Domain.Specification;
 using LibrarySystem.Infrastructure.Mappings.Person;
 namespace LibrarySystem.Infrastructure.Services.Users;
-public class UserService(ISqlDataAccess _sqlDataAccess, IDateTimeProvider _dateTimeProvider) : IUserService
+public class UserService(ISqlDataAccess _sqlDataAccess, IDateTimeProvider _dateTimeProvider, IRedisCacheService _redisCacheService) : IUserService
 {
     public async Task<Guid> Add(InternalUserRegisterRequest request, CancellationToken? cancellationToken = null)
     {
@@ -43,12 +43,40 @@ public class UserService(ISqlDataAccess _sqlDataAccess, IDateTimeProvider _dateT
     }
     public async Task UpdatePassowordResetToken(PasswordChangeRequest request, CancellationToken? cancellationToken)
     {
-        const string Sql = @"UPDATE Users SET ResetPasswordTokenExpiry = NULL, ResetPasswordToken = NULL, Password = @Password WHERE Id = @Id";
+        const string Sql = @"UPDATE Users SET ResetPasswordTokenExpiry = NULL, ResetPasswordToken = NULL, Password = @Password, IsActive = 1 WHERE Id = @Id";
         await _sqlDataAccess.SaveData(Sql, request.ToParameter(), cancellationToken: cancellationToken);
     }
     public async Task UpdateEmailConfirmationToken(Guid id, CancellationToken? cancellationToken)
     {
-        const string Sql = @"UPDATE Users SET VerifyEmailTokenExpiry = NULL, VerifyEmailToken = NULL, IsActive = 1, IsVerified = 1 WHERE Id = @Id";
+        const string Sql = @"UPDATE Users SET VerifyEmailTokenExpiry = NULL, VerifyEmailToken = NULL, IsVerified = 1 WHERE Id = @Id";
         await _sqlDataAccess.SaveData(Sql, new { Id = id }, cancellationToken: cancellationToken);
+    }
+    public async Task<string[]> GetUserRoles(Guid id, CancellationToken? cancellationToken)
+    {
+        string key = $"{id}-roles";
+        string[]? permissions = await _redisCacheService.Get<string[]>(key);
+        if (permissions is not null && permissions.Length > 0)
+            return permissions;
+
+        const string Sql = "SPGetUserRoles";
+        List<string>? res = await _sqlDataAccess.LoadData<string>(Sql, new { id }, StoredProcedure, cancellationToken);
+        if (res.Count > 0)
+            await _redisCacheService.Set(key, res, TimeSpan.FromDays(7));
+
+        return [.. res];
+    }
+    public async Task<string[]> GetUserPermissions(Guid id, CancellationToken? cancellationToken)
+    {
+        string key = $"{id}-permissions";
+        string[]? permissions = await _redisCacheService.Get<string[]>(key);
+        if (permissions is not null && permissions.Length > 0)
+            return permissions;
+
+        const string Sql = "SPGetUserPermissions";
+        List<string>? res = await _sqlDataAccess.LoadData<string>(Sql, new { id }, StoredProcedure, cancellationToken);
+        if (res.Count > 0)
+            await _redisCacheService.Set(key, res, TimeSpan.FromDays(7));
+
+        return [.. res];
     }
 }

@@ -1,6 +1,12 @@
 namespace LibrarySystem.Domain.DTOs.BaseModels;
-public abstract class RegisterBaseRequest(string emailAddress, string userName)
+public abstract class RegisterBaseRequest
 {
-    public string EmailAddress { get; init; } = emailAddress;
-    public string UserName { get; init; } = userName;
+    public RegisterBaseRequest(string emailAddress, string userName)
+    {
+        EmailAddress = NormalizeEmail(emailAddress);
+        UserName = userName.Trim();
+    }
+    public string EmailAddress { get; }
+    public string UserName { get; }
+    private static string NormalizeEmail(string emailAddress) => emailAddress.Trim().ToLower();
 }

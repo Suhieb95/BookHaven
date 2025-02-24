@@ -15,14 +15,14 @@ public class CustomerLoginService(IUnitOfWork _iUnitOfWork, IJwtTokenGenerator _
     private readonly EmailSettings _emailSettings = emailSettings.Value;
     public async Task<Result<CustomerLoginResponse>> Login(CustomerLoginRequest request, CancellationToken? cancellationToken)
     {
-        Customer? currentUser = await GetUser(request.EmailAddress, cancellationToken);
+        Customer? currentUser = await GetCustomer(request.EmailAddress, cancellationToken);
         if (currentUser is null || currentUser is not null and { IsActive: false })
             return Result<CustomerLoginResponse>.Failure(new("Invalid Email Address Or Password", BadRequest, "Incorrect Credentials"));
 
         if (IsIncorrectPassowrd(request.Password, currentUser!.Password))
             return Result<CustomerLoginResponse>.Failure(new("Invalid Email Address Or Password", BadRequest, "Incorrect Credentials"));
 
-        string token = await _jwtTokenGenerator.GenerateAccessToken(currentUser);
+        string token = _jwtTokenGenerator.GenerateAccessToken(currentUser);
         string? imageUrl = await FetchUserImage(currentUser.ImageUrl);
         await EmailHelpers.SendNotifyLoginEmail(currentUser.EmailAddress, _emailSettings.SuccessURL, _dateTimeProvider, _env, cancellationToken, _iNotificationService, _httpContextAccessor, _IPApiClient);
         return Result<CustomerLoginResponse>.Success(new(currentUser.EmailAddress, currentUser.UserName, imageUrl ?? string.Empty, "Bearer " + token, currentUser.Id));
@@ -33,6 +33,6 @@ public class CustomerLoginService(IUnitOfWork _iUnitOfWork, IJwtTokenGenerator _
         return await _fileService.GetFile(publicId);
     }
     private bool IsIncorrectPassowrd(string password, string hash) => !_passwordHasher.VerifyPassword(password, hash);
-    private async Task<Customer?> GetUser(string emailAddress, CancellationToken? cancellationToken)
+    private async Task<Customer?> GetCustomer(string emailAddress, CancellationToken? cancellationToken)
             => (await _iUnitOfWork.Customers.GetAll(new GetCustomerByEmailAddress(emailAddress), cancellationToken)).FirstOrDefault();
 }

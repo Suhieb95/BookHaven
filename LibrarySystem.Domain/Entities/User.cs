@@ -7,6 +7,7 @@ public class User : PersonBase, IPersonEntity
     public bool IsActive { get; set; }
     public DateTime? LastLogin { get; set; }
     public DateTime CreatedAt { get; set; }
+    public bool IsVerified { get; set; }
     public string? ImageUrl { get; set; }
     public string? ResetPasswordToken { get; set; }
     public DateTime ResetPasswordTokenExpiry { get; set; }

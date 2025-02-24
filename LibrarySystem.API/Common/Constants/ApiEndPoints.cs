@@ -11,7 +11,7 @@ internal static class ApiEndPoints
     {
         internal const string GetById = BaseController + "/{id}";
     }
-    internal class Customers
+    internal class Person
     {
         internal const string ConfirmEmailAddress = BaseController + "/confirm-email/{id}";
         internal const string Register = BaseController + "/register";

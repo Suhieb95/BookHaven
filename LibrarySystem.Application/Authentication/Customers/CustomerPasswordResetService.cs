@@ -17,7 +17,7 @@ public class CustomerPasswordResetService(IUnitOfWork _unitOfWork, IOptions<Emai
         if (!result.IsSuccess)
             return result;
 
-        request.SetPasswprd(_passwordHasher.Hash(request.Password));
+        request.SetPassword(_passwordHasher.Hash(request.Password));
         await _unitOfWork.Customers.UpdatePassowordResetToken(request, cancellationToken);
         Customer? customer = await GetCustomer(new GetCustomerById(request.UserId), cancellationToken);
         await EmailHelpers.SendPasswordChangedNotify(customer!.EmailAddress, _emailSettings.ResetPasswordURL, _env, cancellationToken, _notificationService);

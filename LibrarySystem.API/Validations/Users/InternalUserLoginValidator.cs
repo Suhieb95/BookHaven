@@ -1,14 +1,14 @@
 using FluentValidation;
 using LibrarySystem.API.Helpers;
-using LibrarySystem.Domain.DTOs.Customers;
+using LibrarySystem.Domain.DTOs.Users;
 
-namespace LibrarySystem.API.Validations.Customers;
-public class CustomerLoginValidator : AbstractValidator<CustomerLoginRequest>
+namespace LibrarySystem.API.Validations.Users;
+public class InternalUserLoginValidator : AbstractValidator<InternalUserLoginRequest>
 {
-    public CustomerLoginValidator()
+    public InternalUserLoginValidator()
     {
         RuleFor(s => s.EmailAddress).EmailAddress()
-                                                        .WithMessage("A valid email is required");
+                                                          .WithMessage("A valid email is required");
         RuleFor(x => x.Password).NotEmpty()
                                                         .WithMessage("Password Is required.")
                                                         .Password();
