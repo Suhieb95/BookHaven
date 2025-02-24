@@ -6,5 +6,11 @@ public interface IPersonEntity
     bool IsActive { get; }
     DateTime? LastLogin { get; }
     DateTime CreatedAt { get; }
-    string? ImageUrl{ get; }
+    string? ImageUrl { get; }
+    string? ResetPasswordToken { get; }
+    DateTime ResetPasswordTokenExpiry { get; }
+    string? VerifyEmailToken { get; }
+    DateTime VerifyEmailTokenExpiry { get; }
+    bool HasValidRestPasswordToken();
+    bool HasValidEmailConfirmationToken();
 }

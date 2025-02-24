@@ -2,7 +2,7 @@
 public class GetGenreById : Specification
 {
     public GetGenreById(int id)
-    => Parameters = new { Id = id };
+             => Parameters = new { Id = id };
     public override string ToSql()
-    => "Select * from Genres g where g.Id = @Id;";
+             => "Select * from Genres where Id = @Id;";
 }

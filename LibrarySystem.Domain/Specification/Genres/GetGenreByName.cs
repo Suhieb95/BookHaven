@@ -2,9 +2,9 @@
 public class GetGenreByName : Specification
 {
     public GetGenreByName(string name)
-    => Parameters = new { Name = name };
+         => Parameters = new { Name = name };
     public override string ToSql()
-    => "SPGetGenreByName";
+         => "SPGetGenreByName";
         
     
 }

@@ -4,5 +4,5 @@ namespace LibrarySystem.Application.Books;
 public interface IBookApplicationService
 {
     public Task<Result<PaginatedResponse<BooksResponse>>> GetBooks(PaginationParam param, CancellationToken? cancellationToken = null);
-    public Task<Result<Book>> GetBookById(int id, CancellationToken? cancellationToken = null);
+    public Task<Result<BooksResponse>> GetBookById(int id, CancellationToken? cancellationToken = null);
 }

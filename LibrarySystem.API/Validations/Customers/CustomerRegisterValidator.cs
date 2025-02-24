@@ -1,10 +1,6 @@
 using FluentValidation;
 using LibrarySystem.API.Helpers;
-using LibrarySystem.Application.Interfaces.Services;
 using LibrarySystem.Domain.DTOs.Customers;
-using LibrarySystem.Domain.Entities;
-using LibrarySystem.Domain.Specification.Customers;
-
 namespace LibrarySystem.API.Validations.Customers;
 public class CustomerRegisterValidator : AbstractValidator<CustomerRegisterRequest>
 {
