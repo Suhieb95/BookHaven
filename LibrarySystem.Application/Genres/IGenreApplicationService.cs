@@ -2,5 +2,5 @@
 public interface IGenreApplicationService
 {
     Task<Result<int>> Add(Genre entity, CancellationToken? cancellationToken = null);
-    Task Delete(int id, CancellationToken? cancellationToken = null);
+    Task<Result<bool> >Delete(int id, CancellationToken? cancellationToken = null);
 }

@@ -15,13 +15,13 @@ public class GenreController(IGenreApplicationService _genreApplicationService) 
             onFailure: Problem
         );
     }
-    // [HttpDelete]
-    // public async Task<IActionResult> Delete(int id)
-    // {
-    //     Result<int>? result = await _genreApplicationService.Delete(id);
-    //     return result.Map(
-    //         onSuccess: NotContent,
-    //         onFailure: Problem
-    //     );
-    // }
+    [HttpDelete]
+    public async Task<IActionResult> Delete(int id)
+    {
+        Result<bool>? result = await _genreApplicationService.Delete(id);
+        return result.Map(
+            onSuccess: _ => NoContent(),
+            onFailure: Problem
+        );
+    }
 }
