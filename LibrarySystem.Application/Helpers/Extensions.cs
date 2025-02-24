@@ -2,6 +2,7 @@ using System.ComponentModel;
 using System.Reflection;
 using System.Text;
 using LibrarySystem.Domain.BaseModels;
+using Microsoft.AspNetCore.Http;
 using Microsoft.IdentityModel.Tokens;
 
 namespace LibrarySystem.Application.Helpers;
@@ -60,10 +61,12 @@ public static class Extensions
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.Secret)),
             ClockSkew = TimeSpan.Zero
         };
-    public static bool IsValidImageFormat(string path)
+    public static bool IsValidImageFormat(IFormFile? file)
     {
+        if (file is null) return true;
+
         string[] allowedFormats = [".png", ".jpeg", ".gif", "jpg"];
-        return allowedFormats.Contains(Path.GetExtension(path).ToLowerInvariant()); // Extract file extension using GetExtension
+        return allowedFormats.Contains(Path.GetExtension(file.FileName).ToLowerInvariant()); // Extract file extension using GetExtension
     }
     public static bool IsEmptyList<T>(ICollection<T> list) => list.Count == 0;
     public static bool IsNotEmptyList<T>(ICollection<T> list) => list.Count > 0;

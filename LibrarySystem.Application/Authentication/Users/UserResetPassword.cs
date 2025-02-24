@@ -22,10 +22,6 @@ public class UserResetPassword(IUnitOfWork _unitOfWork, IOptions<EmailSettings> 
 
         return Result<bool>.Success(true);
     }
-    public async Task<Result<bool>> GenerateResetPasswordLink(string emailAddress, CancellationToken? cancellationToken = null)
-    {
-        throw new NotImplementedException();
-    }
     public async Task<Result<bool>> ResetPassword(string emailAddress, CancellationToken? cancellationToken = null)
     {
         User? user = await GetUsers(new GetUserByEmailAddress(emailAddress), cancellationToken);

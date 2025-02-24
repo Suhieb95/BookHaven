@@ -1,7 +1,7 @@
 using LibrarySystem.Domain.Exceptions.BooksExceptions;
 
 namespace LibrarySystem.Domain.DTOs.Books;
-public class BooksResponse
+public class BookResponse
 {
     private float? _rating;
     public int Id { get; init; }
@@ -11,8 +11,10 @@ public class BooksResponse
     public string Genre { get; init; } = default!;
     public int PublishedYear { get; init; }
     public decimal Price { get; init; }
-    public string[]? ImageUrl { get; set; }
+    public decimal DiscountPercentage { get; init; }
+    public decimal DiscountedPrice { get; private set; }
     public bool IsInStock { get; init; }
+    public string[]? ImageUrl { get; set; }
     public float? Rating
     {
         get => _rating;
@@ -24,4 +26,6 @@ public class BooksResponse
             _rating = value;
         }
     }
+    public void CalculateDiscountedPrice()
+           => DiscountedPrice = (1 - (DiscountPercentage / 100)) * Price;
 }
