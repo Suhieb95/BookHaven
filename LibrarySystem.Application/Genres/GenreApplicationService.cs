@@ -4,11 +4,17 @@ public class GenreApplicationService(IUnitOfWork unitOfWork) : IGenreApplication
 
     public async Task<Result<int>> Add(Genre entity, CancellationToken? cancellationToken = null)
     {
+        
         /*
          need to check if genre name is in use
         */
 
         int genre = await unitOfWork.Genres.Add(entity, cancellationToken);
         return Result<int>.Success(genre);
+    }
+
+    public async Task Delete(int id, CancellationToken? cancellationToken = null)
+    {
+        await unitOfWork.Genres.Delete(id, cancellationToken);
     }
 }
