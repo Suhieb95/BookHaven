@@ -24,7 +24,19 @@ public class GenreApplicationService(IUnitOfWork _unitOfWork) : IGenreApplicatio
 
 
         await _unitOfWork.Genres.Delete(id, cancellationToken);
+        return Result<bool>.Success(true);
+    }
+    public async Task<Result<bool>> Update(Genre genre, CancellationToken? cancellationToken = null)
+    {
+        List<Genre> currentGenre = await _unitOfWork.Genres.GetAll(new GetGenreById(genre.Id), cancellationToken);
+        if (currentGenre.FirstOrDefault() is null)
+            return Result<bool>.Failure(new Error("Genre does not exist.", NotFound, "Genre not found"));
 
+        List<Genre> usedGenre = await _unitOfWork.Genres.GetAll(new GetGenreByName(genre.Name), cancellationToken);
+        if (usedGenre.FirstOrDefault() is not null)
+            return Result<bool>.Failure(new Error("Genre already exists", Conflict, "Genre exists"));
+
+        await _unitOfWork.Genres.Update(genre, cancellationToken);
         return Result<bool>.Success(true);
     }
 }
