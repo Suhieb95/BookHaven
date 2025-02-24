@@ -7,7 +7,7 @@ public class GenreApplicationService(IUnitOfWork unitOfWork) : IGenreApplication
     {
         /*
          need to check if genre name is in use
-         */
+        */
 
         int genre = await unitOfWork.Genres.Add(entity, cancellationToken);
         return Result<int>.Success(genre);

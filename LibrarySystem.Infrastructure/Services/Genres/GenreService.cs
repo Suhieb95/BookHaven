@@ -1,11 +1,6 @@
 ﻿using LibrarySystem.Application.Interfaces.Database;
 using LibrarySystem.Application.Interfaces.Services;
 using LibrarySystem.Domain.Entities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace LibrarySystem.Infrastructure.Services.Genres
 {
