@@ -1,7 +1,6 @@
+using LibrarySystem.Application.Authentication.Common;
 using LibrarySystem.Application.Interfaces;
 using LibrarySystem.Application.Interfaces.Services;
-using LibrarySystem.Domain.DTOs;
-using LibrarySystem.Domain.DTOs.Auth;
 using LibrarySystem.Domain.DTOs.Customers;
 using LibrarySystem.Domain.Specification.Customers;
 using Microsoft.AspNetCore.Hosting;
@@ -25,7 +24,7 @@ public class CustomerLoginService(IUnitOfWork _iUnitOfWork, IJwtTokenGenerator _
 
         string token = await _jwtTokenGenerator.GenerateAccessToken(currentUser);
         string? imageUrl = await FetchUserImage(currentUser.ImageUrl);
-        await SendNotifyLoginEmail(request.EmailAddress, cancellationToken);
+        await EmailHelpers.SendNotifyLoginEmail(currentUser.EmailAddress, _emailSettings.SuccessURL, _dateTimeProvider, _env, cancellationToken, _iNotificationService, _httpContextAccessor, _IPApiClient);
         return Result<CustomerLoginResponse>.Success(new(currentUser.EmailAddress, currentUser.UserName, imageUrl ?? string.Empty, "Bearer " + token, currentUser.Id));
     }
     private async Task<string?> FetchUserImage(string? publicId)
@@ -36,29 +35,4 @@ public class CustomerLoginService(IUnitOfWork _iUnitOfWork, IJwtTokenGenerator _
     private bool IsIncorrectPassowrd(string password, string hash) => !_passwordHasher.VerifyPassword(password, hash);
     private async Task<Customer?> GetUser(string emailAddress, CancellationToken? cancellationToken)
             => (await _iUnitOfWork.Customers.GetAll(new GetCustomerByEmailAddress(emailAddress), cancellationToken)).FirstOrDefault();
-    private async Task SendNotifyLoginEmail(string to, CancellationToken? cancellationToken)
-    {
-        string? filePath = Path.Combine(_env.WebRootPath, "Templates", "SuccessTemplate.html");
-        StreamReader? str = new(filePath);
-        string? mailText = str.ReadToEnd();
-        str.Close();
-
-        string? ipAddress = await GetIpAddressDetails(cancellationToken);
-
-        mailText = mailText.Replace("[msg]", $"Your Were successfully logged int at {_dateTimeProvider.UtcNow.AddHours(4)} GMT +4, From {ipAddress}.")
-                           .Replace("[title]", "Login Successful")
-                           .Replace("[url]", _emailSettings.SuccessURL)
-                           .Replace("[header]", "Login Activity")
-                           .Replace("[year]", DateTime.Today.Year.ToString());
-
-        EmailRequest email = new(to, "Login Activity", mailText);
-        await _iNotificationService.SendEmail(email);
-    }
-    private async Task<string?> GetIpAddressDetails(CancellationToken? cancellationToken)
-    {
-        string? ipAddress = _httpContextAccessor.HttpContext?.GetServerVariable("HTTP_X_FORWARDED_FOR") ?? _httpContextAccessor.HttpContext?.Connection.RemoteIpAddress?.ToString();
-        string? ipAddressWithoutPort = ipAddress?.Split(':')[0];
-        IpApiResponse? ipApiResponse = await _IPApiClient.Get(ipAddressWithoutPort, cancellationToken ?? CancellationToken.None);
-        return $"{ipApiResponse?.Country} - {ipApiResponse?.City}";
-    }
 }

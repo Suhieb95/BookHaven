@@ -1,4 +1,4 @@
-namespace LibrarySystem.Infrastructure.Parameters.Customers;
+namespace LibrarySystem.Infrastructure.Parameters.Person;
 internal class PasswordChangeParameters
 {
     public required Guid Id { get; init; }

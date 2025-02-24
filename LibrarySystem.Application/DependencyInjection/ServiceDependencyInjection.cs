@@ -1,4 +1,5 @@
 using LibrarySystem.Application.Authentication.Customers;
+using LibrarySystem.Application.Authentication.Users;
 using LibrarySystem.Application.Books;
 using LibrarySystem.Application.Genres;
 using Microsoft.Extensions.DependencyInjection;
@@ -12,6 +13,9 @@ internal static class ServiceDependencyInjection
         services.AddScoped<ICustomerLoginService, CustomerLoginService>();
         services.AddScoped<ICustomerPasswordResetService, CustomerPasswordResetService>();
         services.AddScoped<IGenreApplicationService, GenreApplicationService>();
+        services.AddScoped<IUserRegistrationService, UserRegistrationService>();
+        services.AddScoped<IUserLoginService, UserLoginService>();
+        services.AddScoped<IUserResetPassword, UserResetPassword>();
         return services;
     }
 }

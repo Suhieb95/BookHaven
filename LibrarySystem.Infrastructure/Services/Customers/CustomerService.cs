@@ -5,7 +5,7 @@ using LibrarySystem.Domain.DTOs.Auth;
 using LibrarySystem.Domain.DTOs.Customers;
 using LibrarySystem.Domain.Entities;
 using LibrarySystem.Domain.Specification;
-using LibrarySystem.Infrastructure.Mappings.Customers;
+using LibrarySystem.Infrastructure.Mappings.Person;
 namespace LibrarySystem.Infrastructure.Services.Customers;
 public class CustomerService(ISqlDataAccess _sqlDataAccess, IDateTimeProvider _dateTimeProvider) : ICustomerService
 {

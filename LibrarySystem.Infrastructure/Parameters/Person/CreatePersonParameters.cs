@@ -1,5 +1,5 @@
-namespace LibrarySystem.Infrastructure.Parameters.Customers;
-internal class CreateCustomerParameters
+namespace LibrarySystem.Infrastructure.Parameters.Person;
+internal class CreatePersonParameters
 {
     public required Guid Id { get; init; }
     public required string UserName { get; init; }

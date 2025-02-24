@@ -1,5 +1,5 @@
 namespace LibrarySystem.Domain.BaseModels.User;
-public abstract class PersonBase
+public abstract class PersonBase : BaseEntity<Guid>
 {
     public PersonBase() { }
     public PersonBase(string emailAddress, string userName, Guid id)
@@ -8,7 +8,6 @@ public abstract class PersonBase
         UserName = userName;
         Id = id;
     }
-    public Guid Id { get; set; }
     public string EmailAddress { get; set; } = default!;
     public string UserName { get; set; } = default!;
 };

@@ -1,5 +1,5 @@
+using LibrarySystem.Application.Authentication.Common;
 using LibrarySystem.Application.Interfaces.Services;
-using LibrarySystem.Domain.DTOs;
 using LibrarySystem.Domain.DTOs.Auth;
 using LibrarySystem.Domain.DTOs.Customers;
 using LibrarySystem.Domain.Specification.Customers;
@@ -33,7 +33,7 @@ public class CustomerRegistrationService(IUnitOfWork _iUnitOfWork, IJwtTokenGene
             return Result<bool>.Failure(new Error("Token Has Expired.", BadRequest, "Invalid Token"));
 
         await _iUnitOfWork.Customers.UpdateEmailConfirmationToken(id, cancellationToken);
-        await SendNotifyEmail(currentUser.EmailAddress, cancellationToken);
+        await EmailHelpers.SendEmailConfirmedNotify(currentUser!.EmailAddress, _emailSettings.SuccessURL, _env, cancellationToken, _iNotificationService);
         return Result<bool>.Success(true);
     }
     private void HashPassword(CustomerRegisterRequest request)
@@ -47,7 +47,7 @@ public class CustomerRegistrationService(IUnitOfWork _iUnitOfWork, IJwtTokenGene
 
         EmailConfirmationResult emailConfirmation = _jwtTokenGenerator.GenerateEmailConfirmationToken(result);
         await _iUnitOfWork.Customers.SaveEmailConfirmationToken(emailConfirmation, cancellationToken);
-        await SendConfirmationEmail(emailAddress, result, cancellationToken);
+        await EmailHelpers.SendConfirmationEmail(currentUser!.EmailAddress, result, _emailSettings.EmailConfirmationURL, _env, cancellationToken, _iNotificationService);
     }
     private async Task<bool> IsEmailAddressInUse(string emailAddress, CancellationToken? cancellationToken)
     {
@@ -57,34 +57,5 @@ public class CustomerRegistrationService(IUnitOfWork _iUnitOfWork, IJwtTokenGene
             return true;
 
         return false;
-    }
-    private async Task SendNotifyEmail(string to, CancellationToken? cancellationToken)
-    {
-        string? filePath = Path.Combine(_env.WebRootPath, "Templates", "SuccessTemplate.html");
-        StreamReader? str = new(filePath);
-        string? mailText = await str.ReadToEndAsync();
-        str.Close();
-
-        mailText = mailText.Replace("[msg]", $"Your Email Address Has been Successfully Verified.")
-                           .Replace("[url]", _emailSettings.SuccessURL)
-                           .Replace("[title]", "Email Confirmation")
-                           .Replace("[header]", "Email Confirmation")
-                           .Replace("[year]", DateTime.Today.Year.ToString());
-
-        EmailRequest email = new(to, "Email Confirmation", mailText);
-        await _iNotificationService.SendEmail(email, cancellationToken);
-    }
-    private async Task SendConfirmationEmail(string to, Guid id, CancellationToken? cancellationToken)
-    {
-        string? filePath = Path.Combine(_env.WebRootPath, "Templates", "EmailConfirmation.html");
-        StreamReader? str = new(filePath);
-        string? mailText = await str.ReadToEndAsync();
-        str.Close();
-
-        mailText = mailText.Replace("[url]", _emailSettings.EmailConfirmationURL + id.ToString())
-                           .Replace("[year]", DateTime.Today.Year.ToString());
-
-        EmailRequest email = new(to, "Complete Registration", mailText);
-        await _iNotificationService.SendEmail(email, cancellationToken);
     }
 }

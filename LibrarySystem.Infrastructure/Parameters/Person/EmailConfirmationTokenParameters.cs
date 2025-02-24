@@ -1,4 +1,4 @@
-namespace LibrarySystem.Infrastructure.Parameters.Customers;
+namespace LibrarySystem.Infrastructure.Parameters.Person;
 internal class EmailConfirmationTokenParameters
 {
     public required Guid Id { get; init; }
