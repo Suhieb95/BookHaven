@@ -47,7 +47,7 @@ public class JwtTokenGenerator(IDateTimeProvider dateTimeProvider, IOptions<JwtS
             //     claims.Add(new Claim(PermissionsClaim.Permissions, permission));
         }
 
-        var securityToken = new JwtSecurityToken(claims: [], issuer: _jwtSettings.Issuer, signingCredentials: signingCredentials, audience: _jwtSettings.Audience, expires: _dateTimeProvider.UtcNow.AddMinutes(_jwtSettings.ExpiryMinutes));
+        var securityToken = new JwtSecurityToken(claims: claims, issuer: _jwtSettings.Issuer, signingCredentials: signingCredentials, audience: _jwtSettings.Audience, expires: _dateTimeProvider.UtcNow.AddMinutes(_jwtSettings.ExpiryMinutes));
 
         return new JwtSecurityTokenHandler().WriteToken(securityToken);
     }

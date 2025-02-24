@@ -20,12 +20,29 @@ public class BookApplicationService(IUnitOfWork _iUnitOfWork, IFileService _file
         if (res.Data?.Count == 0)
             return Result<PaginatedResponse<BooksResponse>>.Success(res);
 
+        /*
         foreach (BooksResponse book in res.Data!)
         {
             if (book.ImageUrl is null) continue;
             var images = await _fileService.GetFiles(book.ImageUrl)!;
             book.ImageUrl = images!;
         }
+
+        */
+
+        var imageTasks = res.Data!
+       .Where(book => book.ImageUrl is not null)
+       .Select(async book =>
+       {
+           var images = await _fileService.GetFiles(book.ImageUrl!);
+           return (book, images);
+       });
+        var results = await Task.WhenAll(imageTasks);
+
+        // Assign the fetched images to the respective books
+        foreach (var (book, images) in results)
+            book.ImageUrl = images!;
+
 
         return Result<PaginatedResponse<BooksResponse>>.Success(res);
     }

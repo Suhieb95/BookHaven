@@ -1,4 +1,5 @@
-﻿using LibrarySystem.Domain.Specification.Genres;
+﻿using LibrarySystem.Domain.DTOs;
+using LibrarySystem.Domain.Specification.Genres;
 namespace LibrarySystem.Application.Genres;
 public class GenreApplicationService(IUnitOfWork _unitOfWork) : IGenreApplicationService
 {
@@ -25,6 +26,11 @@ public class GenreApplicationService(IUnitOfWork _unitOfWork) : IGenreApplicatio
 
         await _unitOfWork.Genres.Delete(id, cancellationToken);
         return Result<bool>.Success(true);
+    }
+    public async Task<Result<PaginatedResponse<Genre>>> GetPaginatedGenres(PaginationParam param, CancellationToken? cancellationToken = null)
+    {
+        PaginatedResponse<Genre>? result = await _unitOfWork.Genres.GetPaginated(param, cancellationToken);
+        return Result<PaginatedResponse<Genre>>.Success(result);
     }
     public async Task<Result<bool>> Update(Genre genre, CancellationToken? cancellationToken = null)
     {

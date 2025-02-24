@@ -1,4 +1,5 @@
 using LibrarySystem.Application.Genres;
+using LibrarySystem.Domain.DTOs;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 namespace LibrarySystem.API.Controllers;
@@ -30,6 +31,15 @@ public class GenreController(IGenreApplicationService _genreApplicationService) 
         Result<bool>? result = await _genreApplicationService.Update(genre, cancellationToken);
         return result.Map(
             onSuccess: _ => NoContent(),
+            onFailure: Problem
+        );
+    }
+    [HttpGet]
+    public async Task<IActionResult> GetPaginated([FromQuery] PaginationParam paginationParam, CancellationToken cancellationToken)
+    {
+        Result<PaginatedResponse<Genre>>? result = await _genreApplicationService.GetPaginatedGenres(paginationParam, cancellationToken);
+        return result.Map(
+            onSuccess: Ok,
             onFailure: Problem
         );
     }

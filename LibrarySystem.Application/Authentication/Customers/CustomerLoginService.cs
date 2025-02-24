@@ -26,7 +26,7 @@ public class CustomerLoginService(IUnitOfWork _iUnitOfWork, IJwtTokenGenerator _
         string token = await _jwtTokenGenerator.GenerateAccessToken(currentUser);
         string? imageUrl = await FetchUserImage(currentUser.ImageUrl);
         await SendNotifyLoginEmail(request.EmailAddress, cancellationToken);
-        return Result<CustomerLoginResponse>.Success(new(currentUser.EmailAddress, currentUser.UserName, imageUrl ?? string.Empty, token, currentUser.Id));
+        return Result<CustomerLoginResponse>.Success(new(currentUser.EmailAddress, currentUser.UserName, imageUrl ?? string.Empty, "Bearer " + token, currentUser.Id));
     }
     private async Task<string?> FetchUserImage(string? publicId)
     {

@@ -7,6 +7,7 @@ using LibrarySystem.Domain.Specification;
 namespace LibrarySystem.Infrastructure.Services.Books;
 public class BookService(ISqlDataAccess _sqlDataAccess) : IBookService
 {
+
     public async Task<PaginatedResponse<BooksResponse>> GetAll(PaginationParam param, CancellationToken? cancellationToken = null)
     {
         (List<BooksResponse> books, PaginationDetails? paginationDetails) = await _sqlDataAccess.FetchListAndSingleAsync<BooksResponse, PaginationDetails>
@@ -21,12 +22,27 @@ public class BookService(ISqlDataAccess _sqlDataAccess) : IBookService
         response.SetTotalPage(param.PageSize);
 
         const string Sql = "SELECT ImageUrl FROM BookImages WHERE BookId = @Id";
-        foreach (BooksResponse book in books)
+        /*
+         foreach (BooksResponse book in books)
+         {
+             List<string> bookImages = await _sqlDataAccess.LoadData<string>(Sql, new { book.Id });
+             if (bookImages.Count == 0) continue;
+             book.ImageUrl = [.. bookImages];
+         }
+        */
+
+        var imageTasks = books.Select(async book =>
         {
             List<string> bookImages = await _sqlDataAccess.LoadData<string>(Sql, new { book.Id });
-            if (bookImages.Count == 0) continue;
-            book.ImageUrl = [.. bookImages];
-        }
+            return (book, bookImages);
+        });
+
+        (BooksResponse book, List<string> bookImages)[]? results = await Task.WhenAll(imageTasks);
+
+        // Assign the retrieved images to each book
+        foreach (var (book, bookImages) in results)
+            if (bookImages.Count > 0)
+                book.ImageUrl = [.. bookImages];
 
         return response;
     }
