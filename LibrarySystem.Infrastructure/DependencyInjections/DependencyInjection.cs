@@ -47,7 +47,6 @@ public static class DependencyInjection
         ArgumentNullException.ThrowIfNull(services);
 
         services.Configure<RefreshJwtSettings>(configuration.GetSection(RefreshJwtSettings.SectionName));
-        services.Configure<ApiKeys>(configuration.GetSection(nameof(ApiKeys)));
         services.Configure<EmailSettings>(configuration.GetSection(EmailSettings.SectionName));
         services.Configure<IpProvider>(configuration.GetSection(IpProvider.SectionName));
     }

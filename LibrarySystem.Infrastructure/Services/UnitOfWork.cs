@@ -14,5 +14,5 @@ internal class UnitOfWork(ISqlDataAccess _sqlDataAccess, IDateTimeProvider _date
     public ICustomerService Customers => new CustomerService(_sqlDataAccess, _dateTimeProvider);
     public IBookService Books => new BookService(_sqlDataAccess);
     public IUserService Users => new UserService(_sqlDataAccess, _dateTimeProvider);
-    public IGenreService Genres => new GenreService();
+    public IGenreService Genres => new GenreService(_sqlDataAccess);
 }
