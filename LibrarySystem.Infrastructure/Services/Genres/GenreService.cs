@@ -1,6 +1,7 @@
 ﻿using LibrarySystem.Application.Interfaces.Database;
 using LibrarySystem.Application.Interfaces.Services;
 using LibrarySystem.Domain.Entities;
+using LibrarySystem.Domain.Specification;
 
 namespace LibrarySystem.Infrastructure.Services.Genres;
 public class GenreService(ISqlDataAccess sqlDataAccess) : IGenreService
@@ -10,6 +11,10 @@ public class GenreService(ISqlDataAccess sqlDataAccess) : IGenreService
 
     public async Task Delete(int id, CancellationToken? cancellationToken = null)
         => await sqlDataAccess.SaveData("Delete from Genres where Id = @Id", new { Id = id }, cancellationToken: cancellationToken);
+
+    public async Task<List<Genre>> GetAll(Specification param, CancellationToken? cancellationToken = null)
+        => await sqlDataAccess.LoadData<Genre>(param.ToSql(), param.Parameters, cancellationToken: cancellationToken);
+    
 
     public async Task Update(Genre entity, CancellationToken? cancellationToken = null)
         => await sqlDataAccess.SaveData("Update Genres set Name = @Name where Id = @Id", entity, cancellationToken: cancellationToken);
