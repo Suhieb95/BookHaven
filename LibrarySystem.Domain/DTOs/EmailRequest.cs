@@ -9,5 +9,5 @@ public class EmailRequest
   public string Body { get; }
 
   public static EmailRequest ToDTO(EmailWithAttachmentRequest request)
-      => new(request.To, request.From, request.Subject, request.Body);
+      => new(request.To, request.Subject, request.Body, request.From);
 }

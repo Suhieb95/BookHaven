@@ -7,18 +7,18 @@ namespace LibrarySystem.API.Controllers;
 public class GenreController(IGenreApplicationService _genreApplicationService) : BaseController
 {
     [HttpPost]
-    public async Task<IActionResult> Add(Genre genre)
+    public async Task<IActionResult> Add(Genre genre, CancellationToken cancellationToken)
     {
-        Result<int>? result = await _genreApplicationService.Add(genre);
+        Result<int>? result = await _genreApplicationService.Add(genre, cancellationToken);
         return result.Map(
-            onSuccess: _ => Ok(new Genre() { Id = result.Data, Name = genre.Name }),
+            onSuccess: data => Ok(data),
             onFailure: Problem
         );
     }
     [HttpDelete]
-    public async Task<IActionResult> Delete(int id)
+    public async Task<IActionResult> Delete(int id, CancellationToken cancellationToken)
     {
-        Result<bool>? result = await _genreApplicationService.Delete(id);
+        Result<bool>? result = await _genreApplicationService.Delete(id, cancellationToken);
         return result.Map(
             onSuccess: _ => NoContent(),
             onFailure: Problem
