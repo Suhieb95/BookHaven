@@ -1,5 +1,4 @@
 ﻿namespace LibrarySystem.Application.Genres;
-
 public class GenreApplicationService(IUnitOfWork unitOfWork) : IGenreApplicationService
 {
 

@@ -1,5 +1,4 @@
-﻿
-using LibrarySystem.Domain.BaseModels;
+﻿using LibrarySystem.Domain.BaseModels;
 
 namespace LibrarySystem.Domain.Entities;
 
