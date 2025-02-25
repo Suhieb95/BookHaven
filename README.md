@@ -6,7 +6,6 @@ Welcome to **BookHaven**, an advanced online library store designed to simplify 
 ## Features
 
 - **Book Inventory Management**: Track available books, including their genre, author, price, and availability.
-- **Book Borrowing**: Customers can borrow books, track their borrowings, and manage their returns.
 - **Sales Management**: Keep records of book sales, with detailed information on each transaction.
 - **Customer Accounts**: Users can register, log in, and view their borrowing history and current borrowed books.
 - **Book Recommendations**: Suggest books based on customers' borrowing history and preferences.
@@ -42,6 +41,11 @@ Welcome to **BookHaven**, an advanced online library store designed to simplify 
 - **Authors**: Authors of books, with birth dates and other details.
 - **Genres**: Categories for organizing books based on their genres.
 
+## Maintainers And Authors
+
+This project is maintained by:
+
+- **Suhieb Sami (https://github.com/Suhieb95)** - Creator & Lead Developer
 
 ## End of README
 This README.md provides a structured overview of your project, including authentication details, which are key for any developer working with BookHaven repository. Adjust the links and any specific configurations as needed!
