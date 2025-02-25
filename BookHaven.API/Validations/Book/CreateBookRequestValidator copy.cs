@@ -1,0 +1,12 @@
+using FluentValidation;
+using BookHaven.Domain.DTOs.Books;
+using Extensions = BookHaven.Application.Helpers.Extensions;
+namespace BookHaven.API.Validations.Book;
+public class UpdateBookImageRequestValidator : AbstractValidator<UpdateBookImageRequest>
+{
+    public UpdateBookImageRequestValidator()
+    {
+        RuleFor(x => x.Images).ForEach(x =>
+                                                    x.Must(Extensions.IsValidImageFormat).WithMessage("Invalid image format. Allowed formats are: .png, .jpeg, .gif, .jpg."));
+    }
+}
