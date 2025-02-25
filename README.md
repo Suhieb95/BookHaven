@@ -45,7 +45,7 @@ Welcome to **BookHaven**, an advanced online library store designed to simplify 
 
 This project is maintained by:
 
-- **Suhieb Sami (https://github.com/Suhieb95)** - Creator & Lead Developer
+**Suhieb Sami (https://github.com/Suhieb95)** - Creator & Lead Developer
   
 [![GitHub Profile](https://img.shields.io/badge/GitHub-Suhieb95-blue?logo=github)](https://github.com/Suhieb95)
 
