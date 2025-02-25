@@ -27,7 +27,7 @@ public class BooksController(IBookApplicationService _bookApplicationService) : 
     }
     [HttpDelete(Books.DeleteBookImages)]
     [Authorized(Policy = CustomPolicies.ExcludeNewUserPolicy)]
-    [HasPermission(Permission.Delete, EntityName.Books)]
+    [HasPermission(Permission.Delete, EntityName.BookImages)]
     public async Task<IActionResult> DeleteBookImages(DeleteBookImageRequest request, CancellationToken cancellationToken)
     {
         Result<bool>? result = await _bookApplicationService.DeleteBookImages(request, cancellationToken);
@@ -37,7 +37,7 @@ public class BooksController(IBookApplicationService _bookApplicationService) : 
     }
     [HttpPut(Books.UpdateBookImages)]
     [Authorized(Policy = CustomPolicies.ExcludeNewUserPolicy)]
-    [HasPermission(Permission.Update, EntityName.Books)]
+    [HasPermission(Permission.Update, EntityName.BookImages)]
     public async Task<IActionResult> UpdateBookImages([FromForm] UpdateBookImageRequest request, CancellationToken cancellationToken)
     {
         Result<bool>? result = await _bookApplicationService.UpdateBookImages(request, cancellationToken);

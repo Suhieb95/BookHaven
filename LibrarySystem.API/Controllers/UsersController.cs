@@ -2,6 +2,7 @@ using LibrarySystem.API.Common.Constants;
 using LibrarySystem.API.Filters;
 using LibrarySystem.Application.Authentication.Users;
 using LibrarySystem.Application.Interfaces.Services;
+using LibrarySystem.Domain.DTOs;
 using LibrarySystem.Domain.DTOs.Auth;
 using LibrarySystem.Domain.DTOs.Users;
 using Microsoft.AspNetCore.Mvc;
@@ -12,7 +13,7 @@ namespace LibrarySystem.API.Controllers;
 [EnableRateLimiting("LoginLimiterPolicy")]
 [AllowAnonymous]
 public class UsersController(IUserRegistrationService _userRegistrationService, IUserResetPassword _userResetPassword,
- IUserLoginService _userLoginService, IRefreshTokenCookieSetter _refreshTokenCookieSetter, IUserUpdateService _userUpdateService) : BaseController
+ IUserLoginService _userLoginService, IRefreshTokenCookieSetter _refreshTokenCookieSetter, IUserUpdateService _userUpdateService, IRefreshTokenValidator _IRefreshTokenValidator) : BaseController
 {
     [HttpPost(Person.Register)]
     public async Task<IActionResult> Add(InternalUserRegisterRequest request, CancellationToken cancellationToken)
@@ -101,5 +102,17 @@ public class UsersController(IUserRegistrationService _userRegistrationService, 
     {
         _refreshTokenCookieSetter.DeleteJwtTokenCookie(HttpContext, "refreshToken");
         return NoContent();
+    }
+    [HttpGet(Person.RefreshToken)]
+    [AllowAnonymous]
+    public async Task<IActionResult> GenerateRefreshToken(CancellationToken cancellationToken)
+    {
+        string? token = HttpContext.Request.Cookies["refreshToken"];
+        Result<RefreshToken>? result = await _IRefreshTokenValidator.ValidateRefreshToken(token, cancellationToken);
+
+        return result.Map(
+            onSuccess: _ => CreatedAtAction(nameof(GenerateRefreshToken), _),
+            onFailure: Problem
+            );
     }
 }
