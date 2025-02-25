@@ -1,5 +1,5 @@
 namespace LibrarySystem.API.Common.Constants;
-internal static class Roles
+internal static class CustomRoles
 {
     internal const string Admin = "Admin";
     internal const string Manager = "Manage";

@@ -3,6 +3,7 @@ using LibrarySystem.Domain.DTOs.Books;
 namespace LibrarySystem.Application.Books;
 public interface IBookApplicationService
 {
-    public Task<Result<PaginatedResponse<BookResponse>>> GetBooks(PaginationParam param, CancellationToken? cancellationToken = null);
-    public Task<Result<BookResponse>> GetBookById(int id, CancellationToken? cancellationToken = null);
+    Task<Result<PaginatedResponse<BookResponse>>> GetBooks(PaginationParam param, CancellationToken? cancellationToken = default);
+    Task<Result<BookResponse>> GetBookById(int id, CancellationToken? cancellationToken = default);
+    Task<Result<int>> CreateBook(CreateBookRequest request, CancellationToken? cancellationToken = default);
 }

@@ -1,6 +1,4 @@
-using LibrarySystem.Application;
-using Microsoft.AspNetCore.Authorization;
-
+using LibrarySystem.Application.Authentication;
 namespace LibrarySystem.API.Handlers;
 internal class PermissionAuthoriztionHandler : AuthorizationHandler<PermissionRequirement>
 {

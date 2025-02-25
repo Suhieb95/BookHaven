@@ -1,11 +1,12 @@
 using FluentValidation;
 using FluentValidation.AspNetCore;
 using LibrarySystem.API.Common;
+using LibrarySystem.API.Common.Constants;
 using LibrarySystem.API.Filters;
 using LibrarySystem.API.Handlers;
+using LibrarySystem.Application.Authentication;
 using LibrarySystem.Application.DependencyInjection;
 using LibrarySystem.Infrastructure.DependencyInjections;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Mvc;
@@ -35,14 +36,19 @@ internal static class DependencyInjection
         services.AddSwaggerGen();
         services.AddHttpContextAccessor();
         services.AddControllers(options => options.Filters.Add<JwtValidationFilter>());
-
         services.AddScoped<LastLoginFilter>();
         services.AddRouting(opt =>
         {
             opt.LowercaseUrls = true; // lowercase routes 
             opt.LowercaseQueryStrings = true; // query string keys are automatically converted to lowercase
         });
+
         services.AddSingleton<IAuthorizationHandler, PermissionAuthoriztionHandler>();
+        services.AddSingleton<IAuthorizationHandler, ExcludeNewUserAuthoriztionHandler>();
+
+        services.AddAuthorizationBuilder()
+            .AddPolicy(CustomPolicies.ExcludeNewUserPolicy, policy =>
+                        policy.Requirements.Add(new ExcludeNewUserRequirement("New User")));
 
         return services;
     }

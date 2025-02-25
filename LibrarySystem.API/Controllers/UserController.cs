@@ -25,7 +25,7 @@ public class UserController(IUserRegistrationService _userRegistrationService, I
     }
     [EnableRateLimiting("StandardLimiterPolicy")]
     [HttpPut]
-    [AuthorizedRoles(Roles.Manager, Roles.Admin)]
+    [AuthorizedRoles(CustomRoles.Manager, CustomRoles.Admin)]
     public async Task<IActionResult> Update([FromForm] InternalUserUpdateRequest request, CancellationToken cancellationToken)
     {
         Result<bool>? result = await _userUpdateService.Update(request, cancellationToken);

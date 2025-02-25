@@ -1,7 +1,4 @@
-using Microsoft.AspNetCore.Authorization;
-
-namespace LibrarySystem.API.Utilities;
-
+namespace LibrarySystem.API.Attributes;
 [AttributeUsage(AttributeTargets.Method, AllowMultiple = true, Inherited = false)]
 internal sealed class HasPermissionAttribute : AuthorizeAttribute
 {

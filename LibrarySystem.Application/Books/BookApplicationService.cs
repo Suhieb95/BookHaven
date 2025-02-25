@@ -14,7 +14,7 @@ public class BookApplicationService(IUnitOfWork _iUnitOfWork, IFileService _file
 
         return Result<BookResponse>.Success(res.First());
     }
-    public async Task<Result<PaginatedResponse<BookResponse>>> GetBooks(PaginationParam param, CancellationToken? cancellationToken = null)
+    public async Task<Result<PaginatedResponse<BookResponse>>> GetBooks(PaginationParam param, CancellationToken? cancellationToken = default)
     {
         PaginatedResponse<BookResponse>? res = await _iUnitOfWork.Books.GetPaginated(param, cancellationToken);
 
@@ -37,9 +37,30 @@ public class BookApplicationService(IUnitOfWork _iUnitOfWork, IFileService _file
 
         return Result<PaginatedResponse<BookResponse>>.Success(res);
     }
+    public async Task<Result<int>> CreateBook(CreateBookRequest request, CancellationToken? cancellationToken = null)
+    {
+        BookResponse? book = (await _iUnitOfWork.Books.GetAll(new GetBookByNameSpecification(request.Title), cancellationToken)).FirstOrDefault();
+        if (book is not null)
+            return Result<int>.Failure(new("Book with selected Title already Exists.", Conflict, "Title Exists"));
+
+        int id = await _iUnitOfWork.Books.Add(request);
+
+        if (request.HasImages())
+        {
+            FileUploadResult[] uploadResult = await _fileService.Upload(request.Images!);
+
+            IEnumerable<Task> result = uploadResult
+                .Select(x => _iUnitOfWork.Books.AddBookImagePath(new(id, x.PublicId)));
+
+            await Task.WhenAll(result);
+        }
+
+        return Result<int>.Success(id);
+    }
     private static void SetBooksDiscountPrice(IReadOnlyList<BookResponse> books)
     {
         foreach (BookResponse book in books)
-            book.CalculateDiscountedPrice();
+            if (book.DiscountPercentage > 0)
+                book.CalculateDiscountedPrice();
     }
 }
