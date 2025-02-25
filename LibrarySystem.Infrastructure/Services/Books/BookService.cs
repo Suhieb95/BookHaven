@@ -36,8 +36,8 @@ public class BookService(ISqlDataAccess _sqlDataAccess) : IBookService
 
         return response;
     }
-    public async Task<List<BookResponse>> GetAll(Specification param, CancellationToken? cancellationToken = default)
-       => await _sqlDataAccess.LoadData<BookResponse>(param.ToSql(), param.Parameters, param.CommandType, cancellationToken: cancellationToken);
+    public async Task<List<T>> GetAll<T>(Specification<T> param, CancellationToken? cancellationToken = default)
+       => await _sqlDataAccess.LoadData(param, cancellationToken: cancellationToken);
 
     public async Task<int> Add(CreateBookRequest request, CancellationToken? cancellationToken = default)
     {
@@ -45,9 +45,10 @@ public class BookService(ISqlDataAccess _sqlDataAccess) : IBookService
         int result = await _sqlDataAccess.SaveData<int>(Sql, request.ToParameter(), StoredProcedure, cancellationToken);
         return result;
     }
-    public Task Update(UpdateBookRequest entity, CancellationToken? cancellationToken = default)
+    public async Task Update(UpdateBookRequest entity, CancellationToken? cancellationToken = default)
     {
-        throw new NotImplementedException();
+        const string Sql = "SPUpdateBook";
+        await _sqlDataAccess.SaveData(Sql, entity, StoredProcedure, cancellationToken);
     }
     public async Task Delete(int id, CancellationToken? cancellationToken = default)
     {
@@ -59,7 +60,6 @@ public class BookService(ISqlDataAccess _sqlDataAccess) : IBookService
         const string Sql = "INSERT INTO BookImages (ImageUrl, BookId) VALUES (@ImageUrl, @BookId)";
         await _sqlDataAccess.SaveData(Sql, createBookImage, cancellationToken: cancellationToken);
     }
-
     public async Task<BookResponse> GetById(Specification param, CancellationToken? cancellationToken = null)
     {
         (List<string> images, BookResponse? book) = await _sqlDataAccess.FetchListAndSingleAsync<string, BookResponse>(param.ToSql(),
@@ -69,5 +69,25 @@ public class BookService(ISqlDataAccess _sqlDataAccess) : IBookService
             book!.ImageUrls = [.. images];
 
         return book!;
+    }
+    public async Task DeleteBookImages(int id, string[] paths, CancellationToken? cancellationToken = default)
+    {
+        IEnumerable<Task>? tasks = paths.Select(p => DeleteBookImage(id, p, cancellationToken));
+        await Task.WhenAll(tasks);
+    }
+    public async Task UpdateBookImages(int id, string[] paths, CancellationToken? cancellationToken = default)
+    {
+        IEnumerable<Task>? tasks = paths.Select(p => UpdateBookImage(id, p, cancellationToken));
+        await Task.WhenAll(tasks);
+    }
+    private async Task DeleteBookImage(int id, string path, CancellationToken? cancellationToken = default)
+    {
+        const string Sql = "DELETE FROM BookImages WHERE BookId = @BookId AND ImageUrl = @ImageUrl";
+        await _sqlDataAccess.SaveData(Sql, new { BookId = id, ImageUrl = path }, cancellationToken: cancellationToken);
+    }
+    private async Task UpdateBookImage(int id, string path, CancellationToken? cancellationToken = default)
+    {
+        const string Sql = "INSERT INTO BookImages (BookId, ImageUrl) VALUES (@BookId, @ImageUrl)";
+        await _sqlDataAccess.SaveData(Sql, new { BookId = id, ImageUrl = path }, cancellationToken: cancellationToken);
     }
 }

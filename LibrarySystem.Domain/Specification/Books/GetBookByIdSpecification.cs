@@ -1,5 +1,7 @@
+using LibrarySystem.Domain.DTOs.Books;
+
 namespace LibrarySystem.Domain.Specification.Books;
-public class GetBookByIdSpecification : Specification
+public class GetBookByIdSpecification : Specification<BookResponse>
 {
     public GetBookByIdSpecification(int id)
     {

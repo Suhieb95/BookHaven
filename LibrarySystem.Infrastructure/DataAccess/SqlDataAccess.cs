@@ -1,6 +1,6 @@
 using LibrarySystem.Application.Interfaces;
 using LibrarySystem.Application.Interfaces.Database;
-using System.Data.SqlClient;
+using LibrarySystem.Domain.Specification;
 
 namespace LibrarySystem.Infrastructure.DataAccess;
 internal sealed class SqlDataAccess(IMssqlConnectionFactory idbConnectionFactory) : ISqlDataAccess, IMssqlDbTransaction
@@ -15,6 +15,15 @@ internal sealed class SqlDataAccess(IMssqlConnectionFactory idbConnectionFactory
 
         var rows = await connection.QueryAsync<T>(new CommandDefinition(storedProcedure, parameters,
             commandType: commandType, cancellationToken: ct));
+        return rows.AsList();
+    }
+    public async Task<List<T>> LoadData<T>(Specification<T> specification, CancellationToken? cancellationToken = null)
+    {
+        CancellationToken ct = cancellationToken ?? CancellationToken.None;
+        using IDbConnection connection = await _IdbConnectionFactory.CreateConnection();
+
+        var rows = await connection.QueryAsync<T>(new CommandDefinition(specification.ToSql(), specification.Parameters,
+            commandType: specification.CommandType, cancellationToken: ct));
         return rows.AsList();
     }
     public async Task<T?> LoadSingle<T>(string storedProcedure, object? parameters = default, CommandType? commandType = null, CancellationToken? cancellationToken = null)

@@ -1,11 +1,9 @@
 using LibrarySystem.Application.Genres;
 using LibrarySystem.Domain.DTOs;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 namespace LibrarySystem.API.Controllers;
-
-[AllowAnonymous] // To Be Removed
-public class GenreController(IGenreApplicationService _genreApplicationService) : BaseController
+// Permission to be added
+public class GenresController(IGenreApplicationService _genreApplicationService) : BaseController
 {
     [HttpPost]
     public async Task<IActionResult> Add(Genre genre, CancellationToken cancellationToken)

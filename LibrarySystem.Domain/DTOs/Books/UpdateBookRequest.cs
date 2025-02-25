@@ -1,5 +1,4 @@
 using LibrarySystem.Domain.BaseModels;
-using Microsoft.AspNetCore.Http;
 namespace LibrarySystem.Domain.DTOs.Books;
 public class UpdateBookRequest : BaseEntity<int>
 {
@@ -10,5 +9,5 @@ public class UpdateBookRequest : BaseEntity<int>
     public int GenreId { get; set; }
     public decimal Price { get; set; }
     public int Quantity { get; set; } = 0;
-    public IFormFileCollection? Images { get; set; }
+    public decimal? DiscountPercentage { get; set; }
 }

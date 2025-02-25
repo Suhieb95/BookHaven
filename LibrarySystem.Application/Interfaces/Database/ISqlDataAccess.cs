@@ -1,4 +1,5 @@
 ﻿using System.Data;
+using LibrarySystem.Domain.Specification;
 namespace LibrarySystem.Application.Interfaces.Database;
 public interface ISqlDataAccess
 {
@@ -9,4 +10,5 @@ public interface ISqlDataAccess
     Task<(List<T1>, List<T2>)> FetchTwoListsAsync<T1, T2>(string sql, CancellationToken? cancellationToken = null, object? param = default, CommandType? commandType = null);
     Task<(T1?, List<T2>)> FetchSingleAndListAsync<T1, T2>(string sql, CancellationToken? cancellationToken = null, object? param = default, CommandType? commandType = null);
     Task<(List<T1>, T2?)> FetchListAndSingleAsync<T1, T2>(string sql, CancellationToken? cancellationToken = null, object? param = default, CommandType? commandType = null);
+    Task<List<T>> LoadData<T>(Specification<T> specification, CancellationToken? cancellationToken = null);
 }

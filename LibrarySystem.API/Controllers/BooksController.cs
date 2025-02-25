@@ -5,7 +5,7 @@ using LibrarySystem.Domain.DTOs.Books;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LibrarySystem.API.Controllers;
-public class BookController(IBookApplicationService _bookApplicationService) : BaseController
+public class BooksController(IBookApplicationService _bookApplicationService) : BaseController
 {
     [AllowAnonymous]
     [HttpGet]
@@ -25,9 +25,27 @@ public class BookController(IBookApplicationService _bookApplicationService) : B
                       onSuccess: Ok,
                       onFailure: Problem);
     }
+    [AllowAnonymous]
+    [HttpDelete(Books.DeleteBookImages)]
+    public async Task<IActionResult> DeleteBookImages(DeleteBookImageRequest request, CancellationToken cancellationToken)
+    {
+        Result<bool>? result = await _bookApplicationService.DeleteBookImages(request, cancellationToken);
+        return result.Map(
+                      onSuccess: _ => NoContent(),
+                      onFailure: Problem);
+    }
+    [AllowAnonymous]
+    [HttpPut(Books.UpdateBookImages)]
+    public async Task<IActionResult> UpdateBookImages([FromForm] UpdateBookImageRequest request, CancellationToken cancellationToken)
+    {
+        Result<bool>? result = await _bookApplicationService.UpdateBookImages(request, cancellationToken);
+        return result.Map(
+                      onSuccess: _ => NoContent(),
+                      onFailure: Problem);
+    }
     [HttpDelete(Books.Delete)]
-    // [Authorize(Policy = CustomPolicies.ExcludeNewUserPolicy)]
-    // [HasPermission(Permission.Delete, EntityName.Books)]
+    [Authorize(Policy = CustomPolicies.ExcludeNewUserPolicy)]
+    [HasPermission(Permission.Delete, EntityName.Books)]
     public async Task<IActionResult> Delete(int id, CancellationToken cancellationToken)
     {
         Result<bool>? result = await _bookApplicationService.DeleteBook(id, cancellationToken);
@@ -36,8 +54,8 @@ public class BookController(IBookApplicationService _bookApplicationService) : B
                       onFailure: Problem);
     }
     [HttpPut]
-    // [Authorize(Policy = CustomPolicies.ExcludeNewUserPolicy)]
-    // [HasPermission(Permission.Update, EntityName.Books)]
+    [Authorize(Policy = CustomPolicies.ExcludeNewUserPolicy)]
+    [HasPermission(Permission.Update, EntityName.Books)]
     public async Task<IActionResult> Update(UpdateBookRequest request, CancellationToken cancellationToken)
     {
         Result<bool>? result = await _bookApplicationService.UpdateBook(request, cancellationToken);

@@ -2,6 +2,7 @@ using LibrarySystem.Application.Interfaces;
 using LibrarySystem.Application.Interfaces.Database;
 using LibrarySystem.Application.Interfaces.Repositories;
 using LibrarySystem.Application.Interfaces.Services;
+using LibrarySystem.Infrastructure.Services.Authors;
 using LibrarySystem.Infrastructure.Services.Books;
 using LibrarySystem.Infrastructure.Services.Customers;
 using LibrarySystem.Infrastructure.Services.Genres;
@@ -15,4 +16,5 @@ internal class UnitOfWork(ISqlDataAccess _sqlDataAccess, IDateTimeProvider _date
     public IBookService Books => new BookService(_sqlDataAccess);
     public IUserService Users => new UserService(_sqlDataAccess, _dateTimeProvider, _redisCacheService);
     public IGenreService Genres => new GenreService(_sqlDataAccess);
+    public IAuthorService Authors => new AuthorService(_sqlDataAccess);
 }

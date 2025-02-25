@@ -11,6 +11,8 @@ internal static class ApiEndPoints
     {
         internal const string GetById = BaseController + "/{id}";
         internal const string Delete = BaseController + "/{id}";
+        internal const string DeleteBookImages = BaseController + "/book-images";
+        internal const string UpdateBookImages = BaseController + "/update-book-images";
     }
     internal class Person
     {

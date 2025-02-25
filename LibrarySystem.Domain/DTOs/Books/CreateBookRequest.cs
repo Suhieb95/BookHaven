@@ -11,5 +11,4 @@ public class CreateBookRequest
     public int Quantity { get; set; } = 0;
     public decimal? DiscountPercentage { get; set; }
     public IFormFileCollection? Images { get; set; }
-    public bool HasImages() => Images is not null && Images.Count > 0;
 }
