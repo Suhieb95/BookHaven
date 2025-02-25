@@ -32,7 +32,7 @@ public class BookApplicationService(IUnitOfWork _iUnitOfWork, IFileService _file
         if (res.Data?.Count == 0)
             return Result<PaginatedResponse<BookResponse>>.Success(res);
 
-        SetBooksDiscountPrice(res.Data!);
+        SetBooksDiscountedPrice(res.Data!);
         var imageTasks = res.Data!.Where(book => book.ImageUrls is not null)
                                                                                 .Select(async book =>
                                                                                 {
@@ -136,7 +136,7 @@ public class BookApplicationService(IUnitOfWork _iUnitOfWork, IFileService _file
             }).ToArray();
     private async Task<BookResponse?> GetById(int id, CancellationToken? cancellationToken = default)
         => (await _iUnitOfWork.Books.GetAll(new GetBookByIdSpecification(id), cancellationToken)).FirstOrDefault();
-    private static void SetBooksDiscountPrice(IReadOnlyList<BookResponse> books)
+    private static void SetBooksDiscountedPrice(IReadOnlyList<BookResponse> books)
     {
         foreach (BookResponse book in books)
             book.CalculateDiscountedPrice();

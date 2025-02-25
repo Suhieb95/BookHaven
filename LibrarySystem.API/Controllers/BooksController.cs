@@ -25,8 +25,9 @@ public class BooksController(IBookApplicationService _bookApplicationService) : 
                       onSuccess: Ok,
                       onFailure: Problem);
     }
-    [AllowAnonymous]
     [HttpDelete(Books.DeleteBookImages)]
+    [Authorized(Policy = CustomPolicies.ExcludeNewUserPolicy)]
+    [HasPermission(Permission.Delete, EntityName.Books)]
     public async Task<IActionResult> DeleteBookImages(DeleteBookImageRequest request, CancellationToken cancellationToken)
     {
         Result<bool>? result = await _bookApplicationService.DeleteBookImages(request, cancellationToken);
@@ -34,8 +35,9 @@ public class BooksController(IBookApplicationService _bookApplicationService) : 
                       onSuccess: _ => NoContent(),
                       onFailure: Problem);
     }
-    [AllowAnonymous]
     [HttpPut(Books.UpdateBookImages)]
+    [Authorized(Policy = CustomPolicies.ExcludeNewUserPolicy)]
+    [HasPermission(Permission.Update, EntityName.Books)]
     public async Task<IActionResult> UpdateBookImages([FromForm] UpdateBookImageRequest request, CancellationToken cancellationToken)
     {
         Result<bool>? result = await _bookApplicationService.UpdateBookImages(request, cancellationToken);
@@ -44,7 +46,7 @@ public class BooksController(IBookApplicationService _bookApplicationService) : 
                       onFailure: Problem);
     }
     [HttpDelete(Books.Delete)]
-    [Authorize(Policy = CustomPolicies.ExcludeNewUserPolicy)]
+    [Authorized(Policy = CustomPolicies.ExcludeNewUserPolicy)]
     [HasPermission(Permission.Delete, EntityName.Books)]
     public async Task<IActionResult> Delete(int id, CancellationToken cancellationToken)
     {
@@ -54,7 +56,7 @@ public class BooksController(IBookApplicationService _bookApplicationService) : 
                       onFailure: Problem);
     }
     [HttpPut]
-    [Authorize(Policy = CustomPolicies.ExcludeNewUserPolicy)]
+    [Authorized(Policy = CustomPolicies.ExcludeNewUserPolicy)]
     [HasPermission(Permission.Update, EntityName.Books)]
     public async Task<IActionResult> Update(UpdateBookRequest request, CancellationToken cancellationToken)
     {
@@ -64,7 +66,7 @@ public class BooksController(IBookApplicationService _bookApplicationService) : 
                       onFailure: Problem);
     }
     [HttpPost]
-    [Authorize(Policy = CustomPolicies.ExcludeNewUserPolicy)]
+    [Authorized(Policy = CustomPolicies.ExcludeNewUserPolicy)]
     [HasPermission(Permission.Create, EntityName.Books)]
     public async Task<IActionResult> Create([FromForm] CreateBookRequest request, CancellationToken cancellationToken)
     {
