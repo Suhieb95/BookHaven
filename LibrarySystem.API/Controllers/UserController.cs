@@ -83,6 +83,17 @@ public class UserController(IUserRegistrationService _userRegistrationService, I
             onFailure: Problem
             );
     }
+    [Authorize]
+    [EnableRateLimiting("StandardLimiterPolicy")]
+    [HttpPut(Person.RemoveProfilePicture)]
+    public async Task<IActionResult> RemoveProfilePicture([FromQuery] Guid id, CancellationToken cancellationToken)
+    {
+        Result<bool>? result = await _userUpdateService.RemoveProfilePicture(id, cancellationToken);
+        return result.Map(
+           onSuccess: _ => NoContent(),
+           onFailure: Problem
+           );
+    }
     [HttpPost(Person.Logout)]
     [EnableRateLimiting("StandardLimiterPolicy")]
     public IActionResult Logout()

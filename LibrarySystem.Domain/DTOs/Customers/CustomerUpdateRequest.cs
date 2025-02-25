@@ -14,6 +14,4 @@ public class CustomerUpdateRequest : LoginRequestBase
     public required string UserName { get; init; }
     public string? ImageUrl { get; set; }
     public IFormFile? Image { get; init; }
-    public bool IsValidToDeleteImage() => Image is null && ImageUrl is null;
 }
-

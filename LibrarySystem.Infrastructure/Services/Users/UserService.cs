@@ -79,4 +79,9 @@ public class UserService(ISqlDataAccess _sqlDataAccess, IDateTimeProvider _dateT
 
         return [.. res];
     }
+    public async Task RemoveProfilePicture(Guid id, CancellationToken? cancellationToken)
+    {
+        const string Sql = @"UPDATE Users SET ImageUrl = NULL WHERE Id = @Id";
+        await _sqlDataAccess.SaveData(Sql, new { id }, cancellationToken: cancellationToken);
+    }
 }

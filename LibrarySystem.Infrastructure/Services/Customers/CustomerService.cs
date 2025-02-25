@@ -44,4 +44,9 @@ public class CustomerService(ISqlDataAccess _sqlDataAccess, IDateTimeProvider _d
         const string Sql = @"UPDATE Customers SET VerifyEmailTokenExpiry = NULL, VerifyEmailToken = NULL, IsActive = 1, IsVerified = 1 WHERE Id = @Id";
         await _sqlDataAccess.SaveData(Sql, new { Id = id }, cancellationToken: cancellationToken);
     }
+    public async Task RemoveProfilePicture(Guid id, CancellationToken? cancellationToken)
+    {
+        const string Sql = @"UPDATE Customers SET ImageUrl = NULL WHERE Id = @Id";
+        await _sqlDataAccess.SaveData(Sql, new { id }, cancellationToken: cancellationToken);
+    }
 }

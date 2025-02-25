@@ -3,7 +3,6 @@ using LibrarySystem.Application.Authentication.Customers;
 using LibrarySystem.Application.Interfaces.Services;
 using LibrarySystem.Domain.DTOs.Auth;
 using LibrarySystem.Domain.DTOs.Customers;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
 namespace LibrarySystem.API.Controllers;
@@ -79,6 +78,17 @@ public class CustomerController(ICustomerRegistrationService _customerRegisterat
             onSuccess: _ => Ok(new { Message = "Email Address Confirmed, you may Login now." }),
             onFailure: Problem
             );
+    }
+    [Authorize]
+    [EnableRateLimiting("StandardLimiterPolicy")]
+    [HttpPut(Person.RemoveProfilePicture)]
+    public async Task<IActionResult> RemoveProfilePicture([FromQuery] Guid id, CancellationToken cancellationToken)
+    {
+        Result<bool>? result = await _updateCustomerService.RemoveProfilePicture(id, cancellationToken);
+        return result.Map(
+           onSuccess: _ => NoContent(),
+           onFailure: Problem
+           );
     }
     [HttpPost(Person.Logout)]
     [EnableRateLimiting("StandardLimiterPolicy")]

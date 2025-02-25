@@ -9,4 +9,5 @@ public interface ICustomerService : IGenericReadWithParamRepository<List<Custome
     Task SavePassowordResetToken(ResetPasswordResult passwordResult, CancellationToken? cancellationToken);
     Task UpdatePassowordResetToken(PasswordChangeRequest passwordChangeRequest, CancellationToken? cancellationToken);
     Task UpdateEmailConfirmationToken(Guid id, CancellationToken? cancellationToken);
+    Task RemoveProfilePicture(Guid id, CancellationToken? cancellationToken);
 }

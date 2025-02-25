@@ -29,7 +29,7 @@ public class RefreshTokenValidator(IUnitOfWork _unitOfWork, IOptions<RefreshJwtS
         if (string.IsNullOrEmpty(userId))
             return Result<RefreshToken>.Failure(new("Either Refresh Token is invalid or expired.", HttpStatusCode.Forbidden, "Invalid Token"));
 
-        UserType type = Enum.TryParse<UserType>(userType, true, out var parsedType) ? parsedType : UserType.Customer;
+        UserType type = Enum.Parse<UserType>(userType, false);
         Guid guidId = Guid.Parse(userId);
 
         string? imageUrl = string.Empty;

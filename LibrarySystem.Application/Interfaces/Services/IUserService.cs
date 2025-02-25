@@ -12,4 +12,5 @@ public interface IUserService : IGenericReadWithParamRepository<List<User>, Spec
     Task UpdateEmailConfirmationToken(Guid id, CancellationToken? cancellationToken);
     Task<string[]> GetUserRoles(Guid id, CancellationToken? cancellationToken);
     Task<string[]> GetUserPermissions(Guid id, CancellationToken? cancellationToken);
+    Task RemoveProfilePicture(Guid id, CancellationToken? cancellationToken);
 }

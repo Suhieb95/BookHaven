@@ -13,7 +13,7 @@ public class UserLoginService(IUnitOfWork _unitOfWork, IOptions<EmailSettings> e
     : IUserLoginService
 {
     private readonly EmailSettings _emailSettings = emailSettings.Value;
-    public async Task<Result<InternalUserLoginResponse>> Login(InternalUserLoginRequest request, CancellationToken? cancellationToken = null)
+    public async Task<Result<InternalUserLoginResponse>> Login(InternalUserLoginRequest request, CancellationToken? cancellationToken = default)
     {
         User? currentUser = (await _unitOfWork.Users.GetAll(new GetUserByEmailAddress(request.EmailAddress), cancellationToken)).FirstOrDefault();
         if (currentUser is null || currentUser is not null and { IsActive: false })
@@ -22,7 +22,7 @@ public class UserLoginService(IUnitOfWork _unitOfWork, IOptions<EmailSettings> e
         if (IsIncorrectPassowrd(request.Password, currentUser!.Password))
             return Result<InternalUserLoginResponse>.Failure(new("Invalid Email Address Or Password", BadRequest, "Incorrect Credentials"));
 
-        string? imageUrl = await FetchUserImage(currentUser.ImageUrl);
+        string? imageUrl = await FetchUserImage(currentUser.ImageUrl, cancellationToken);
         (string[] roles, string[] permissions) = await AddUserPermissionsAndRoles(currentUser.Id, cancellationToken);
         string token = _jwtTokenGenerator.GenerateAccessToken(currentUser, UserType.Internal, roles, permissions);
         string refreshToken = _jwtTokenGenerator.GenerateRefreshToken(currentUser, UserType.Internal);
@@ -38,10 +38,10 @@ public class UserLoginService(IUnitOfWork _unitOfWork, IOptions<EmailSettings> e
 
         return Result<InternalUserLoginResponse>.Success(response);
     }
-    private async Task<string?> FetchUserImage(string? publicId)
+    private async Task<string?> FetchUserImage(string? publicId, CancellationToken? cancellationToken)
     {
         if (string.IsNullOrEmpty(publicId)) return null;
-        return await _fileService.GetFile(publicId);
+        return await _fileService.GetFile(publicId, cancellationToken);
     }
     private async Task<(string[] roles, string[] permissions)> AddUserPermissionsAndRoles(Guid id, CancellationToken? cancellationToken = default)
     {
