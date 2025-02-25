@@ -1,7 +1,5 @@
 using System.Text.RegularExpressions;
 using LibrarySystem.API.Common.Constants;
-using LibrarySystem.Domain.Entities;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.Timeouts;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;

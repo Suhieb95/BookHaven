@@ -1,8 +1,9 @@
+using LibrarySystem.API.Common.Constants;
 using LibrarySystem.API.Filters;
 using LibrarySystem.Application.Authentication.Users;
+using LibrarySystem.Application.Interfaces.Services;
 using LibrarySystem.Domain.DTOs.Auth;
 using LibrarySystem.Domain.DTOs.Users;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
 
@@ -10,7 +11,8 @@ namespace LibrarySystem.API.Controllers;
 
 [EnableRateLimiting("LoginLimiterPolicy")]
 [AllowAnonymous]
-public class UserController(IUserRegistrationService _userRegistrationService, IUserResetPassword _userResetPassword, IUserLoginService _userLoginService) : BaseController
+public class UserController(IUserRegistrationService _userRegistrationService, IUserResetPassword _userResetPassword,
+ IUserLoginService _userLoginService, IRefreshTokenCookieSetter _refreshTokenCookieSetter, IUserUpdateService _userUpdateService) : BaseController
 {
     [HttpPost(Person.Register)]
     public async Task<IActionResult> Add(InternalUserRegisterRequest request, CancellationToken cancellationToken)
@@ -21,15 +23,29 @@ public class UserController(IUserRegistrationService _userRegistrationService, I
             onFailure: Problem
             );
     }
+    [EnableRateLimiting("StandardLimiterPolicy")]
+    [HttpPut]
+    [AuthorizedRoles(Roles.Manager, Roles.Admin)]
+    public async Task<IActionResult> Update([FromForm] InternalUserUpdateRequest request, CancellationToken cancellationToken)
+    {
+        Result<bool>? result = await _userUpdateService.Update(request, cancellationToken);
+        return result.Map(
+            onSuccess: _ => NoContent(),
+            onFailure: Problem
+            );
+    }
     [ServiceFilter(typeof(LastLoginFilter))]
     [HttpPost(Person.Login)]
     public async Task<IActionResult> Login(InternalUserLoginRequest request, CancellationToken cancellationToken)
     {
         Result<InternalUserLoginResponse>? result = await _userLoginService.Login(request, cancellationToken);
+        if (result.IsSuccess)
+            _refreshTokenCookieSetter.SetJwtTokenCookie(HttpContext, result.Data!.Token);
+
         return result.Map(
-            onSuccess: Ok,
-            onFailure: Problem
-            );
+                onSuccess: Ok,
+                onFailure: Problem
+                );
     }
     [HttpPut(Person.ChangePassword)]
     public async Task<IActionResult> ChangePassword(PasswordChangeRequest passwordChangeRequest, CancellationToken cancellationToken)
@@ -66,5 +82,12 @@ public class UserController(IUserRegistrationService _userRegistrationService, I
             onSuccess: _ => Ok(new { Message = "Email Address Confirmed, you may set your password now." }),
             onFailure: Problem
             );
+    }
+    [HttpPost(Person.Logout)]
+    [EnableRateLimiting("StandardLimiterPolicy")]
+    public IActionResult Logout()
+    {
+        _refreshTokenCookieSetter.DeleteJwtTokenCookie(HttpContext, "refreshToken");
+        return NoContent();
     }
 }

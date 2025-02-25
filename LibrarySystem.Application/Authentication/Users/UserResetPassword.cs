@@ -17,7 +17,7 @@ public class UserResetPassword(IUnitOfWork _unitOfWork, IOptions<EmailSettings> 
 
         request.SetPassword(_passwordHasher.Hash(request.Password));
         await _unitOfWork.Users.UpdatePassowordResetToken(request, cancellationToken);
-        User? user = await GetUsers(new GetUserByIdSpecification(request.UserId), cancellationToken);
+        User? user = await GetUsers(new GetUserById(request.UserId), cancellationToken);
         await EmailHelpers.SendPasswordChangedNotify(user!.EmailAddress, _emailSettings.ResetPasswordURL, _env, cancellationToken, _notificationService);
 
         return Result<bool>.Success(true);
@@ -36,7 +36,7 @@ public class UserResetPassword(IUnitOfWork _unitOfWork, IOptions<EmailSettings> 
 
     public async Task<Result<bool>> VerifyToken(Guid id, CancellationToken? cancellationToken = null)
     {
-        User? user = await GetUsers(new GetUserByIdSpecification(id), cancellationToken);
+        User? user = await GetUsers(new GetUserById(id), cancellationToken);
         if (user is null || user is not null and { IsVerified: false })
             return Result<bool>.Failure(new("User Doesn't Exists.", BadRequest, "Invalid User"));
 

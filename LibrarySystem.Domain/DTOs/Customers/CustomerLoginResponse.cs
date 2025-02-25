@@ -3,8 +3,7 @@ using LibrarySystem.Domain.Enums;
 
 namespace LibrarySystem.Domain.DTOs.Customers;
 
-public class CustomerLoginResponse(string emailAddress, string userName, string imageurl, string token, Guid id)
- : AuthenticatedUserBase(emailAddress, userName, token, id, PersonType.Customer)
+public class CustomerLoginResponse(string emailAddress, string userName, string? imageurl, string token, Guid id, string refreshToken)
+ : AuthenticatedUserBase(emailAddress, userName, token, id, UserType.Customer, imageurl, refreshToken)
 {
-    public string? ImageUrl { get; init; } = imageurl;
 };

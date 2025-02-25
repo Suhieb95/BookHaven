@@ -1,6 +1,13 @@
 namespace LibrarySystem.Domain.DTOs.BaseModels;
-public abstract class LoginRequestBase(string emailAddress, string password)
+public abstract class LoginRequestBase
 {
-    public string EmailAddress { get; init; } = emailAddress;
-    public string Password { get; init; } = password;
+    public LoginRequestBase() { }
+    public LoginRequestBase(string emailAddress, string password)
+    {
+        EmailAddress = emailAddress;
+        Password = password;
+    }
+    public required string EmailAddress { get; init; }
+    public required string Password { get; set; }
+    public void SetPassword(string password) => Password = password;
 }

@@ -3,7 +3,6 @@ using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
 using LibrarySystem.Application.Interfaces;
-using LibrarySystem.Application.Interfaces.Repositories;
 using LibrarySystem.Application.Interfaces.Services;
 using LibrarySystem.Domain.BaseModels.User;
 using LibrarySystem.Domain.DTOs.Auth;
@@ -14,13 +13,13 @@ using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 
 namespace LibrarySystem.Infrastructure.Authentication;
-public class JwtTokenGenerator(IDateTimeProvider dateTimeProvider, IOptions<JwtSettings> jwtSettings, IOptions<RefreshJwtSettings> refreshJwtSettings, IUnitOfWork _unitOfWork)
+public class JwtTokenGenerator(IDateTimeProvider dateTimeProvider, IOptions<JwtSettings> jwtSettings, IOptions<RefreshJwtSettings> refreshJwtSettings)
      : IJwtTokenGenerator
 {
     private readonly IDateTimeProvider _dateTimeProvider = dateTimeProvider;
     private readonly JwtSettings _jwtSettings = jwtSettings.Value;
     private readonly RefreshJwtSettings _refreshJwtSettings = refreshJwtSettings.Value;
-    public string GenerateAccessToken(PersonBase person, PersonType personType = PersonType.Customer, string[]? roles = null, string[]? permissions = null)
+    public string GenerateAccessToken(PersonBase person, UserType personType = UserType.Customer, string[]? roles = null, string[]? permissions = null)
     {
         if (person is null)
             throw new JwtTokenExpception();
@@ -29,13 +28,14 @@ public class JwtTokenGenerator(IDateTimeProvider dateTimeProvider, IOptions<JwtS
 
         var claims = new List<Claim>{
 
-            new Claim(ClaimTypes.Email,person.EmailAddress),
-            new Claim(ClaimTypes.NameIdentifier,person.Id.ToString()),
-            new Claim(JwtRegisteredClaimNames.Jti,Guid.NewGuid().ToString()),
-            new Claim(JwtRegisteredClaimNames.Iat,JwtSettings.GetIssuedAt(), ClaimValueTypes.Integer64),
+            new(ClaimTypes.Email,person.EmailAddress),
+            new(ClaimTypes.NameIdentifier,person.Id.ToString()),
+            new(JwtRegisteredClaimNames.Jti,Guid.NewGuid().ToString()),
+            new(JwtRegisteredClaimNames.Iat,JwtSettings.GetIssuedAt(), ClaimValueTypes.Integer64),
+            new("PersonType",personType.ToString(), ClaimValueTypes.Integer64),
         };
 
-        if (personType == PersonType.InternalUser)
+        if (personType == UserType.Internal)
             AddUserPermissionsAndRoles(claims, roles!, permissions!);
 
         var securityToken = new JwtSecurityToken(
@@ -47,7 +47,7 @@ public class JwtTokenGenerator(IDateTimeProvider dateTimeProvider, IOptions<JwtS
 
         return new JwtSecurityTokenHandler().WriteToken(securityToken);
     }
-    public string GenerateRefreshToken(PersonBase person)
+    public string GenerateRefreshToken(PersonBase person, UserType personType = UserType.Customer)
     {
         if (person is null)
             throw new JwtTokenExpception();
@@ -58,6 +58,7 @@ public class JwtTokenGenerator(IDateTimeProvider dateTimeProvider, IOptions<JwtS
             new Claim(JwtRegisteredClaimNames.Jti,Guid.NewGuid().ToString()),
             new Claim(JwtRegisteredClaimNames.Iat,JwtSettings.GetIssuedAt(), ClaimValueTypes.Integer64),
             new Claim(ClaimTypes.NameIdentifier,person.Id.ToString()),
+            new("UserType",personType.ToString(), ClaimValueTypes.Integer64),
         };
 
         var securityToken = new JwtSecurityToken(
@@ -74,7 +75,7 @@ public class JwtTokenGenerator(IDateTimeProvider dateTimeProvider, IOptions<JwtS
     public EmailConfirmationResult GenerateEmailConfirmationToken(Guid userId)
          => new(userId, Convert.ToHexString(RandomNumberGenerator.GetBytes(120)), DateTime.Now.AddDays(1));
 
-    private void AddUserPermissionsAndRoles(List<Claim> claims, string[] roles, string[] permissions)
+    private static void AddUserPermissionsAndRoles(List<Claim> claims, string[] roles, string[] permissions)
     {
         foreach (string role in roles)
             claims.Add(new Claim(ClaimTypes.Role, role.ToString()));

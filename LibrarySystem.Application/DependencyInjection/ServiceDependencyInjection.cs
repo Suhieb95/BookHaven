@@ -16,6 +16,8 @@ internal static class ServiceDependencyInjection
         services.AddScoped<IUserRegistrationService, UserRegistrationService>();
         services.AddScoped<IUserLoginService, UserLoginService>();
         services.AddScoped<IUserResetPassword, UserResetPassword>();
+        services.AddScoped<IUserUpdateService, UserUpdateService>();
+        services.AddScoped<ICustomerUpdateService, CustomerUpdateService>();
         return services;
     }
 }

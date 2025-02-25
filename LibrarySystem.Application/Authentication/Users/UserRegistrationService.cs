@@ -12,7 +12,7 @@ public class UserRegistrationService(IUnitOfWork _unitOfWork, IWebHostEnvironmen
     private readonly EmailSettings _emailSettings = emailSettings.Value;
     public async Task<Result<bool>> ConfirmEmailAddress(Guid id, CancellationToken? cancellationToken = null)
     {
-        User? user = (await _unitOfWork.Users.GetAll(new GetUserByIdSpecification(id), cancellationToken)).FirstOrDefault();
+        User? user = (await _unitOfWork.Users.GetAll(new GetUserById(id), cancellationToken)).FirstOrDefault();
         if (user is null)
             return Result<bool>.Failure(new("User Doesn't Exist", NotFound, "User Not Found"));
 
@@ -40,7 +40,7 @@ public class UserRegistrationService(IUnitOfWork _unitOfWork, IWebHostEnvironmen
     }
     private async Task SendEmailConfirmationLink(CancellationToken? cancellationToken, Guid id)
     {
-        User? user = (await _unitOfWork.Users.GetAll(new GetUserByIdSpecification(id), cancellationToken)).FirstOrDefault();
+        User? user = (await _unitOfWork.Users.GetAll(new GetUserById(id), cancellationToken)).FirstOrDefault();
         if (user is not null && user.HasValidEmailConfirmationToken())
             return;
 

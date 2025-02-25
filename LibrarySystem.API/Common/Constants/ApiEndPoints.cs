@@ -19,5 +19,6 @@ internal static class ApiEndPoints
         internal const string ChangePassword = BaseController + "/change-password";
         internal const string VerifyResetPasswordToken = BaseController + "/verify-password-reset-token";
         internal const string ResetPasswordRequest = BaseController + "/reset-password-request";
+        internal const string Logout = BaseController + "/logout";
     }
 }

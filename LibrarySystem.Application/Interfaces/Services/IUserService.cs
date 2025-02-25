@@ -5,7 +5,7 @@ using LibrarySystem.Domain.Specification;
 namespace LibrarySystem.Application.Interfaces.Services;
 public interface IUserService : IGenericReadWithParamRepository<List<User>, Specification>, IGenericWriteRepository<InternalUserRegisterRequest, InternalUserUpdateRequest, Guid>
 {
-    Task LastLogin(string emailAddress, PersonType personType = PersonType.InternalUser);
+    Task LastLogin(string emailAddress, UserType personType = UserType.Internal);
     Task SaveEmailConfirmationToken(EmailConfirmationResult emailConfirmationResult, CancellationToken? cancellationToken);
     Task SavePassowordResetToken(ResetPasswordResult passwordResult, CancellationToken? cancellationToken);
     Task UpdatePassowordResetToken(PasswordChangeRequest passwordChangeRequest, CancellationToken? cancellationToken);

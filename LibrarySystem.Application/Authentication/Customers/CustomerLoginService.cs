@@ -23,9 +23,10 @@ public class CustomerLoginService(IUnitOfWork _iUnitOfWork, IJwtTokenGenerator _
             return Result<CustomerLoginResponse>.Failure(new("Invalid Email Address Or Password", BadRequest, "Incorrect Credentials"));
 
         string token = _jwtTokenGenerator.GenerateAccessToken(currentUser);
+        string refreshToken = _jwtTokenGenerator.GenerateRefreshToken(currentUser);
         string? imageUrl = await FetchUserImage(currentUser.ImageUrl);
         await EmailHelpers.SendNotifyLoginEmail(currentUser.EmailAddress, _emailSettings.SuccessURL, _dateTimeProvider, _env, cancellationToken, _iNotificationService, _httpContextAccessor, _IPApiClient);
-        return Result<CustomerLoginResponse>.Success(new(currentUser.EmailAddress, currentUser.UserName, imageUrl ?? string.Empty, "Bearer " + token, currentUser.Id));
+        return Result<CustomerLoginResponse>.Success(new(currentUser.EmailAddress, currentUser.UserName, imageUrl ?? string.Empty, "Bearer " + token, currentUser.Id, refreshToken));
     }
     private async Task<string?> FetchUserImage(string? publicId)
     {

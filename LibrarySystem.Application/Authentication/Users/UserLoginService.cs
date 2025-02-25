@@ -24,15 +24,17 @@ public class UserLoginService(IUnitOfWork _unitOfWork, IOptions<EmailSettings> e
 
         string? imageUrl = await FetchUserImage(currentUser.ImageUrl);
         (string[] roles, string[] permissions) = await AddUserPermissionsAndRoles(currentUser.Id, cancellationToken);
-        string token = _jwtTokenGenerator.GenerateAccessToken(currentUser, PersonType.InternalUser, roles, permissions);
+        string token = _jwtTokenGenerator.GenerateAccessToken(currentUser, UserType.Internal, roles, permissions);
+        string refreshToken = _jwtTokenGenerator.GenerateRefreshToken(currentUser, UserType.Internal);
         await EmailHelpers.SendNotifyLoginEmail(currentUser.EmailAddress, _emailSettings.SuccessURL, _dateTimeProvider, _env, cancellationToken, _notificationService, _httpContextAccessor, _IPApiClient);
 
         InternalUserLoginResponse response = new(
             currentUser.EmailAddress,
             currentUser.UserName,
-            imageUrl ?? string.Empty,
             "Bearer " + token,
-            currentUser.Id);
+            currentUser.Id,
+            refreshToken,
+            imageUrl ?? string.Empty);
 
         return Result<InternalUserLoginResponse>.Success(response);
     }

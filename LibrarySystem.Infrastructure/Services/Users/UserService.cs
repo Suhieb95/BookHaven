@@ -26,7 +26,7 @@ public class UserService(ISqlDataAccess _sqlDataAccess, IDateTimeProvider _dateT
     }
     public async Task<List<User>> GetAll(Specification param, CancellationToken? cancellationToken = null)
         => await _sqlDataAccess.LoadData<User>(param.ToSql(), param.Parameters, cancellationToken: cancellationToken);
-    public async Task LastLogin(string emailAddress, PersonType personType = PersonType.InternalUser)
+    public async Task LastLogin(string emailAddress, UserType personType = UserType.Internal)
     {
         string sql = $"UPDATE {personType.GetEnumValue()} SET LastLogin = @LastLogin WHERE EmailAddress = @EmailAddress";
         await _sqlDataAccess.SaveData(sql, new { EmailAddress = emailAddress, LastLogin = _dateTimeProvider.UtcNow });
