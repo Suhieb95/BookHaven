@@ -7,7 +7,7 @@ using LibrarySystem.Infrastructure.Mappings.Book;
 namespace LibrarySystem.Infrastructure.Services.Books;
 public class BookService(ISqlDataAccess _sqlDataAccess) : IBookService
 {
-    public async Task<PaginatedResponse<BookResponse>> GetPaginated(PaginationParam param, CancellationToken? cancellationToken = null)
+    public async Task<PaginatedResponse<BookResponse>> GetPaginated(PaginationParam param, CancellationToken? cancellationToken = default)
     {
         (List<BookResponse> books, PaginationDetails? paginationDetails) = await _sqlDataAccess.FetchListAndSingleAsync<BookResponse, PaginationDetails>
                      ("SPGetBooks", cancellationToken, param, StoredProcedure);
@@ -32,24 +32,24 @@ public class BookService(ISqlDataAccess _sqlDataAccess) : IBookService
         // Assign the retrieved images to each book
         foreach (var (book, bookImages) in results)
             if (bookImages.Count > 0)
-                book.ImageUrl = [.. bookImages];
+                book.ImageUrls = [.. bookImages];
 
         return response;
     }
-    public async Task<List<BookResponse>> GetAll(Specification param, CancellationToken? cancellationToken = null)
+    public async Task<List<BookResponse>> GetAll(Specification param, CancellationToken? cancellationToken = default)
        => await _sqlDataAccess.LoadData<BookResponse>(param.ToSql(), param.Parameters, param.CommandType, cancellationToken: cancellationToken);
 
-    public async Task<int> Add(CreateBookRequest request, CancellationToken? cancellationToken = null)
+    public async Task<int> Add(CreateBookRequest request, CancellationToken? cancellationToken = default)
     {
         const string Sql = "SPCreateBook";
         int result = await _sqlDataAccess.SaveData<int>(Sql, request.ToParameter(), StoredProcedure, cancellationToken);
         return result;
     }
-    public Task Update(UpdateBookRequest entity, CancellationToken? cancellationToken = null)
+    public Task Update(UpdateBookRequest entity, CancellationToken? cancellationToken = default)
     {
         throw new NotImplementedException();
     }
-    public async Task Delete(int id, CancellationToken? cancellationToken = null)
+    public async Task Delete(int id, CancellationToken? cancellationToken = default)
     {
         const string Sql = "DELETE FROM Books WHERE Id = @Id";
         await _sqlDataAccess.SaveData<int>(Sql, new { id }, cancellationToken: cancellationToken);
@@ -58,5 +58,16 @@ public class BookService(ISqlDataAccess _sqlDataAccess) : IBookService
     {
         const string Sql = "INSERT INTO BookImages (ImageUrl, BookId) VALUES (@ImageUrl, @BookId)";
         await _sqlDataAccess.SaveData(Sql, createBookImage, cancellationToken: cancellationToken);
+    }
+
+    public async Task<BookResponse> GetById(Specification param, CancellationToken? cancellationToken = null)
+    {
+        (List<string> images, BookResponse? book) = await _sqlDataAccess.FetchListAndSingleAsync<string, BookResponse>(param.ToSql(),
+                                 cancellationToken, param.Parameters, param.CommandType)!;
+
+        if (images.Count > 0)
+            book!.ImageUrls = [.. images];
+
+        return book!;
     }
 }

@@ -10,6 +10,7 @@ internal static class ApiEndPoints
     internal class Books
     {
         internal const string GetById = BaseController + "/{id}";
+        internal const string Delete = BaseController + "/{id}";
     }
     internal class Person
     {
