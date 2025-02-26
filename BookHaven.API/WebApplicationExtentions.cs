@@ -1,18 +1,24 @@
 using BookHaven.API.Middlewares;
+using Scalar.AspNetCore;
 
 namespace BookHaven.API;
 internal static class WebApplicationExtentions
 {
-    internal static WebApplication AddSwagger(this WebApplication application)
+    internal static WebApplication AddAPIUI(this WebApplication application)
     {
         if (application.Environment.IsDevelopment())
         {
+            application.MapScalarApiReference();
+            application.MapOpenApi();
             application.UseDeveloperExceptionPage();
             application.UseSwagger();
             application.UseSwaggerUI();
         }
         else
+        {
+            application.UseMiddleware<ContentSecurityPolicyMiddleware>();
             application.UseExceptionHandler("/error");
+        }
 
         return application;
     }
@@ -25,7 +31,6 @@ internal static class WebApplicationExtentions
 
         bool isDevelopment = application.Environment.IsDevelopment();
 
-        application.UseMiddleware<ContentSecurityPolicyMiddleware>();
         application.UseReferrerPolicy(opt => opt.NoReferrer());
         application.UseXContentTypeOptions();
         application.UseXXssProtection(opt => opt.EnabledWithBlockMode());
@@ -36,7 +41,7 @@ internal static class WebApplicationExtentions
                    .CustomSources(isDevelopment ? originCorsPolicy!.LocalURL : originCorsPolicy!.ProductionURL))
                    .FrameAncestors(s => s.Self()));
 
-        application.AddSwagger();
+        application.AddAPIUI();
         application.UseCors(isDevelopment ? originCorsPolicy!.LocalPolicyName : originCorsPolicy!.ProductionPolicyName); // CORS first
         application.MapHealthChecks("/healthz");
         application.UseRateLimiter();
