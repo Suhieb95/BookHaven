@@ -25,7 +25,7 @@ internal static class DependencyInjection
 
         services.AddInfrastructure(configuration, isDev)
                 .AddApplication();
-                
+
         services.SetUploadSize();
         services.AddApiVerison();
         services.AddValidation();

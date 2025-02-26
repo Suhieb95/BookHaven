@@ -9,6 +9,8 @@ public class CreateBookRequestValidator : AbstractValidator<CreateBookRequest>
     {
         RuleFor(x => x.Images).ForEach(x =>
                                                     x.Must(Extensions.IsValidImageFormat).WithMessage("Invalid image format. Allowed formats are: .png, .jpeg, .gif, .jpg."));
+        RuleFor(x => x.Quantity).GreaterThanOrEqualTo(0).WithMessage("Quantity must be greater than or equal to 0");
+        RuleFor(x => x.ISBN).NotNull().WithMessage("ISBN No is required.");
         RuleFor(x => x.PublishedYear)
             .GreaterThanOrEqualTo((short)1600)
             .WithMessage("Published year must be greater than or equal to 1600.")

@@ -3,7 +3,6 @@ using BookHaven.API.Common.Constants;
 using Microsoft.AspNetCore.Http.Timeouts;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
-
 namespace BookHaven.API.Controllers;
 
 [ApiController]
