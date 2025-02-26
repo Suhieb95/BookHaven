@@ -1,6 +1,6 @@
-@host = http://localhost:5057
+@host = http://localhost:5057/api/v1
 
-GET {{host}}/weatherforecast/
+GET {{host}}/books
 Accept: application/json
 
 ###

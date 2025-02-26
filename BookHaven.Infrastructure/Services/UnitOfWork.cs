@@ -9,12 +9,13 @@ using BookHaven.Infrastructure.Services.Genres;
 using BookHaven.Infrastructure.Services.Users;
 
 namespace BookHaven.Infrastructure.Services;
-internal class UnitOfWork(ISqlDataAccess _sqlDataAccess, IDateTimeProvider _dateTimeProvider, IRedisCacheService _redisCacheService) : IUnitOfWork
+internal class UnitOfWork(ISqlDataAccess _sqlDataAccess, IDateTimeProvider _dateTimeProvider, IRedisCacheService _redisCacheService, IMssqlDbTransaction _mssqlDbTransaction)
+    : IUnitOfWork
 {
     // Data Access Services
     public ICustomerService Customers => new CustomerService(_sqlDataAccess, _dateTimeProvider);
-    public IBookService Books => new BookService(_sqlDataAccess);
     public IUserService Users => new UserService(_sqlDataAccess, _dateTimeProvider, _redisCacheService);
-    public IGenreService Genres => new GenreService(_sqlDataAccess);
-    public IAuthorService Authors => new AuthorService(_sqlDataAccess);
+    public IGenreService Genres => new GenreService(_sqlDataAccess, _mssqlDbTransaction);
+    public IAuthorService Authors => new AuthorService(_sqlDataAccess, _mssqlDbTransaction);
+    public IBookService Books => new BookService(_sqlDataAccess, Authors, Genres, _mssqlDbTransaction);
 }

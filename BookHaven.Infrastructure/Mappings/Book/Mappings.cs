@@ -10,10 +10,19 @@ internal static class Mappings
           Title = request.Title,
           ISBN = request.ISBN,
           PublishedYear = request.PublishedYear,
-          AuthorId = request.AuthorId,
-          GenreId = request.GenreId,
           Price = request.Price,
           Quantity = request.Quantity,
           DiscountPercentage = request.DiscountPercentage
       };
+    internal static UpdateBookParameters ToParameter(this UpdateBookRequest request)
+    => new()
+    {
+        Id= request.Id,
+        Title = request.Title,
+        ISBN = request.ISBN,
+        PublishedYear = request.PublishedYear,
+        Price = request.Price,
+        Quantity = request.Quantity,
+        DiscountPercentage = request.DiscountPercentage
+    };
 }

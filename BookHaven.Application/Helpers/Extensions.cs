@@ -65,7 +65,7 @@ public static class Extensions
     {
         if (file is null) return true;
 
-        string[] allowedFormats = [".png", ".jpeg", ".gif", "jpg"];
+        string[] allowedFormats = [".png", ".jpeg", ".gif", ".jpg"];
         return allowedFormats.Contains(Path.GetExtension(file.FileName).ToLowerInvariant()); // Extract file extension using GetExtension
     }
     public static bool HasImages(this IFormFileCollection? files) => files?.Count > 0 && files is not null;

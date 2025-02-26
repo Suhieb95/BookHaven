@@ -19,8 +19,8 @@ public class GenreApplicationService(IUnitOfWork _unitOfWork) : IGenreApplicatio
         if (currentGenre.FirstOrDefault() is null)
             return Result<bool>.Failure(new Error("Genre does not exist, you can't do this action", NotFound, "Genre was not found"));
 
-        List<Genre> usedGenre = await _unitOfWork.Genres.GetAll(new GetUsedGenre(id), cancellationToken);
-        if (usedGenre.FirstOrDefault() is not null)
+        List<bool> usedGenre = await _unitOfWork.Genres.GetAll(new GetUsedGenre(id), cancellationToken);
+        if (usedGenre.FirstOrDefault())
             return Result<bool>.Failure(new Error("Genre is in use", Conflict, "Genre is used"));
 
 

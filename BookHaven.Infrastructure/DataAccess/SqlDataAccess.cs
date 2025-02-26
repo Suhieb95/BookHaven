@@ -8,12 +8,12 @@ internal sealed class SqlDataAccess(IMssqlConnectionFactory idbConnectionFactory
     private IDbConnection? _connection;
     private IDbTransaction? _transaction;
     private readonly IMssqlConnectionFactory _IdbConnectionFactory = idbConnectionFactory;
-    public async Task<List<T>> LoadData<T>(string storedProcedure, object? parameters = default, CommandType? commandType = null, CancellationToken? cancellationToken = null)
+    public async Task<List<T>> LoadData<T>(string sql, object? parameters = default, CommandType? commandType = null, CancellationToken? cancellationToken = null)
     {
         CancellationToken ct = cancellationToken ?? CancellationToken.None;
         using IDbConnection connection = await _IdbConnectionFactory.CreateConnection();
 
-        var rows = await connection.QueryAsync<T>(new CommandDefinition(storedProcedure, parameters,
+        var rows = await connection.QueryAsync<T>(new CommandDefinition(sql, parameters,
             commandType: commandType, cancellationToken: ct));
         return rows.AsList();
     }
@@ -26,25 +26,25 @@ internal sealed class SqlDataAccess(IMssqlConnectionFactory idbConnectionFactory
             commandType: specification.CommandType, cancellationToken: ct));
         return rows.AsList();
     }
-    public async Task<T?> LoadSingle<T>(string storedProcedure, object? parameters = default, CommandType? commandType = null, CancellationToken? cancellationToken = null)
+    public async Task<T?> LoadSingle<T>(string sql, object? parameters = default, CommandType? commandType = null, CancellationToken? cancellationToken = null)
     {
         CancellationToken ct = cancellationToken ?? CancellationToken.None;
         using IDbConnection connection = await _IdbConnectionFactory.CreateConnection();
-        var row = await connection.ExecuteScalarAsync<T>(new CommandDefinition(storedProcedure, parameters, commandType: commandType, cancellationToken: ct));
+        var row = await connection.ExecuteScalarAsync<T>(new CommandDefinition(sql, parameters, commandType: commandType, cancellationToken: ct));
         return row;
     }
-    public async Task SaveData<P>(string storedProcedure, P? parameters = default, CommandType? commandType = null, CancellationToken? cancellationToken = null)
+    public async Task SaveData<P>(string sql, P? parameters = default, CommandType? commandType = null, CancellationToken? cancellationToken = null)
     {
         CancellationToken ct = cancellationToken ?? CancellationToken.None;
         using IDbConnection connection = await _IdbConnectionFactory.CreateConnection();
-        await connection.ExecuteScalarAsync(new CommandDefinition(storedProcedure, parameters,
+        await connection.ExecuteScalarAsync(new CommandDefinition(sql, parameters,
             commandType: commandType, cancellationToken: ct));
     }
-    public async Task<T?> SaveData<T>(string storedProcedure, object? parameters = default, CommandType? commandType = null, CancellationToken? cancellationToken = null)
+    public async Task<T?> SaveData<T>(string sql, object? parameters = default, CommandType? commandType = null, CancellationToken? cancellationToken = null)
     {
         CancellationToken ct = cancellationToken ?? CancellationToken.None;
         using IDbConnection connection = await _IdbConnectionFactory.CreateConnection();
-        var result = await connection.ExecuteScalarAsync<T>(new CommandDefinition(storedProcedure, parameters, commandType: commandType, cancellationToken: ct));
+        var result = await connection.ExecuteScalarAsync<T>(new CommandDefinition(sql, parameters, commandType: commandType, cancellationToken: ct));
         return result;
     }
     public async Task<(List<T1>, List<T2>)> FetchTwoListsAsync<T1, T2>(string sql, CancellationToken? cancellationToken = null, object? param = default, CommandType? commandType = null)
@@ -74,18 +74,18 @@ internal sealed class SqlDataAccess(IMssqlConnectionFactory idbConnectionFactory
             async result => (await result.ReadAsync<T1>()).AsList(),
             async result => await result.ReadFirstOrDefaultAsync<T2>(),
             cancellationToken);
-    public async Task<List<T>> LoadDataInTransaction<T>(string storedProcedure, object? parameters = default, CommandType? commandType = null)
+    public async Task<List<T>> LoadDataInTransaction<T>(string sql, object? parameters = default, CommandType? commandType = null)
     {
-        IEnumerable<T> rows = await _transaction!.Connection!.QueryAsync<T>(storedProcedure, parameters, commandType: commandType, transaction: _transaction);
+        IEnumerable<T> rows = await _transaction!.Connection!.QueryAsync<T>(sql, parameters, commandType: commandType, transaction: _transaction);
         return rows.AsList();
     }
-    public async Task<T?> LoadSingleInTransaction<T>(string storedProcedure, object? parameters = default, CommandType? commandType = null)
-       => await _transaction!.Connection!.QuerySingleOrDefaultAsync<T>(storedProcedure, parameters, commandType: commandType, transaction: _transaction);
-    public async Task SaveDataInTransaction<P>(string storedProcedure, P parameters, CommandType? commandType = null, CancellationToken? cancellationToken = null)
-        => await _transaction!.Connection!.ExecuteAsync(new CommandDefinition(storedProcedure, parameters,
+    public async Task<T?> LoadSingleInTransaction<T>(string sql, object? parameters = default, CommandType? commandType = null)
+       => await _transaction!.Connection!.QuerySingleOrDefaultAsync<T>(sql, parameters, commandType: commandType, transaction: _transaction);
+    public async Task SaveDataInTransaction<P>(string sql, P parameters, CommandType? commandType = null, CancellationToken? cancellationToken = null)
+        => await _transaction!.Connection!.ExecuteAsync(new CommandDefinition(sql, parameters,
        commandType: commandType, transaction: _transaction, cancellationToken: cancellationToken ?? CancellationToken.None));
-    public async Task<T?> SaveDataInTransaction<T>(string storedProcedure, object parameters, CommandType? commandType = null, CancellationToken? cancellationToken = null)
-        => await _transaction!.Connection!.ExecuteScalarAsync<T>(new CommandDefinition(storedProcedure, parameters,
+    public async Task<T?> SaveDataInTransaction<T>(string sql, object parameters, CommandType? commandType = null, CancellationToken? cancellationToken = null)
+        => await _transaction!.Connection!.ExecuteScalarAsync<T>(new CommandDefinition(sql, parameters,
        commandType: commandType, transaction: _transaction, cancellationToken: cancellationToken ?? CancellationToken.None));
     public void CommitTransaction()
     {

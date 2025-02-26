@@ -53,6 +53,8 @@ public class FileService : IFileService
         {
             File = new FileDescription(file.FileName, str),
             Transformation = new Transformation()
+            .Height(300)
+            .Width(300)
             .Crop("fill")
             .Gravity("face")
         };

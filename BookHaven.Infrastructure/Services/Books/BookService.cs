@@ -1,11 +1,14 @@
+using BookHaven.Application.Interfaces;
 using BookHaven.Application.Interfaces.Database;
 using BookHaven.Application.Interfaces.Services;
 using BookHaven.Domain.DTOs;
 using BookHaven.Domain.DTOs.Books;
 using BookHaven.Domain.Specification;
+using BookHaven.Domain.Specification.Authors;
+using BookHaven.Domain.Specification.Genres;
 using BookHaven.Infrastructure.Mappings.Book;
 namespace BookHaven.Infrastructure.Services.Books;
-public class BookService(ISqlDataAccess _sqlDataAccess) : IBookService
+public class BookService(ISqlDataAccess _sqlDataAccess, IAuthorService _authorService, IGenreService _genreService, IMssqlDbTransaction _mssqlDbTransaction) : IBookService
 {
     public async Task<PaginatedResponse<BookResponse>> GetPaginated(PaginationParam param, CancellationToken? cancellationToken = default)
     {
@@ -34,6 +37,9 @@ public class BookService(ISqlDataAccess _sqlDataAccess) : IBookService
             if (bookImages.Count > 0)
                 book.ImageUrls = [.. bookImages];
 
+        IEnumerable<Task>? tasks = response.Data.Select(x => GetBookAuthorsAndGenres(x, cancellationToken));
+        await Task.WhenAll(tasks);
+
         return response;
     }
     public async Task<List<T>> GetAll<T>(Specification<T> param, CancellationToken? cancellationToken = default)
@@ -41,14 +47,39 @@ public class BookService(ISqlDataAccess _sqlDataAccess) : IBookService
 
     public async Task<int> Add(CreateBookRequest request, CancellationToken? cancellationToken = default)
     {
-        const string Sql = "SPCreateBook";
-        int result = await _sqlDataAccess.SaveData<int>(Sql, request.ToParameter(), StoredProcedure, cancellationToken);
-        return result;
+        try
+        {
+            const string Sql = "SPCreateBook";
+            await _mssqlDbTransaction.InitilizeTransaction();
+            int result = await _mssqlDbTransaction.SaveDataInTransaction<int>(Sql, request.ToParameter(), StoredProcedure, cancellationToken);
+            await _authorService.UpdateBookAuthors(new(result, request.Authors));
+            await _genreService.UpdateBookGenres(new(result, request.Genres));
+            _mssqlDbTransaction.CommitTransaction();
+            return result;
+        }
+        catch
+        {
+            _mssqlDbTransaction.RollbackTransaction();
+            throw;
+        }
     }
     public async Task Update(UpdateBookRequest entity, CancellationToken? cancellationToken = default)
     {
-        const string Sql = "SPUpdateBook";
-        await _sqlDataAccess.SaveData(Sql, entity, StoredProcedure, cancellationToken);
+
+        try
+        {
+            const string Sql = "SPUpdateBook";
+            await _mssqlDbTransaction.InitilizeTransaction();
+            await _mssqlDbTransaction.SaveDataInTransaction(Sql, entity.ToParameter(), StoredProcedure, cancellationToken);
+            await _authorService.UpdateBookAuthors(new(entity.Id, entity.Authors));
+            await _genreService.UpdateBookGenres(new(entity.Id, entity.Genres));
+            _mssqlDbTransaction.CommitTransaction();
+        }
+        catch
+        {
+            _mssqlDbTransaction.RollbackTransaction();
+            throw;
+        }
     }
     public async Task Delete(int id, CancellationToken? cancellationToken = default)
     {
@@ -68,6 +99,7 @@ public class BookService(ISqlDataAccess _sqlDataAccess) : IBookService
         if (images.Count > 0)
             book!.ImageUrls = [.. images];
 
+        await GetBookAuthorsAndGenres(book!, cancellationToken);
         return book!;
     }
     public async Task DeleteBookImages(int id, string[] paths, CancellationToken? cancellationToken = default)
@@ -89,5 +121,10 @@ public class BookService(ISqlDataAccess _sqlDataAccess) : IBookService
     {
         const string Sql = "INSERT INTO BookImages (BookId, ImageUrl) VALUES (@BookId, @ImageUrl)";
         await _sqlDataAccess.SaveData(Sql, new { BookId = id, ImageUrl = path }, cancellationToken: cancellationToken);
+    }
+    private async Task GetBookAuthorsAndGenres(BookResponse book, CancellationToken? cancellationToken = default)
+    {
+        book.Authors = await _authorService.GetAll(new GetAuthorsByBookId(book.Id), cancellationToken);
+        book.Genres = await _genreService.GetAll(new GetGenresByBookId(book.Id), cancellationToken);
     }
 }

@@ -1,13 +1,12 @@
-using BookHaven.Domain.BaseModels;
-namespace BookHaven.Domain.DTOs.Books;
-public class UpdateBookRequest : BaseEntity<int>
+namespace BookHaven.Infrastructure.Parameters.Book;
+
+public class UpdateBookParameters
 {
+    public int Id { get; set; }
     public required string Title { get; set; }
     public required string ISBN { get; set; }
     public short PublishedYear { get; set; }
     public decimal Price { get; set; }
-    public List<int> Authors { get; set; } = [];
-    public List<int> Genres { get; set; } = [];
     public int Quantity { get; set; } = 0;
     public decimal? DiscountPercentage { get; set; }
 }
