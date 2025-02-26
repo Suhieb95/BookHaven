@@ -12,7 +12,7 @@ public class JwtValidationFilter(IOptions<JwtSettings> jwtSettings) : IActionFil
     {
         bool isAnonymous = context.ActionDescriptor.EndpointMetadata
                .Any(em => em.GetType() == typeof(AllowAnonymousAttribute));
-        bool isRefreshTokenPath = context.HttpContext.Request.Path.StartsWithSegments(Auth.RefreshToken);
+        bool isRefreshTokenPath = context.HttpContext.Request.Path.StartsWithSegments(Person.RefreshToken);
 
         if (isAnonymous || isRefreshTokenPath)
             return;

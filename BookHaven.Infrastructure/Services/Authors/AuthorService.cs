@@ -12,7 +12,7 @@ public class AuthorService(ISqlDataAccess _sqlDataAccess, IMssqlDbTransaction _m
         => await _sqlDataAccess.SaveData<int>(_upsertAuthor, entity, StoredProcedure, cancellationToken);
     public async Task Delete(int id, CancellationToken? cancellationToken = null)
     {
-        const string Sql = "DeleteAuthor";
+        const string Sql = "SPDeleteAuthor";
         await _sqlDataAccess.SaveData(Sql, new { id }, StoredProcedure, cancellationToken);
     }
     public async Task Update(Author entity, CancellationToken? cancellationToken = null)

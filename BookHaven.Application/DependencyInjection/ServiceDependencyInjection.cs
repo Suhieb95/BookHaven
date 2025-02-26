@@ -1,5 +1,6 @@
 using BookHaven.Application.Authentication.Customers;
 using BookHaven.Application.Authentication.Users;
+using BookHaven.Application.Authors;
 using BookHaven.Application.Books;
 using BookHaven.Application.Genres;
 using Microsoft.Extensions.DependencyInjection;
@@ -18,6 +19,7 @@ internal static class ServiceDependencyInjection
         services.AddScoped<IUserResetPassword, UserResetPassword>();
         services.AddScoped<IUserUpdateService, UserUpdateService>();
         services.AddScoped<ICustomerUpdateService, CustomerUpdateService>();
+        services.AddScoped<IAuthorApplicationService, AuthorApplicationService>();
         return services;
     }
 }

@@ -27,6 +27,15 @@ public class GenreApplicationService(IUnitOfWork _unitOfWork) : IGenreApplicatio
         await _unitOfWork.Genres.Delete(id, cancellationToken);
         return Result<bool>.Success(true);
     }
+    public async Task<Result<Genre>> GetById(int id, CancellationToken? cancellationToken = null)
+    {
+        List<Genre> currentGenre = await _unitOfWork.Genres.GetAll(new GetGenreById(id), cancellationToken);
+        Genre? genre = currentGenre.FirstOrDefault();
+        if (genre is null)
+            return Result<Genre>.Failure(new Error("Genre does not exist, you can't do this action", NotFound, "Genre was not found"));
+
+        return Result<Genre>.Success(genre);
+    }
     public async Task<Result<PaginatedResponse<Genre>>> GetPaginatedGenres(PaginationParam param, CancellationToken? cancellationToken = null)
     {
         PaginatedResponse<Genre>? result = await _unitOfWork.Genres.GetPaginated(param, cancellationToken);

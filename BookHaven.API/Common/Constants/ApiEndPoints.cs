@@ -2,19 +2,17 @@ namespace BookHaven.API.Common.Constants;
 internal static class ApiEndPoints
 {
     internal const string BaseController = "/api/v1/[controller]";
-    internal class Auth
-    {
-        private const string Authentication = "/auth";
-        internal const string RefreshToken = Authentication + "/refresh-token";
-    }
-    internal class Books
+    internal abstract class BaseEnpoint
     {
         internal const string GetById = BaseController + "/{id}";
         internal const string Delete = BaseController + "/{id}";
+    }
+    internal class Books : BaseEnpoint
+    {
         internal const string DeleteBookImages = BaseController + "/book-images";
         internal const string UpdateBookImages = BaseController + "/update-book-images";
     }
-    internal class Person
+    internal class Person : BaseEnpoint
     {
         internal const string ConfirmEmailAddress = BaseController + "/confirm-email/{id}";
         internal const string Register = BaseController + "/register";
@@ -26,4 +24,6 @@ internal static class ApiEndPoints
         internal const string RemoveProfilePicture = BaseController + "/remove-profile-picture";
         internal const string RefreshToken = BaseController + "/refresh-token";
     }
+    internal class Authors : BaseEnpoint;
+    internal class Genres : BaseEnpoint;
 }

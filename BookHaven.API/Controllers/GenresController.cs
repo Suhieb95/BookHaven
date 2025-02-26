@@ -17,7 +17,7 @@ public class GenresController(IGenreApplicationService _genreApplicationService)
         );
     }
     [HasPermission(Permission.Delete, EntityName.Genres)]
-    [HttpDelete]
+    [HttpDelete(Genres.Delete)]
     public async Task<IActionResult> Delete(int id, CancellationToken cancellationToken)
     {
         Result<bool>? result = await _genreApplicationService.Delete(id, cancellationToken);
@@ -33,6 +33,16 @@ public class GenresController(IGenreApplicationService _genreApplicationService)
         Result<bool>? result = await _genreApplicationService.Update(genre, cancellationToken);
         return result.Map(
             onSuccess: _ => NoContent(),
+            onFailure: Problem
+        );
+    }
+    [HasPermission(Permission.Read, EntityName.Genres)]
+    [HttpGet(Genres.GetById)]
+    public async Task<IActionResult> GetById(int id, CancellationToken cancellationToken)
+    {
+        Result<Genre>? result = await _genreApplicationService.GetById(id, cancellationToken);
+        return result.Map(
+            onSuccess: Ok,
             onFailure: Problem
         );
     }
