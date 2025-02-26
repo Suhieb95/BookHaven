@@ -99,7 +99,7 @@ public class CustomersController(ICustomerRegistrationService _customerRegistera
         return NoContent();
     }
     [EnableRateLimiting("StandardLimiterPolicy")]
-    [HttpGet(Person.RefreshToken)]
+    [HttpPost(Person.RefreshToken)]
     [AllowAnonymous]
     public async Task<IActionResult> GenerateRefreshToken(CancellationToken cancellationToken)
     {

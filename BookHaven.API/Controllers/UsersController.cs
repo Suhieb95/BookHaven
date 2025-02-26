@@ -103,7 +103,7 @@ public class UsersController(IUserRegistrationService _userRegistrationService, 
         _refreshTokenCookieSetter.DeleteJwtTokenCookie(HttpContext, "refreshToken");
         return NoContent();
     }
-    [HttpGet(Person.RefreshToken)]
+    [HttpPost(Person.RefreshToken)]
     [EnableRateLimiting("StandardLimiterPolicy")]
     [AllowAnonymous]
     public async Task<IActionResult> GenerateRefreshToken(CancellationToken cancellationToken)

@@ -72,7 +72,7 @@ public class BooksController(IBookApplicationService _bookApplicationService) : 
     {
         Result<int>? result = await _bookApplicationService.CreateBook(request, cancellationToken);
         return result.Map(
-                      onSuccess: _ => Ok(_),
+                      onSuccess: _ => CreatedAtAction(nameof(Create), _),
                       onFailure: Problem);
     }
 }

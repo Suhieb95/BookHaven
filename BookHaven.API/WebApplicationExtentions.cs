@@ -8,11 +8,14 @@ internal static class WebApplicationExtentions
     {
         if (application.Environment.IsDevelopment())
         {
-            application.MapScalarApiReference();
+            application.MapScalarApiReference(opt =>
+            {
+                opt.WithTheme(ScalarTheme.BluePlanet);
+                opt.WithPreferredScheme("Bearer");
+                opt.WithTitle("BookHaven API");
+            });
             application.MapOpenApi();
             application.UseDeveloperExceptionPage();
-            application.UseSwagger();
-            application.UseSwaggerUI();
         }
         else
         {

@@ -12,7 +12,7 @@ public class GenresController(IGenreApplicationService _genreApplicationService)
     {
         Result<int>? result = await _genreApplicationService.Add(genre, cancellationToken);
         return result.Map(
-            onSuccess: data => Ok(data),
+            onSuccess: data => CreatedAtAction(nameof(Add), data),
             onFailure: Problem
         );
     }
