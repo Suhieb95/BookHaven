@@ -42,7 +42,7 @@ public class UsersController(IUserRegistrationService _userRegistrationService, 
     {
         Result<InternalUserLoginResponse>? result = await _userLoginService.Login(request, cancellationToken);
         if (result.IsSuccess)
-            _refreshTokenCookieSetter.SetJwtTokenCookie(HttpContext, result.Data!.Token);
+            _refreshTokenCookieSetter.SetJwtTokenCookie(HttpContext, result.Data!.RefreshToken);
 
         return result.Map(
                 onSuccess: Ok,
@@ -87,7 +87,7 @@ public class UsersController(IUserRegistrationService _userRegistrationService, 
     }
     [Authorize]
     [EnableRateLimiting("StandardLimiterPolicy")]
-    [HttpPut(Person.RemoveProfilePicture)]
+    [HttpDelete(Person.RemoveProfilePicture)]
     public async Task<IActionResult> RemoveProfilePicture([FromQuery] Guid id, CancellationToken cancellationToken)
     {
         Result<bool>? result = await _userUpdateService.RemoveProfilePicture(id, cancellationToken);
@@ -104,6 +104,7 @@ public class UsersController(IUserRegistrationService _userRegistrationService, 
         return NoContent();
     }
     [HttpGet(Person.RefreshToken)]
+    [EnableRateLimiting("StandardLimiterPolicy")]
     [AllowAnonymous]
     public async Task<IActionResult> GenerateRefreshToken(CancellationToken cancellationToken)
     {

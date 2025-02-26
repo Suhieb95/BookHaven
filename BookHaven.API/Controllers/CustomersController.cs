@@ -82,7 +82,7 @@ public class CustomersController(ICustomerRegistrationService _customerRegistera
     }
     [Authorize]
     [EnableRateLimiting("StandardLimiterPolicy")]
-    [HttpPut(Person.RemoveProfilePicture)]
+    [HttpDelete(Person.RemoveProfilePicture)]
     public async Task<IActionResult> RemoveProfilePicture([FromQuery] Guid id, CancellationToken cancellationToken)
     {
         Result<bool>? result = await _updateCustomerService.RemoveProfilePicture(id, cancellationToken);
@@ -98,6 +98,7 @@ public class CustomersController(ICustomerRegistrationService _customerRegistera
         _refreshTokenCookieSetter.DeleteJwtTokenCookie(HttpContext, "refreshToken");
         return NoContent();
     }
+    [EnableRateLimiting("StandardLimiterPolicy")]
     [HttpGet(Person.RefreshToken)]
     [AllowAnonymous]
     public async Task<IActionResult> GenerateRefreshToken(CancellationToken cancellationToken)

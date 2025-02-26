@@ -42,7 +42,7 @@ public class RefreshTokenValidator(IUnitOfWork _unitOfWork, IOptions<RefreshJwtS
             user.Id,
             user.EmailAddress,
             user.UserName,
-            accessToken,
+            "Bearer " + accessToken,
             imageUrl ?? string.Empty);
 
         return Result<RefreshToken>.Success(refreshToken);
