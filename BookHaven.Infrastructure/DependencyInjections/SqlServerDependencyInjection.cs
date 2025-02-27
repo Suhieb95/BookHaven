@@ -1,5 +1,5 @@
-using BookHaven.Application.Interfaces;
 using BookHaven.Application.Interfaces.Database;
+using BookHaven.Application.Interfaces.Services;
 using BookHaven.Domain.Entities;
 using BookHaven.Infrastructure.DataAccess;
 using Microsoft.Extensions.Configuration;
@@ -14,7 +14,7 @@ internal static class SqlServerDependencyInjection
         string connectionString = configuration.GetSection(ConnectionString.SectionName).GetValue<string>(
                    isDev ? ConnectionString.LocalConnection : ConnectionString.ProductionConnection)!;
 
-        services.AddScoped<IDbConnectionFactory>(sp => new MSSQLConnectionFactory(connectionString!));
+        services.AddScoped<IMSSQLConnectionFactory>(sp => new MSSQLConnectionFactory(connectionString!));
         services.AddScoped<ISqlDataAccess, SqlDataAccess>();
         services.AddScoped<IMssqlDbTransaction, SqlDataAccess>();
         return services;

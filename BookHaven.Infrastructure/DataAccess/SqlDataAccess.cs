@@ -1,13 +1,14 @@
 using BookHaven.Application.Interfaces;
 using BookHaven.Application.Interfaces.Database;
+using BookHaven.Application.Interfaces.Services;
 using BookHaven.Domain.Specification;
 
 namespace BookHaven.Infrastructure.DataAccess;
-internal sealed class SqlDataAccess(IDbConnectionFactory idbConnectionFactory) : ISqlDataAccess, IMssqlDbTransaction
+internal sealed class SqlDataAccess(IMSSQLConnectionFactory idbConnectionFactory) : ISqlDataAccess, IMssqlDbTransaction
 {
     private IDbConnection? _connection;
     private IDbTransaction? _transaction;
-    private readonly IDbConnectionFactory _IdbConnectionFactory = idbConnectionFactory;
+    private readonly IMSSQLConnectionFactory _IdbConnectionFactory = idbConnectionFactory;
     public async Task<List<T>> LoadData<T>(string sql, object? parameters = default, CommandType? commandType = null, CancellationToken? cancellationToken = null)
     {
         CancellationToken ct = cancellationToken ?? CancellationToken.None;

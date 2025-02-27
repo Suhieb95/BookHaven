@@ -24,20 +24,6 @@ internal static class LimiterDependencyInjection
              })).RejectionStatusCode = (int)loginLimiter.RejectionStatusCode;
         });
 
-        var fixedLimiter = configuration.GetSection(FixedLimiter.SectionName).Get<FixedLimiter>();
-        services.AddRateLimiter(opt =>
-        {
-            opt.AddPolicy(fixedLimiter!.PolicyName, httpContext =>
-            RateLimitPartition.GetFixedWindowLimiter(partitionKey: httpContext.Connection.RemoteIpAddress!.ToString(),
-             factory: _ => new FixedWindowRateLimiterOptions
-             {
-                 PermitLimit = fixedLimiter.PermitLimit,
-                 QueueLimit = fixedLimiter.PermitLimit,
-                 QueueProcessingOrder = QueueProcessingOrder.OldestFirst,
-                 Window = TimeSpan.FromSeconds(fixedLimiter.Window),
-             })).RejectionStatusCode = (int)fixedLimiter.RejectionStatusCode;
-        });
-
         var uTMLimiter = configuration.GetSection(UTMLimiter.SectionName).Get<UTMLimiter>();
         services.AddRateLimiter(opt =>
         {
@@ -61,6 +47,21 @@ internal static class LimiterDependencyInjection
                  Window = TimeSpan.FromSeconds(loginCodeLimiter.Window),
              })).RejectionStatusCode = (int)loginCodeLimiter.RejectionStatusCode; // Don't Queue Requests
         });
+
+        var fixedLimiter = configuration.GetSection(FixedLimiter.SectionName).Get<FixedLimiter>();
+        services.AddRateLimiter(opt =>
+        {
+            opt.AddPolicy(fixedLimiter!.PolicyName, httpContext =>
+            RateLimitPartition.GetFixedWindowLimiter(partitionKey: httpContext.Connection.RemoteIpAddress!.ToString(),
+             factory: _ => new FixedWindowRateLimiterOptions
+             {
+                 PermitLimit = fixedLimiter.PermitLimit,
+                 QueueLimit = fixedLimiter.PermitLimit,
+                 QueueProcessingOrder = QueueProcessingOrder.OldestFirst,
+                 Window = TimeSpan.FromSeconds(fixedLimiter.Window),
+             })).RejectionStatusCode = (int)fixedLimiter.RejectionStatusCode;
+        });
+        
         return services;
     }
 }
