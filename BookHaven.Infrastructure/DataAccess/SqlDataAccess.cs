@@ -3,11 +3,11 @@ using BookHaven.Application.Interfaces.Database;
 using BookHaven.Domain.Specification;
 
 namespace BookHaven.Infrastructure.DataAccess;
-internal sealed class SqlDataAccess(IMssqlConnectionFactory idbConnectionFactory) : ISqlDataAccess, IMssqlDbTransaction
+internal sealed class SqlDataAccess(IDbConnectionFactory idbConnectionFactory) : ISqlDataAccess, IMssqlDbTransaction
 {
     private IDbConnection? _connection;
     private IDbTransaction? _transaction;
-    private readonly IMssqlConnectionFactory _IdbConnectionFactory = idbConnectionFactory;
+    private readonly IDbConnectionFactory _IdbConnectionFactory = idbConnectionFactory;
     public async Task<List<T>> LoadData<T>(string sql, object? parameters = default, CommandType? commandType = null, CancellationToken? cancellationToken = null)
     {
         CancellationToken ct = cancellationToken ?? CancellationToken.None;

@@ -33,7 +33,6 @@ internal static class DependencyInjection
         services.AddOpenApi();
         services.AddCorsPolicy(configuration);
         services.AddEndpointsApiExplorer();
-        services.AddSwaggerGen();
         services.AddHttpContextAccessor();
         services.AddControllers(options => options.Filters.Add<JwtValidationFilter>());
         services.AddScoped<LastLoginFilter>();

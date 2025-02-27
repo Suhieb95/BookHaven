@@ -1,5 +1,6 @@
+using System.Data;
 namespace BookHaven.Application.Interfaces;
-public interface IDbConnectionFactory<T>
+public interface IDbConnectionFactory
 {
-    Task<T> CreateConnection();
+    Task<IDbConnection> CreateConnection();
 }
