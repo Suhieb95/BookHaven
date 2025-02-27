@@ -1,6 +1,5 @@
 using BookHaven.Application.Interfaces.Database;
 using BookHaven.Application.Interfaces.Services;
-using BookHaven.Domain.DTOs.Auth;
 using BookHaven.Domain.DTOs.Customers;
 using BookHaven.Infrastructure.Mappings.Person;
 namespace BookHaven.Infrastructure.Services.Customers;
@@ -18,30 +17,5 @@ public class CustomerService(ISqlDataAccess _sqlDataAccess, IDateTimeProvider _d
     {
         const string Sql = "SPUpdateCustomer";
         await _sqlDataAccess.SaveData(Sql, entity.ToParameter(), StoredProcedure, cancellationToken);
-    }
-    public async Task SaveEmailConfirmationToken(EmailConfirmationResult emailConfirmationResult, CancellationToken? cancellationToken)
-    {
-        const string Sql = @"UPDATE Customers SET VerifyEmailTokenExpiry = @VerifyEmailTokenExpiry, VerifyEmailToken = @VerifyEmailToken WHERE Id = @Id";
-        await _sqlDataAccess.SaveData(Sql, emailConfirmationResult.ToParameter(), cancellationToken: cancellationToken);
-    }
-    public async Task SavePassowordResetToken(ResetPasswordResult passwordResult, CancellationToken? cancellationToken)
-    {
-        const string Sql = @"UPDATE Customers SET ResetPasswordTokenExpiry = @ResetPasswordTokenExpiry, ResetPasswordToken = @ResetPasswordToken WHERE TRIM(LOWER(EmailAddress)) = TRIM(LOWER(@EmailAddress))";
-        await _sqlDataAccess.SaveData(Sql, passwordResult.ToParameter(), cancellationToken: cancellationToken);
-    }
-    public async Task UpdatePassowordResetToken(PasswordChangeRequest request, CancellationToken? cancellationToken)
-    {
-        const string Sql = @"UPDATE Customers SET ResetPasswordTokenExpiry = NULL, ResetPasswordToken = NULL, Password = @Password WHERE Id = @Id";
-        await _sqlDataAccess.SaveData(Sql, request.ToParameter(), cancellationToken: cancellationToken);
-    }
-    public async Task UpdateEmailConfirmationToken(Guid id, CancellationToken? cancellationToken)
-    {
-        const string Sql = @"UPDATE Customers SET VerifyEmailTokenExpiry = NULL, VerifyEmailToken = NULL, IsActive = 1, IsVerified = 1 WHERE Id = @Id";
-        await _sqlDataAccess.SaveData(Sql, new { Id = id }, cancellationToken: cancellationToken);
-    }
-    public async Task RemoveProfilePicture(Guid id, CancellationToken? cancellationToken)
-    {
-        const string Sql = @"UPDATE Customers SET ImageUrl = NULL WHERE Id = @Id";
-        await _sqlDataAccess.SaveData(Sql, new { id }, cancellationToken: cancellationToken);
     }
 }

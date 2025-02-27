@@ -1,6 +1,7 @@
 using BookHaven.Application.Interfaces.Database;
 using BookHaven.Application.Interfaces.Repositories;
 using BookHaven.Application.Interfaces.Services;
+using BookHaven.Infrastructure.Services.Auth;
 using BookHaven.Infrastructure.Services.Authors;
 using BookHaven.Infrastructure.Services.BookImages;
 using BookHaven.Infrastructure.Services.Books;
@@ -19,6 +20,7 @@ internal class UnitOfWork(ISqlDataAccess sqlDataAccess, IDateTimeProvider dateTi
     private IAuthorService? _authors;
     private IBookImagesService? _bookImages;
     private IBookService? _books;
+    private IUserSecurityService? _userSecurity;
 
     // Lazy Initialization for Services
     public ICustomerService Customers => _customers ??= new CustomerService(sqlDataAccess, dateTimeProvider);
@@ -27,4 +29,5 @@ internal class UnitOfWork(ISqlDataAccess sqlDataAccess, IDateTimeProvider dateTi
     public IAuthorService Authors => _authors ??= new AuthorService(sqlDataAccess, mssqlDbTransaction);
     public IBookImagesService BookImages => _bookImages ??= new BookImagesService(sqlDataAccess);
     public IBookService Books => _books ??= new BookService(sqlDataAccess, this, mssqlDbTransaction);
+    public IUserSecurityService UserSecurity => _userSecurity ??= new UserSecurityService(sqlDataAccess);
 }

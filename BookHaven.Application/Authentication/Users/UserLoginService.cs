@@ -3,6 +3,7 @@ using BookHaven.Application.Interfaces.Services;
 using BookHaven.Domain.DTOs.Users;
 using BookHaven.Domain.Enums;
 using BookHaven.Domain.Specification.Users;
+
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
@@ -38,10 +39,7 @@ public class UserLoginService(IUnitOfWork _unitOfWork, IOptions<EmailSettings> e
         return Result<InternalUserLoginResponse>.Success(response);
     }
     private async Task<string?> FetchUserImage(string? publicId, CancellationToken? cancellationToken)
-    {
-        if (string.IsNullOrEmpty(publicId)) return null;
-        return await _fileService.GetFile(publicId, cancellationToken);
-    }
+        => string.IsNullOrEmpty(publicId) ? null : await _fileService.GetFile(publicId, cancellationToken);
     private async Task<(string[] roles, string[] permissions)> AddUserPermissionsAndRoles(Guid id, CancellationToken? cancellationToken = default)
     {
         string[] roles = await _unitOfWork.Users.GetUserRoles(id, cancellationToken);

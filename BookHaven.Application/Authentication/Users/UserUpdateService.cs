@@ -1,6 +1,7 @@
 using BookHaven.Application.Interfaces.Services;
 using BookHaven.Domain.DTOs;
 using BookHaven.Domain.DTOs.Users;
+using BookHaven.Domain.Enums;
 using BookHaven.Domain.Specification.Users;
 
 namespace BookHaven.Application.Authentication.Users;
@@ -10,12 +11,12 @@ public class UserUpdateService(IUnitOfWork _unitOfWork, IFileService _fileServic
     {
         User? currentUser = await _unitOfWork.Users.GetBy(new GetUserById(id), cancellationToken);
         if (currentUser is null)
-            return Result<bool>.Failure(new("User Doesn't Exists.", NotFound, "User Not Found"));
+            return Result<bool>.Failure(new Error("User Doesn't Exists.", NotFound, "User Not Found"));
 
         if (currentUser.ImageUrl is not null)
         {
             await _fileService.Delete(currentUser.ImageUrl);
-            await _unitOfWork.Users.RemoveProfilePicture(id, cancellationToken);
+            await _unitOfWork.UserSecurity.RemoveProfilePicture(id, cancellationToken, UserType.Customer);
         }
 
         return Result<bool>.Success(true);
@@ -24,7 +25,7 @@ public class UserUpdateService(IUnitOfWork _unitOfWork, IFileService _fileServic
     {
         User? currentUser = await _unitOfWork.Users.GetBy(new GetUserByEmailAddress(request.EmailAddress), cancellationToken);
         if (currentUser is null)
-            return Result<bool>.Failure(new("User Doesn't Exists.", NotFound, "User Not Found"));
+            return Result<bool>.Failure(new Error("User Doesn't Exists.", NotFound, "User Not Found"));
 
         if (request.Image is not null)
         {

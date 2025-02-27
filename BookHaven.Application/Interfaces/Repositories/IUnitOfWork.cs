@@ -9,4 +9,5 @@ public interface IUnitOfWork
     IGenreService Genres { get; }
     IAuthorService Authors { get; }
     IBookImagesService BookImages { get; }
+    IUserSecurityService UserSecurity { get; }
 }

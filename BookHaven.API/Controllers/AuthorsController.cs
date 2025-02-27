@@ -1,5 +1,6 @@
 using BookHaven.API.Common.Constants;
 using BookHaven.Application.Authors;
+
 using Microsoft.AspNetCore.Mvc;
 
 namespace BookHaven.API.Controllers;
@@ -7,10 +8,12 @@ namespace BookHaven.API.Controllers;
 public class AuthorsController(IAuthorApplicationService _authorApplicationService) : BaseController
 {
     [HttpGet(Authors.GetById)]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(Author))]
+    [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(ProblemDetails))]
     [HasPermission(Permission.Read, EntityName.Authors)]
     public async Task<IActionResult> GetById(int id, CancellationToken cancellationToken)
     {
-        var result = await _authorApplicationService.GetById(id, cancellationToken);
+        Result<Author>? result = await _authorApplicationService.GetById(id, cancellationToken);
         return result.Map(
                    onSuccess: Ok,
                    onFailure: Problem
@@ -18,6 +21,8 @@ public class AuthorsController(IAuthorApplicationService _authorApplicationServi
     }
     [HttpGet]
     [HasPermission(Permission.Read, EntityName.Authors)]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<Author>))]
+
     public async Task<IActionResult> Get(CancellationToken cancellationToken)
     {
         Result<List<Author>>? result = await _authorApplicationService.GetAll(cancellationToken);
@@ -28,6 +33,7 @@ public class AuthorsController(IAuthorApplicationService _authorApplicationServi
     }
     [HttpPost]
     [HasPermission(Permission.Create, EntityName.Authors)]
+    [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(int))]
     public async Task<IActionResult> Create(Author author, CancellationToken cancellationToken)
     {
         Result<int>? result = await _authorApplicationService.Create(author, cancellationToken);
@@ -38,6 +44,9 @@ public class AuthorsController(IAuthorApplicationService _authorApplicationServi
     }
     [HttpDelete(Authors.Delete)]
     [HasPermission(Permission.Delete, EntityName.Authors)]
+    [ProducesResponseType(StatusCodes.Status204NoContent, Type = typeof(void))]
+    [ProducesResponseType(StatusCodes.Status409Conflict, Type = typeof(ProblemDetails))]
+    [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(ProblemDetails))]
     public async Task<IActionResult> Delete(int id, CancellationToken cancellationToken)
     {
         Result<bool>? result = await _authorApplicationService.Delete(id, cancellationToken);
@@ -48,6 +57,8 @@ public class AuthorsController(IAuthorApplicationService _authorApplicationServi
     }
     [HttpPut]
     [HasPermission(Permission.Update, EntityName.Authors)]
+    [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(ProblemDetails))]
+    [ProducesResponseType(StatusCodes.Status204NoContent, Type = typeof(void))]
     public async Task<IActionResult> Update(Author author, CancellationToken cancellationToken)
     {
         Result<bool>? result = await _authorApplicationService.Update(author, cancellationToken);

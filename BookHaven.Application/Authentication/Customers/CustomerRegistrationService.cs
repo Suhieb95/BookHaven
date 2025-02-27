@@ -33,7 +33,7 @@ public class CustomerRegistrationService(IUnitOfWork _iUnitOfWork, IJwtTokenGene
         if (!currentUser.HasValidEmailConfirmationToken())
             return Result<bool>.Failure(new Error("Token Has Expired.", BadRequest, "Invalid Token"));
 
-        await _iUnitOfWork.Customers.UpdateEmailConfirmationToken(id, cancellationToken);
+        await _iUnitOfWork.UserSecurity.UpdateEmailConfirmationToken(id, cancellationToken);
         await EmailHelpers.SendEmailConfirmedNotify(currentUser!.EmailAddress, _emailSettings.SuccessURL, _env, cancellationToken, _iNotificationService);
         return Result<bool>.Success(true);
     }
@@ -46,7 +46,7 @@ public class CustomerRegistrationService(IUnitOfWork _iUnitOfWork, IJwtTokenGene
             return;
 
         EmailConfirmationResult emailConfirmation = _jwtTokenGenerator.GenerateEmailConfirmationToken(result);
-        await _iUnitOfWork.Customers.SaveEmailConfirmationToken(emailConfirmation, cancellationToken);
+        await _iUnitOfWork.UserSecurity.SaveEmailConfirmationToken(emailConfirmation, cancellationToken);
         await EmailHelpers.SendConfirmationEmail(currentUser!.EmailAddress, result, _emailSettings.EmailConfirmationURL, _env, cancellationToken, _iNotificationService);
     }
     private async Task<bool> IsEmailAddressInUse(string emailAddress, CancellationToken? cancellationToken)

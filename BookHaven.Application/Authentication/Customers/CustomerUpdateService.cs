@@ -10,12 +10,12 @@ public class CustomerUpdateService(IUnitOfWork _unitOfWork, IFileService _fileSe
     {
         Customer? currentUser = (await _unitOfWork.Customers.GetAll(new GetCustomerById(id), cancellationToken)).FirstOrDefault();
         if (currentUser is null)
-            return Result<bool>.Failure(new("Customer Doesn't Exists.", NotFound, "Customer Not Found"));
+            return Result<bool>.Failure(new Error("Customer Doesn't Exists.", NotFound, "Customer Not Found"));
 
         if (currentUser.ImageUrl is not null)
         {
             await _fileService.Delete(currentUser.ImageUrl);
-            await _unitOfWork.Customers.RemoveProfilePicture(id, cancellationToken);
+            await _unitOfWork.UserSecurity.RemoveProfilePicture(id, cancellationToken);
         }
 
         return Result<bool>.Success(true);
@@ -24,7 +24,7 @@ public class CustomerUpdateService(IUnitOfWork _unitOfWork, IFileService _fileSe
     {
         Customer? currentUser = (await _unitOfWork.Customers.GetAll(new GetCustomerByEmailAddress(request.EmailAddress), cancellationToken)).FirstOrDefault();
         if (currentUser is null)
-            return Result<bool>.Failure(new("Customer Doesn't Exists.", NotFound, "Customer Not Found"));
+            return Result<bool>.Failure(new Error("Customer Doesn't Exists.", NotFound, "Customer Not Found"));
 
         if (request.Image is not null)
         {

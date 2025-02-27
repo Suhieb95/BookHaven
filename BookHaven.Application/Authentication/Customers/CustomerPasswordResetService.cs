@@ -19,7 +19,7 @@ public class CustomerPasswordResetService(IUnitOfWork _unitOfWork, IOptions<Emai
             return result;
 
         request.SetPassword(_passwordHasher.Hash(request.Password));
-        await _unitOfWork.Customers.UpdatePassowordResetToken(request, cancellationToken);
+        await _unitOfWork.UserSecurity.UpdatePassowordResetToken(request, cancellationToken);
         Customer? customer = await GetCustomer(new GetCustomerById(request.UserId), cancellationToken);
         await EmailHelpers.SendPasswordChangedNotify(customer!.EmailAddress, _emailSettings.ResetPasswordURL, _env, cancellationToken, _notificationService);
 
@@ -32,7 +32,7 @@ public class CustomerPasswordResetService(IUnitOfWork _unitOfWork, IOptions<Emai
             return Result<bool>.Failure(new Error("Customer Doesn't With this Exists.", BadRequest, "Invalid Customer"));
 
         ResetPasswordResult resetPassword = _jwtTokenGenerator.GeneratePasswordResetToken(emailAddress);
-        await _unitOfWork.Customers.SavePassowordResetToken(resetPassword, cancellationToken);
+        await _unitOfWork.UserSecurity.SavePassowordResetToken(resetPassword, cancellationToken);
         await EmailHelpers.SendResetPasswordLink(customer!.EmailAddress, customer.Id, _emailSettings.ResetPasswordURL, _env, cancellationToken, _notificationService);
         return Result<bool>.Success(true);
     }

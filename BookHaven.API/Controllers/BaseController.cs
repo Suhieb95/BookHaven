@@ -1,8 +1,9 @@
 using System.Text.RegularExpressions;
-using BookHaven.API.Common.Constants;
 using Microsoft.AspNetCore.Http.Timeouts;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
+using BookHaven.API.Common.Constants;
+
 namespace BookHaven.API.Controllers;
 
 [ApiController]
@@ -22,7 +23,6 @@ public abstract partial class BaseController : ControllerBase
 
         return Problem(statusCode: (int)error.StatusCode, title: statusCodeWithSpaces, detail: error.Message);
     }
-
     [GeneratedRegex("(\\B[A-Z])")]
     private static partial Regex MyRegex();
 }

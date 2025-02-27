@@ -1,8 +1,10 @@
 using BookHaven.Application.Authentication.Common;
 using BookHaven.Application.Interfaces.Services;
 using BookHaven.Domain.DTOs.Auth;
+using BookHaven.Domain.Enums;
 using BookHaven.Domain.Specification;
 using BookHaven.Domain.Specification.Users;
+
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Options;
 
@@ -17,7 +19,7 @@ public class UserResetPassword(IUnitOfWork _unitOfWork, IOptions<EmailSettings> 
             return result;
 
         request.SetPassword(_passwordHasher.Hash(request.Password));
-        await _unitOfWork.Users.UpdatePassowordResetToken(request, cancellationToken);
+        await _unitOfWork.UserSecurity.UpdatePassowordResetToken(request, cancellationToken, UserType.Customer);
         User? user = await GetUser(new GetUserById(request.UserId), cancellationToken);
         await EmailHelpers.SendPasswordChangedNotify(user!.EmailAddress, _emailSettings.ResetPasswordURL, _env, cancellationToken, _notificationService);
 
@@ -30,7 +32,7 @@ public class UserResetPassword(IUnitOfWork _unitOfWork, IOptions<EmailSettings> 
             return Result<bool>.Failure(new("User Doesn't With this Exists.", BadRequest, "Invalid User"));
 
         ResetPasswordResult resetPassword = _jwtTokenGenerator.GeneratePasswordResetToken(emailAddress);
-        await _unitOfWork.Users.SavePassowordResetToken(resetPassword, cancellationToken);
+        await _unitOfWork.UserSecurity.SavePassowordResetToken(resetPassword, cancellationToken, UserType.Customer);
         await EmailHelpers.SendResetPasswordLink(user!.EmailAddress, user.Id, _emailSettings.ResetPasswordURL, _env, cancellationToken, _notificationService);
         return Result<bool>.Success(true);
     }
