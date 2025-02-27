@@ -14,13 +14,13 @@ public class UserResetPassword(IUnitOfWork _unitOfWork, IOptions<EmailSettings> 
     private readonly EmailSettings _emailSettings = emailSettings.Value;
     public async Task<Result<bool>> ChangePassword(PasswordChangeRequest request, CancellationToken? cancellationToken = null)
     {
-        Result<bool> result = await VerifyToken(request.UserId, cancellationToken);
+        Result<bool> result = await VerifyToken(request.Id, cancellationToken);
         if (!result.IsSuccess)
             return result;
 
         request.SetPassword(_passwordHasher.Hash(request.Password));
         await _unitOfWork.UserSecurity.UpdatePassowordResetToken(request, cancellationToken, UserType.Customer);
-        User? user = await GetUser(new GetUserById(request.UserId), cancellationToken);
+        User? user = await GetUser(new GetUserById(request.Id), cancellationToken);
         await EmailHelpers.SendPasswordChangedNotify(user!.EmailAddress, _emailSettings.ResetPasswordURL, _env, cancellationToken, _notificationService);
 
         return Result<bool>.Success(true);

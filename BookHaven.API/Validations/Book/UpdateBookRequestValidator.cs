@@ -1,14 +1,11 @@
 using FluentValidation;
 using BookHaven.Domain.DTOs.Books;
-using Extensions = BookHaven.Application.Helpers.Extensions;
 namespace BookHaven.API.Validations.Book;
-public class CreateBookRequestValidator : AbstractValidator<CreateBookRequest>
+public class UpdateBookRequestValidator : AbstractValidator<UpdateBookRequest>
 {
     private readonly int currentYear = DateTime.Now.Year;
-    public CreateBookRequestValidator()
+    public UpdateBookRequestValidator()
     {
-        RuleFor(x => x.Images).ForEach(x =>
-                                                    x.Must(Extensions.IsValidImageFormat).WithMessage("Invalid image format. Allowed formats are: .png, .jpeg, .gif, .jpg."));
         RuleFor(x => x.Price).GreaterThanOrEqualTo(1).WithMessage("Price must be greater than or equal to 0");
         RuleFor(x => x.Quantity).GreaterThanOrEqualTo(0).WithMessage("Quantity must be greater than or equal to 0");
         RuleFor(x => x.ISBN).NotNull().WithMessage("ISBN No is required.");

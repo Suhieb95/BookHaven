@@ -2,7 +2,6 @@ using BookHaven.Application.Interfaces.Database;
 using BookHaven.Application.Interfaces.Services;
 using BookHaven.Domain.DTOs.Auth;
 using BookHaven.Domain.Enums;
-using BookHaven.Infrastructure.Mappings.Person;
 
 namespace BookHaven.Infrastructure.Services.Auth;
 public class UserSecurityService(ISqlDataAccess _sqlDataAccess) : IUserSecurityService
@@ -10,12 +9,12 @@ public class UserSecurityService(ISqlDataAccess _sqlDataAccess) : IUserSecurityS
     public async Task SaveEmailConfirmationToken(EmailConfirmationResult emailConfirmationResult, CancellationToken? cancellationToken, UserType userType = UserType.Customer)
     {
         string sql = $@"UPDATE {GetTableName(userType)} SET VerifyEmailTokenExpiry = @VerifyEmailTokenExpiry, VerifyEmailToken = @VerifyEmailToken WHERE Id = @Id";
-        await _sqlDataAccess.SaveData(sql, emailConfirmationResult.ToParameter(), cancellationToken: cancellationToken);
+        await _sqlDataAccess.SaveData(sql, emailConfirmationResult, cancellationToken: cancellationToken);
     }
     public async Task SavePassowordResetToken(ResetPasswordResult passwordResult, CancellationToken? cancellationToken, UserType userType = UserType.Customer)
     {
         string sql = $@"UPDATE {GetTableName(userType)} SET ResetPasswordTokenExpiry = @ResetPasswordTokenExpiry, ResetPasswordToken = @ResetPasswordToken WHERE TRIM(LOWER(EmailAddress)) = TRIM(LOWER(@EmailAddress))";
-        await _sqlDataAccess.SaveData(sql, passwordResult.ToParameter(), cancellationToken: cancellationToken);
+        await _sqlDataAccess.SaveData(sql, passwordResult, cancellationToken: cancellationToken);
     }
     public async Task UpdatePassowordResetToken(PasswordChangeRequest request, CancellationToken? cancellationToken, UserType userType = UserType.Customer)
     {
@@ -25,7 +24,7 @@ public class UserSecurityService(ISqlDataAccess _sqlDataAccess) : IUserSecurityS
             UserType.Internal => @"UPDATE Users SET ResetPasswordTokenExpiry = NULL, ResetPasswordToken = NULL, Password = @Password, IsActive = 1 WHERE Id = @Id",
             _ => throw new Exception("Invalid User.")
         };
-        await _sqlDataAccess.SaveData(sql, request.ToParameter(), cancellationToken: cancellationToken);
+        await _sqlDataAccess.SaveData(sql, request, cancellationToken: cancellationToken);
     }
     public async Task UpdateEmailConfirmationToken(Guid id, CancellationToken? cancellationToken, UserType userType = UserType.Customer)
     {

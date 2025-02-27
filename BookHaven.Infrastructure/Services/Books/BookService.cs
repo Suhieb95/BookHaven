@@ -62,15 +62,15 @@ public class BookService(ISqlDataAccess _sqlDataAccess, IUnitOfWork _unitOfWork,
             throw;
         }
     }
-    public async Task Update(UpdateBookRequest entity, CancellationToken? cancellationToken = default)
+    public async Task Update(UpdateBookRequest request, CancellationToken? cancellationToken = default)
     {
         try
         {
             const string Sql = "SPUpdateBook";
             await _mssqlDbTransaction.InitilizeTransaction();
-            await _mssqlDbTransaction.SaveDataInTransaction(Sql, entity.ToParameter(), StoredProcedure, cancellationToken);
-            await _unitOfWork.Authors.UpdateBookAuthors(new(entity.Id, entity.Authors));
-            await _unitOfWork.Genres.UpdateBookGenres(new(entity.Id, entity.Genres));
+            await _mssqlDbTransaction.SaveDataInTransaction(Sql, request.ToParameter(), StoredProcedure, cancellationToken);
+            await _unitOfWork.Authors.UpdateBookAuthors(new(request.Id, request.Authors));
+            await _unitOfWork.Genres.UpdateBookGenres(new(request.Id, request.Genres));
             _mssqlDbTransaction.CommitTransaction();
         }
         catch

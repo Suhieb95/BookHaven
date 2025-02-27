@@ -6,7 +6,7 @@ public class PasswordChangeRequestValidator : AbstractValidator<PasswordChangeRe
 {
     public PasswordChangeRequestValidator()
     {
-        RuleFor(s => s.UserId).NotEmpty()
+        RuleFor(s => s.Id).NotEmpty()
                                                     .WithMessage("Invalid User Id.");
         RuleFor(x => x.Password).NotEmpty()
                                                     .WithMessage("Password Is required.")
