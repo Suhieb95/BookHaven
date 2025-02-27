@@ -2,6 +2,7 @@ using BookHaven.Application.Interfaces.Database;
 using BookHaven.Application.Interfaces.Repositories;
 using BookHaven.Application.Interfaces.Services;
 using BookHaven.Infrastructure.Services.Authors;
+using BookHaven.Infrastructure.Services.BookImages;
 using BookHaven.Infrastructure.Services.Books;
 using BookHaven.Infrastructure.Services.Customers;
 using BookHaven.Infrastructure.Services.Genres;
@@ -16,5 +17,6 @@ internal class UnitOfWork(ISqlDataAccess _sqlDataAccess, IDateTimeProvider _date
     public IUserService Users => new UserService(_sqlDataAccess, _dateTimeProvider, _redisCacheService);
     public IGenreService Genres => new GenreService(_sqlDataAccess, _mssqlDbTransaction);
     public IAuthorService Authors => new AuthorService(_sqlDataAccess, _mssqlDbTransaction);
+    public IBookImagesService BookImages => new BookImagesService(_sqlDataAccess);
     public IBookService Books => new BookService(_sqlDataAccess, Authors, Genres, _mssqlDbTransaction);
 }

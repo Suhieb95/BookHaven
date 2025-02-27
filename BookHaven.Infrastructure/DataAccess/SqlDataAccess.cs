@@ -1,4 +1,3 @@
-using BookHaven.Application.Interfaces;
 using BookHaven.Application.Interfaces.Database;
 using BookHaven.Application.Interfaces.Services;
 using BookHaven.Domain.Specification;
@@ -9,15 +8,6 @@ internal sealed class SqlDataAccess(IMSSQLConnectionFactory idbConnectionFactory
     private IDbConnection? _connection;
     private IDbTransaction? _transaction;
     private readonly IMSSQLConnectionFactory _IdbConnectionFactory = idbConnectionFactory;
-    public async Task<List<T>> LoadData<T>(string sql, object? parameters = default, CommandType? commandType = null, CancellationToken? cancellationToken = null)
-    {
-        CancellationToken ct = cancellationToken ?? CancellationToken.None;
-        using IDbConnection connection = await _IdbConnectionFactory.CreateConnection();
-
-        var rows = await connection.QueryAsync<T>(new CommandDefinition(sql, parameters,
-            commandType: commandType, cancellationToken: ct));
-        return rows.AsList();
-    }
     public async Task<List<T>> LoadData<T>(Specification<T> specification, CancellationToken? cancellationToken = null)
     {
         CancellationToken ct = cancellationToken ?? CancellationToken.None;
@@ -27,11 +17,29 @@ internal sealed class SqlDataAccess(IMSSQLConnectionFactory idbConnectionFactory
             commandType: specification.CommandType, cancellationToken: ct));
         return rows.AsList();
     }
-    public async Task<T?> LoadSingle<T>(string sql, object? parameters = default, CommandType? commandType = null, CancellationToken? cancellationToken = null)
+    public async Task<T?> LoadFirstOrDefault<T>(Specification<T> specification, CancellationToken? cancellationToken = null)
     {
         CancellationToken ct = cancellationToken ?? CancellationToken.None;
         using IDbConnection connection = await _IdbConnectionFactory.CreateConnection();
-        var row = await connection.ExecuteScalarAsync<T>(new CommandDefinition(sql, parameters, commandType: commandType, cancellationToken: ct));
+
+        T? row = await connection.QueryFirstOrDefaultAsync<T>(new CommandDefinition(specification.ToSql(), specification.Parameters,
+            commandType: specification.CommandType, cancellationToken: ct));
+        return row;
+    }
+    public async Task<List<T>> LoadData<T>(string sql, object? parameters = default, CommandType? commandType = null, CancellationToken? cancellationToken = null)
+    {
+        CancellationToken ct = cancellationToken ?? CancellationToken.None;
+        using IDbConnection connection = await _IdbConnectionFactory.CreateConnection();
+
+        var rows = await connection.QueryAsync<T>(new CommandDefinition(sql, parameters,
+            commandType: commandType, cancellationToken: ct));
+        return rows.AsList();
+    }
+    public async Task<T?> LoadFirstOrDefault<T>(string sql, object? parameters = default, CommandType? commandType = null, CancellationToken? cancellationToken = null)
+    {
+        CancellationToken ct = cancellationToken ?? CancellationToken.None;
+        using IDbConnection connection = await _IdbConnectionFactory.CreateConnection();
+        T? row = await connection.QueryFirstOrDefaultAsync<T>(new CommandDefinition(sql, parameters, commandType: commandType, cancellationToken: ct));
         return row;
     }
     public async Task SaveData<P>(string sql, P? parameters = default, CommandType? commandType = null, CancellationToken? cancellationToken = null)

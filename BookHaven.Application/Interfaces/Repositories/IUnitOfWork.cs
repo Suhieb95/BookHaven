@@ -8,4 +8,5 @@ public interface IUnitOfWork
     IUserService Users { get; }
     IGenreService Genres { get; }
     IAuthorService Authors { get; }
+    IBookImagesService BookImages { get; }
 }

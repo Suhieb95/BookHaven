@@ -7,7 +7,8 @@ using BookHaven.Domain.Specification.Authors;
 using BookHaven.Domain.Specification.Genres;
 using BookHaven.Infrastructure.Mappings.Book;
 namespace BookHaven.Infrastructure.Services.Books;
-public class BookService(ISqlDataAccess _sqlDataAccess, IAuthorService _authorService, IGenreService _genreService, IMssqlDbTransaction _mssqlDbTransaction) : IBookService
+public class BookService(ISqlDataAccess _sqlDataAccess, IAuthorService _authorService, IGenreService _genreService, IMssqlDbTransaction _mssqlDbTransaction)
+    : IBookService
 {
     public async Task<PaginatedResponse<BookResponse>> GetPaginated(PaginationParam param, CancellationToken? cancellationToken = default)
     {
@@ -41,9 +42,10 @@ public class BookService(ISqlDataAccess _sqlDataAccess, IAuthorService _authorSe
 
         return response;
     }
-    public async Task<List<T>> GetAll<T>(Specification<T> param, CancellationToken? cancellationToken = default)
+    public async Task<List<TResult>> GetAll<TResult>(Specification<TResult> param, CancellationToken? cancellationToken = default)
        => await _sqlDataAccess.LoadData(param, cancellationToken: cancellationToken);
-
+    public async Task<TResult?> GetBy<TResult>(Specification<TResult> param, CancellationToken? cancellationToken = null)
+      => await _sqlDataAccess.LoadFirstOrDefault(param, cancellationToken: cancellationToken);
     public async Task<int> Add(CreateBookRequest request, CancellationToken? cancellationToken = default)
     {
         try
@@ -64,7 +66,6 @@ public class BookService(ISqlDataAccess _sqlDataAccess, IAuthorService _authorSe
     }
     public async Task Update(UpdateBookRequest entity, CancellationToken? cancellationToken = default)
     {
-
         try
         {
             const string Sql = "SPUpdateBook";
@@ -85,11 +86,6 @@ public class BookService(ISqlDataAccess _sqlDataAccess, IAuthorService _authorSe
         const string Sql = "DELETE FROM Books WHERE Id = @Id";
         await _sqlDataAccess.SaveData<int>(Sql, new { id }, cancellationToken: cancellationToken);
     }
-    public async Task AddBookImagePath(CreateBookImage createBookImage, CancellationToken? cancellationToken = default)
-    {
-        const string Sql = "INSERT INTO BookImages (ImageUrl, BookId) VALUES (@ImageUrl, @BookId)";
-        await _sqlDataAccess.SaveData(Sql, createBookImage, cancellationToken: cancellationToken);
-    }
     public async Task<BookResponse> GetById(Specification param, CancellationToken? cancellationToken = null)
     {
         (List<string> images, BookResponse? book) = await _sqlDataAccess.FetchListAndSingleAsync<string, BookResponse>(param.ToSql(),
@@ -100,26 +96,6 @@ public class BookService(ISqlDataAccess _sqlDataAccess, IAuthorService _authorSe
 
         await GetBookAuthorsAndGenres(book!, cancellationToken);
         return book!;
-    }
-    public async Task DeleteBookImages(int id, string[] paths, CancellationToken? cancellationToken = default)
-    {
-        IEnumerable<Task>? tasks = paths.Select(p => DeleteBookImage(id, p, cancellationToken));
-        await Task.WhenAll(tasks);
-    }
-    public async Task UpdateBookImages(int id, string[] paths, CancellationToken? cancellationToken = default)
-    {
-        IEnumerable<Task>? tasks = paths.Select(p => UpdateBookImage(id, p, cancellationToken));
-        await Task.WhenAll(tasks);
-    }
-    private async Task DeleteBookImage(int id, string path, CancellationToken? cancellationToken = default)
-    {
-        const string Sql = "DELETE FROM BookImages WHERE BookId = @BookId AND ImageUrl = @ImageUrl";
-        await _sqlDataAccess.SaveData(Sql, new { BookId = id, ImageUrl = path }, cancellationToken: cancellationToken);
-    }
-    private async Task UpdateBookImage(int id, string path, CancellationToken? cancellationToken = default)
-    {
-        const string Sql = "INSERT INTO BookImages (BookId, ImageUrl) VALUES (@BookId, @ImageUrl)";
-        await _sqlDataAccess.SaveData(Sql, new { BookId = id, ImageUrl = path }, cancellationToken: cancellationToken);
     }
     private async Task GetBookAuthorsAndGenres(BookResponse book, CancellationToken? cancellationToken = default)
     {

@@ -61,7 +61,7 @@ public class BookApplicationService(IUnitOfWork _iUnitOfWork, IFileService _file
             FileUploadResult[] uploadResult = await _fileService.Upload(request.Images!);
 
             IEnumerable<Task> result = uploadResult
-                .Select(x => _iUnitOfWork.Books.AddBookImagePath(new(id, x.PublicId)));
+                .Select(x => _iUnitOfWork.BookImages.Add(new(id, x.PublicId)));
 
             await Task.WhenAll(result);
         }
@@ -105,7 +105,7 @@ public class BookApplicationService(IUnitOfWork _iUnitOfWork, IFileService _file
             return Result<bool>.Failure(new Error("Not Images were Selected", BadRequest, "Empty Paths"));
 
         string[] publicIds = GetPublicIds(request.Paths);
-        await _iUnitOfWork.Books.DeleteBookImages(request.Id, publicIds, cancellationToken);
+        await _iUnitOfWork.BookImages.Delete(new UpdateBookImagesRequest(request.Id, publicIds), cancellationToken);
 
         IEnumerable<Task<bool>>? imagesTasks = publicIds.Select(_fileService.Delete);
         await Task.WhenAll(imagesTasks);
@@ -123,7 +123,7 @@ public class BookApplicationService(IUnitOfWork _iUnitOfWork, IFileService _file
 
         FileUploadResult[]? uploadResults = await _fileService.Upload(request.Images);
         string[] paths = [.. uploadResults.Select(x => x.PublicId)];
-        await _iUnitOfWork.Books.UpdateBookImages(request.Id, paths, cancellationToken);
+        await _iUnitOfWork.BookImages.Update(new UpdateBookImagesRequest(request.Id, paths), cancellationToken);
 
         return Result<bool>.Success(true);
     }
