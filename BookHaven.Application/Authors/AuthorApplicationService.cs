@@ -26,10 +26,9 @@ public class AuthorApplicationService(IUnitOfWork _unitOfWork) : IAuthorApplicat
     public async Task<Result<Author>> GetById(int id, CancellationToken? cancellationToken = null)
     {
         Author? author = await GetAuthorById(id, cancellationToken);
-        if (author is null)
-            return Result<Author>.Failure(new("Author Doesn't Exists", NotFound, "Author Not Found"));
-
-        return Result<Author>.Success(author);
+        return author is null
+            ? Result<Author>.Failure(new("Author Doesn't Exists", NotFound, "Author Not Found"))
+            : Result<Author>.Success(author);
     }
     public async Task<Result<bool>> Update(Author request, CancellationToken? cancellationToken = null)
     {

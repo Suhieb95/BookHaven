@@ -131,8 +131,8 @@ public class BookApplicationService(IUnitOfWork _iUnitOfWork, IFileService _file
         => paths.Select(x =>
             {
                 string[] parts = x.Split("/");
-                string publicId = parts[^1];
-                return publicId.Split('.')[0]; // Extract the public ID
+                string publicId = parts[^1]; // Last Part after the last "/".
+                return publicId.Split('.')[0]; // Extract the public ID.
             }).ToArray();
     private async Task<BookResponse?> GetById(int id, CancellationToken? cancellationToken = default)
         => await _iUnitOfWork.Books.GetBy(new GetBookByIdSpecification(id), cancellationToken);

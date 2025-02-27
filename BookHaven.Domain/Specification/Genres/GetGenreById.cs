@@ -1,5 +1,4 @@
 ﻿using BookHaven.Domain.Entities;
-
 namespace BookHaven.Domain.Specification.Genres;
 public class GetGenreById : Specification<Genre>
 {
