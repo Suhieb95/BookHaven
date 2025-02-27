@@ -7,7 +7,7 @@ namespace BookHaven.API.Controllers;
 [Authorized(Policy = CustomPolicies.ExcludeNewUserPolicy)]
 public class AuthorsController(IAuthorApplicationService _authorApplicationService) : BaseController
 {
-    [HttpGet(Authors.GetById)]
+    [HttpGet(BaseEndpoint.GetById)]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(Author))]
     [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(ProblemDetails))]
     [HasPermission(Permission.Read, EntityName.Authors)]
@@ -42,7 +42,7 @@ public class AuthorsController(IAuthorApplicationService _authorApplicationServi
             onFailure: Problem
         );
     }
-    [HttpDelete(Authors.Delete)]
+    [HttpDelete(BaseEndpoint.Delete)]
     [HasPermission(Permission.Delete, EntityName.Authors)]
     [ProducesResponseType(StatusCodes.Status204NoContent, Type = typeof(void))]
     [ProducesResponseType(StatusCodes.Status409Conflict, Type = typeof(ProblemDetails))]

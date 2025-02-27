@@ -28,6 +28,6 @@ internal class UnitOfWork(ISqlDataAccess sqlDataAccess, IDateTimeProvider dateTi
     public IGenreService Genres => _genres ??= new GenreService(sqlDataAccess, mssqlDbTransaction);
     public IAuthorService Authors => _authors ??= new AuthorService(sqlDataAccess, mssqlDbTransaction);
     public IBookImagesService BookImages => _bookImages ??= new BookImagesService(sqlDataAccess);
-    public IBookService Books => _books ??= new BookService(sqlDataAccess, this, mssqlDbTransaction);
+    public IBookService Books => _books ??= new BookService(sqlDataAccess, Authors, Genres, mssqlDbTransaction);
     public IUserSecurityService UserSecurity => _userSecurity ??= new UserSecurityService(sqlDataAccess);
 }

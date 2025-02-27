@@ -3,9 +3,9 @@
 namespace BookHaven.Domain.Specification.Genres;
 public class GetGenreByName : Specification<Genre>
 {
-     public GetGenreByName(string name)
+     public GetGenreByName(string name, int? id = null)
      {
-          Parameters = new { name };
+          Parameters = new { name, id };
           CommandType = StoredProcedure;
      }
      public override string ToSql()

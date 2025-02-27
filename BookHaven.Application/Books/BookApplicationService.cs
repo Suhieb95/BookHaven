@@ -51,9 +51,9 @@ public class BookApplicationService(IUnitOfWork _iUnitOfWork, IFileService _file
     }
     public async Task<Result<int>> CreateBook(CreateBookRequest request, CancellationToken? cancellationToken = null)
     {
-        BookResponse? book = await _iUnitOfWork.Books.GetBy(new GetBookByNameSpecification(request.Title), cancellationToken);
-        if (book is not null)
-            return Result<int>.Failure(new("Book with selected Title already Exists.", Conflict, "Title Exists"));
+        (bool flowControl, Result<int>? value) = await ValidateBook<int>(request.Title, request.ISBN, cancellationToken: cancellationToken);
+        if (flowControl == false)
+            return value!;
 
         int id = await _iUnitOfWork.Books.Add(request);
 
@@ -88,9 +88,9 @@ public class BookApplicationService(IUnitOfWork _iUnitOfWork, IFileService _file
         if (res is null)
             return Result<bool>.Failure(new Error("Book Doesn't Exists.", NotFound, "Not Found"));
 
-        BookResponse? book = await _iUnitOfWork.Books.GetBy(new GetBookByNameSpecification(request.Title), cancellationToken);
-        if (book is not null)
-            return Result<bool>.Failure(new("Book with selected Title already Exists.", Conflict, "Title Exists"));
+        (bool flowControl, Result<bool>? value) = await ValidateBook<bool>(request.Title, request.ISBN, request.Id, cancellationToken);
+        if (flowControl == false)
+            return value!;
 
         await _iUnitOfWork.Books.Update(request, cancellationToken);
         return Result<bool>.Success(true);
@@ -105,7 +105,7 @@ public class BookApplicationService(IUnitOfWork _iUnitOfWork, IFileService _file
             return Result<bool>.Failure(new Error("Not Images were Selected", BadRequest, "Empty Paths"));
 
         string[] publicIds = GetPublicIds(request.Paths);
-        await _iUnitOfWork.BookImages.Delete(new UpdateBookImagesRequest(request.Id, publicIds), cancellationToken);
+        await _iUnitOfWork.BookImages.Delete(new UpdateBookImagesResult(request.Id, publicIds), cancellationToken);
 
         IEnumerable<Task<bool>>? imagesTasks = publicIds.Select(_fileService.Delete);
         await Task.WhenAll(imagesTasks);
@@ -123,7 +123,7 @@ public class BookApplicationService(IUnitOfWork _iUnitOfWork, IFileService _file
 
         FileUploadResult[]? uploadResults = await _fileService.Upload(request.Images);
         string[] paths = [.. uploadResults.Select(x => x.PublicId)];
-        await _iUnitOfWork.BookImages.Update(new UpdateBookImagesRequest(request.Id, paths), cancellationToken);
+        await _iUnitOfWork.BookImages.Update(new UpdateBookImagesResult(request.Id, paths), cancellationToken);
 
         return Result<bool>.Success(true);
     }
@@ -140,5 +140,17 @@ public class BookApplicationService(IUnitOfWork _iUnitOfWork, IFileService _file
     {
         foreach (BookResponse book in books)
             book.CalculateDiscountedPrice();
+    }
+    private async Task<(bool flowControl, Result<T>? value)> ValidateBook<T>(string title, string isbn, int? id = null, CancellationToken? cancellationToken = default)
+    {
+        bool isBookNameFound = await _iUnitOfWork.Books.GetBy(new IsBookTitleUniqueSpecification(title, id), cancellationToken);
+        if (isBookNameFound)
+            return (flowControl: false, value: Result<T>.Failure(new("Book with selected Title already Exists.", Conflict, "Title Exists")));
+
+        bool isBookISBNFound = await _iUnitOfWork.Books.GetBy(new IsBookISBNUniqueSpecification(isbn, id), cancellationToken);
+        if (isBookISBNFound)
+            return (flowControl: false, value: Result<T>.Failure(new("Book with selected ISBN already Exists.", Conflict, "ISBN Exists")));
+
+        return (flowControl: true, value: null);
     }
 }

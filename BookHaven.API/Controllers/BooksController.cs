@@ -2,6 +2,7 @@ using BookHaven.API.Common.Constants;
 using BookHaven.Application.Books;
 using BookHaven.Domain.DTOs;
 using BookHaven.Domain.DTOs.Books;
+
 using Microsoft.AspNetCore.Mvc;
 
 namespace BookHaven.API.Controllers;
@@ -42,10 +43,11 @@ public class BooksController(IBookApplicationService _bookApplicationService) : 
     {
         Result<bool>? result = await _bookApplicationService.UpdateBookImages(request, cancellationToken);
         return result.Map(
-                      onSuccess: _ => NoContent(),
-                      onFailure: Problem);
+            onSuccess: _ => NoContent(),
+            onFailure: Problem);
     }
-    [HttpDelete(Books.Delete)]
+
+    [HttpDelete(BaseEndpoint.Delete)]
     [Authorized(Policy = CustomPolicies.ExcludeNewUserPolicy)]
     [HasPermission(Permission.Delete, EntityName.Books)]
     public async Task<IActionResult> Delete(int id, CancellationToken cancellationToken)

@@ -27,12 +27,11 @@ public class GenreService(ISqlDataAccess _sqlDataAccess, IMssqlDbTransaction _ms
     }
     public async Task UpdateBookGenres(UpdateBookGenresRequest request, CancellationToken? cancellationToken = null)
     {
-        const string DeleteOldSql = "DELETE FROM BookGenres WHERE BookId = @BookId AND GenreId NOT IN (@GenreIds)";
+        const string DeleteOldSql = "DELETE FROM BookGenres WHERE BookId = @BookId AND GenreId NOT IN @GenreIds";
         await _mssqlDbTransaction.SaveDataInTransaction(DeleteOldSql, new { request.BookId, GenreIds = request.Genres }, cancellationToken: cancellationToken);
-
-        const string Sql = "SPUpdateBookGenre";
+        const string Sql = "SPUpdateBookGenres";
         var tasks = request.Genres
-                                            .Select(x => _mssqlDbTransaction.SaveDataInTransaction(Sql, new { BookId = request.BookId, GenreId = x }, StoredProcedure, cancellationToken));
+                                            .Select(genreId => _mssqlDbTransaction.SaveDataInTransaction(Sql, new { request.BookId, GenreId = genreId }, StoredProcedure, cancellationToken));
         await Task.WhenAll(tasks);
     }
 }

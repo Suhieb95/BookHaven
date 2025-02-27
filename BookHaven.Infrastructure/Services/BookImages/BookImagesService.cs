@@ -10,12 +10,12 @@ public class BookImagesService(ISqlDataAccess _sqlDataAccess) : IBookImagesServi
         const string Sql = "INSERT INTO BookImages (ImageUrl, BookId) VALUES (@ImageUrl, @BookId)";
         await _sqlDataAccess.SaveData<int>(Sql, createBookImage, cancellationToken: cancellationToken);
     }
-    public async Task Delete(UpdateBookImagesRequest request, CancellationToken? cancellationToken = null)
+    public async Task Delete(UpdateBookImagesResult request, CancellationToken? cancellationToken = null)
     {
         IEnumerable<Task>? tasks = request.Paths.Select(p => DeleteBookImage(request.BookId, p, cancellationToken));
         await Task.WhenAll(tasks);
     }
-    public async Task Update(UpdateBookImagesRequest request, CancellationToken? cancellationToken = null)
+    public async Task Update(UpdateBookImagesResult request, CancellationToken? cancellationToken = null)
     {
         IEnumerable<Task>? tasks = request.Paths.Select(p => UpdateBookImage(request.BookId, p, cancellationToken));
         await Task.WhenAll(tasks);

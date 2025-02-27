@@ -53,16 +53,12 @@ public class FileService : IFileService
         {
             File = new FileDescription(file.FileName, str),
             Transformation = new Transformation()
-            .Height(300)
-            .Width(300)
             .Crop("fill")
             .Gravity("face")
         };
         UploadResult? uploadResult = await _cloudinary.UploadAsync(uploadParam, cancellationToken: cancellationToken);
-        if (uploadResult.Error != null)
-            throw new FileUploadException();
 
-        return new FileUploadResult(uploadResult.SecureUrl.AbsoluteUri, uploadResult.PublicId);
+        return uploadResult.Error != null ? throw new FileUploadException() : new FileUploadResult(uploadResult.SecureUrl.AbsoluteUri, uploadResult.PublicId);
     }
     public async Task<FileUploadResult[]> Upload(IFormFileCollection files, CancellationToken? cancellationToken = default)
     {

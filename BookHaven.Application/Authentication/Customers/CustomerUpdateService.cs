@@ -26,6 +26,10 @@ public class CustomerUpdateService(IUnitOfWork _unitOfWork, IFileService _fileSe
         if (currentUser is null)
             return Result<bool>.Failure(new Error("Customer Doesn't Exists.", NotFound, "Customer Not Found"));
 
+        bool isDuplicateUserName = await _unitOfWork.Customers.GetBy(new IsCustomerUserNameUnique(request.UserName, currentUser.Id), cancellationToken);
+        if (isDuplicateUserName)
+            return Result<bool>.Failure(new Error("User Name already exists.", BadRequest, "Invalid User Name"));
+
         if (request.Image is not null)
         {
             FileUploadResult uploadResult = await _fileService.Upload(request.Image, cancellationToken);

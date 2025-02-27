@@ -7,7 +7,6 @@ public class GenericSpecificationReadRepository(ISqlDataAccess _sqlDataAccess) :
 {
     public async Task<List<TResult>> GetAll<TResult>(Specification<TResult> param, CancellationToken? cancellationToken)
         => await _sqlDataAccess.LoadData(param, cancellationToken);
-
     public async Task<TResult?> GetBy<TResult>(Specification<TResult> param, CancellationToken? cancellationToken)
         => await _sqlDataAccess.LoadFirstOrDefault(param, cancellationToken);
 }

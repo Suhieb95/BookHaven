@@ -11,7 +11,7 @@ public class AuthorApplicationService(IUnitOfWork _unitOfWork) : IAuthorApplicat
     {
         Author? author = await GetAuthorById(id, cancellationToken);
         if (author is null)
-            return Result<bool>.Failure(new("Author Doesn't Exists", NotFound, "Author Not Found"));
+            return Result<bool>.Failure(new Error("Author Doesn't Exists", NotFound, "Author Not Found"));
 
         bool isAuthorUsed = await _unitOfWork.Authors.GetBy(new GetUsedAuthor(id), cancellationToken);
         if (isAuthorUsed)
@@ -27,14 +27,18 @@ public class AuthorApplicationService(IUnitOfWork _unitOfWork) : IAuthorApplicat
     {
         Author? author = await GetAuthorById(id, cancellationToken);
         return author is null
-            ? Result<Author>.Failure(new("Author Doesn't Exists", NotFound, "Author Not Found"))
+            ? Result<Author>.Failure(new Error("Author Doesn't Exists", NotFound, "Author Not Found"))
             : Result<Author>.Success(author);
     }
     public async Task<Result<bool>> Update(Author request, CancellationToken? cancellationToken = null)
     {
         Author? author = await GetAuthorById(request.Id, cancellationToken);
         if (author is null)
-            return Result<bool>.Failure(new("Author Doesn't Exists", NotFound, "Author Not Found"));
+            return Result<bool>.Failure(new Error("Author Doesn't Exists", NotFound, "Author Not Found"));
+
+        bool isAuthorNameFound = await _unitOfWork.Authors.GetBy(new IsAuthorNameUnique(request.Name, request.Id), cancellationToken);
+        if (isAuthorNameFound)
+            return Result<bool>.Failure(new Error("Author Name Exists", Conflict, "Author Exists"));
 
         await _unitOfWork.Authors.Update(request, cancellationToken);
         return Result<bool>.Success(true);

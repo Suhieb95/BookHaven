@@ -18,6 +18,10 @@ public class CustomerRegistrationService(IUnitOfWork _iUnitOfWork, IJwtTokenGene
         if (await IsEmailAddressInUse(request.EmailAddress, cancellationToken))
             return Result<bool>.Failure(new Error("Email Address exists, Please Login.", BadRequest, "Email Address Exists"));
 
+        bool isDuplicateUserName = await _iUnitOfWork.Customers.GetBy(new IsCustomerUserNameUnique(request.UserName), cancellationToken);
+        if (isDuplicateUserName)
+            return Result<bool>.Failure(new Error("User Name already exists.", BadRequest, "Invalid User Name"));
+
         HashPassword(request);
         Guid result = await _iUnitOfWork.Customers.Add(request, cancellationToken);
         await SendEmailConfirmationToken(request.EmailAddress, result, cancellationToken);

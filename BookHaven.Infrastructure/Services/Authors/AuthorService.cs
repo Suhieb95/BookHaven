@@ -17,12 +17,11 @@ public class AuthorService(ISqlDataAccess _sqlDataAccess, IMssqlDbTransaction _m
         => await _sqlDataAccess.SaveData(_upsertAuthor, entity, StoredProcedure, cancellationToken);
     public async Task UpdateBookAuthors(UpdateBookAuthorsRequest request, CancellationToken? cancellationToken = null)
     {
-        const string DeleteOldSql = "DELETE FROM BookAuthors WHERE BookId = @BookId AND AuthorId NOT IN (@AuthorIds)";
+        const string DeleteOldSql = "DELETE FROM BookAuthors WHERE BookId = @BookId AND AuthorId NOT IN @AuthorIds";
         await _mssqlDbTransaction.SaveDataInTransaction(DeleteOldSql, new { request.BookId, AuthorIds = request.Authors }, cancellationToken: cancellationToken);
-
-        const string Sql = "SPUpdateBookAuthor";
+        const string Sql = "SPUpdateBookAuthors";
         var tasks = request.Authors
-                                            .Select(x => _mssqlDbTransaction.SaveDataInTransaction(Sql, new { BookId = request.BookId, AuthorId = x }, StoredProcedure, cancellationToken));
+                                            .Select(authorId => _mssqlDbTransaction.SaveDataInTransaction(Sql, new { BookId = request.BookId, AuthorId = authorId }, StoredProcedure, cancellationToken));
         await Task.WhenAll(tasks);
     }
 }

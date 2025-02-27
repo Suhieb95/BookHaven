@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Versioning;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
+using Microsoft.OpenApi.Models;
 
 namespace BookHaven.API;
 internal static class DependencyInjection
@@ -25,7 +26,8 @@ internal static class DependencyInjection
 
         services.AddInfrastructure(configuration, isDev)
                 .AddApplication();
-
+        services.AddSwaggerGen();
+        services.AddSwaggerAuth();
         services.SetUploadSize();
         services.AddApiVerison();
         services.AddValidation();
@@ -80,14 +82,8 @@ internal static class DependencyInjection
     }
     private static IServiceCollection SetUploadSize(this IServiceCollection services)
     {
-        services.Configure<FormOptions>(options =>
-        {
-            options.MultipartBodyLengthLimit = 5242880; // Limit to 5 MB.
-        });
-        services.Configure<KestrelServerOptions>(options =>
-        {
-            options.Limits.MaxRequestBodySize = 5242880; // Limit to 5 MB.
-        });
+        services.Configure<FormOptions>(options => options.MultipartBodyLengthLimit = 5242880);
+        services.Configure<KestrelServerOptions>(options => options.Limits.MaxRequestBodySize = 5242880);
         return services;
     }
     private static IServiceCollection AddApiVerison(this IServiceCollection services)
@@ -99,6 +95,39 @@ internal static class DependencyInjection
             options.ReportApiVersions = false;
             options.ApiVersionReader = new UrlSegmentApiVersionReader();
         });
+        return services;
+    }
+    private static IServiceCollection AddSwaggerAuth(this IServiceCollection services)
+    {
+        services.AddSwaggerGen(c =>
+        {
+            c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+            {
+                In = ParameterLocation.Header,
+                Description = "Please enter the Bearer token",
+                Name = "Authorization",
+                Type = SecuritySchemeType.Http,
+                BearerFormat = "JWT",
+                Scheme = "bearer"
+            });
+
+            // Add security requirement to all API operations in Swagger UI
+            c.AddSecurityRequirement(new OpenApiSecurityRequirement
+            {
+                {
+                    new OpenApiSecurityScheme
+                    {
+                        Reference = new OpenApiReference
+                        {
+                            Type = ReferenceType.SecurityScheme,
+                            Id = "Bearer"
+                        }
+                    },
+                    []
+                }
+            });
+        });
+
         return services;
     }
 }
