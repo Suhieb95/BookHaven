@@ -1,4 +1,4 @@
-using BookHaven.Application.Interfaces;
+using BookHaven.Application.Interfaces.Services;
 
 namespace BookHaven.Infrastructure.Services;
 public class DateTimeProvider : IDateTimeProvider

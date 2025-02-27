@@ -1,5 +1,4 @@
-﻿using BookHaven.Application.Interfaces;
-using BookHaven.Application.Interfaces.Database;
+﻿using BookHaven.Application.Interfaces.Database;
 using BookHaven.Application.Interfaces.Services;
 using BookHaven.Domain.DTOs;
 using BookHaven.Domain.DTOs.Books;

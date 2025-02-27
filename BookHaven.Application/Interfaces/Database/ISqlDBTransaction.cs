@@ -1,6 +1,5 @@
 using System.Data;
-namespace BookHaven.Application.Interfaces;
-
+namespace BookHaven.Application.Interfaces.Database;
 public interface ISqlDBTransaction
 {
     Task InitilizeTransaction(IsolationLevel? isolationLevel = null);

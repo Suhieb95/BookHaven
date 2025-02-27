@@ -1,4 +1,4 @@
-using BookHaven.Application.Interfaces;
+using BookHaven.Application.Interfaces.Services;
 using BookHaven.Domain.DTOs.Auth;
 using BookHaven.Domain.DTOs.Customers;
 using BookHaven.Domain.DTOs.Users;

@@ -1,4 +1,3 @@
-using BookHaven.Application.Interfaces;
 using BookHaven.Application.Interfaces.Services;
 using BookHaven.Domain.Entities;
 using BookHaven.Infrastructure.Authentication;

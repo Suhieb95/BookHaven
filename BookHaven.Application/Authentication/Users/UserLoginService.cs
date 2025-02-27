@@ -1,5 +1,4 @@
 using BookHaven.Application.Authentication.Common;
-using BookHaven.Application.Interfaces;
 using BookHaven.Application.Interfaces.Services;
 using BookHaven.Domain.DTOs.Users;
 using BookHaven.Domain.Enums;

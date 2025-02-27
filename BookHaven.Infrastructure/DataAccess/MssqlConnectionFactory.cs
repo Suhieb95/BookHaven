@@ -1,4 +1,5 @@
 using BookHaven.Application.Interfaces;
+using BookHaven.Application.Interfaces.Database;
 using Microsoft.Data.SqlClient;
 namespace BookHaven.Infrastructure.DataAccess;
 public class MSSQLConnectionFactory(string connectionString) : IDbConnectionFactory

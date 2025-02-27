@@ -2,7 +2,6 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
-using BookHaven.Application.Interfaces;
 using BookHaven.Application.Interfaces.Services;
 using BookHaven.Domain.BaseModels.User;
 using BookHaven.Domain.DTOs.Auth;
