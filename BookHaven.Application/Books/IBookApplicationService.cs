@@ -1,6 +1,5 @@
 using BookHaven.Domain.DTOs;
 using BookHaven.Domain.DTOs.Books;
-using Microsoft.AspNetCore.Http;
 namespace BookHaven.Application.Books;
 public interface IBookApplicationService
 {

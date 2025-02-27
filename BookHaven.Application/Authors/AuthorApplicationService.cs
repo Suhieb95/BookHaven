@@ -13,8 +13,8 @@ public class AuthorApplicationService(IUnitOfWork _unitOfWork) : IAuthorApplicat
         if (author is null)
             return Result<bool>.Failure(new("Author Doesn't Exists", NotFound, "Author Not Found"));
 
-        List<bool> usedAuthor = await _unitOfWork.Authors.GetAll(new GetUsedAuthor(id), cancellationToken);
-        if (usedAuthor.FirstOrDefault())
+        bool isAuthorUsed = await _unitOfWork.Authors.GetBy(new GetUsedAuthor(id), cancellationToken);
+        if (isAuthorUsed)
             return Result<bool>.Failure(new Error("Author is in use", Conflict, "Author is used"));
 
         await _unitOfWork.Authors.Delete(id, cancellationToken);
@@ -41,5 +41,5 @@ public class AuthorApplicationService(IUnitOfWork _unitOfWork) : IAuthorApplicat
         return Result<bool>.Success(true);
     }
     private async Task<Author?> GetAuthorById(int id, CancellationToken? cancellationToken = default)
-        => (await _unitOfWork.Authors.GetAll(new GetAuthorById(id), cancellationToken)).FirstOrDefault();
+        => await _unitOfWork.Authors.GetBy(new GetAuthorById(id), cancellationToken);
 }

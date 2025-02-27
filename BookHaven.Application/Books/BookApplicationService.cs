@@ -50,7 +50,7 @@ public class BookApplicationService(IUnitOfWork _iUnitOfWork, IFileService _file
     }
     public async Task<Result<int>> CreateBook(CreateBookRequest request, CancellationToken? cancellationToken = null)
     {
-        BookResponse? book = (await _iUnitOfWork.Books.GetAll(new GetBookByNameSpecification(request.Title), cancellationToken)).FirstOrDefault();
+        BookResponse? book = await _iUnitOfWork.Books.GetBy(new GetBookByNameSpecification(request.Title), cancellationToken);
         if (book is not null)
             return Result<int>.Failure(new("Book with selected Title already Exists.", Conflict, "Title Exists"));
 
@@ -81,7 +81,6 @@ public class BookApplicationService(IUnitOfWork _iUnitOfWork, IFileService _file
         await _iUnitOfWork.Books.Delete(id, cancellationToken);
         return Result<bool>.Success(true);
     }
-
     public async Task<Result<bool>> UpdateBook(UpdateBookRequest request, CancellationToken? cancellationToken = null)
     {
         BookResponse? res = await GetById(request.Id, cancellationToken);
@@ -135,7 +134,7 @@ public class BookApplicationService(IUnitOfWork _iUnitOfWork, IFileService _file
                 return publicId.Split('.')[0]; // Extract the public ID
             }).ToArray();
     private async Task<BookResponse?> GetById(int id, CancellationToken? cancellationToken = default)
-        => (await _iUnitOfWork.Books.GetAll(new GetBookByIdSpecification(id), cancellationToken)).FirstOrDefault();
+        => await _iUnitOfWork.Books.GetBy(new GetBookByIdSpecification(id), cancellationToken);
     private static void SetBooksDiscountedPrice(IReadOnlyList<BookResponse> books)
     {
         foreach (BookResponse book in books)

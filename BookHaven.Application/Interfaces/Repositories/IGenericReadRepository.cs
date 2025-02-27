@@ -12,7 +12,7 @@ public interface IGenericReadByIdRepository<T, U> where T : class?
 {
     Task<T> GetById(U param, CancellationToken? cancellationToken = default);
 }
-public interface IGenericReadRepository
+public interface IGenericSpecificationReadRepository
 {
     Task<TResult?> GetBy<TResult>(Specification<TResult> param, CancellationToken? cancellationToken = default);
     Task<List<TResult>> GetAll<TResult>(Specification<TResult> param, CancellationToken? cancellationToken = default);

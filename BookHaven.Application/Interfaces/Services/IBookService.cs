@@ -6,4 +6,4 @@ namespace BookHaven.Application.Interfaces.Services;
 public interface IBookService : IGenericReadPaginatedRepository<PaginatedResponse<BookResponse>, PaginationParam>,
 IGenericReadByIdRepository<BookResponse, Specification>,
 IGenericWriteRepository<CreateBookRequest, UpdateBookRequest, int>,
-IGenericReadRepository;
+IGenericSpecificationReadRepository;

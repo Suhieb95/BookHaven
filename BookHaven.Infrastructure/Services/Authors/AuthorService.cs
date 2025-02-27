@@ -18,6 +18,8 @@ public class AuthorService(ISqlDataAccess _sqlDataAccess, IMssqlDbTransaction _m
         => await _sqlDataAccess.SaveData(_upsertAuthor, entity, StoredProcedure, cancellationToken);
     public async Task<List<T>> GetAll<T>(Specification<T> specification, CancellationToken? cancellationToken = default)
         => await _sqlDataAccess.LoadData(specification, cancellationToken);
+    public async Task<TResult?> GetBy<TResult>(Specification<TResult> specification, CancellationToken? cancellationToken = null)
+            => await _sqlDataAccess.LoadFirstOrDefault(specification, cancellationToken);
     public async Task UpdateBookAuthors(UpdateBookAuthorsRequest request, CancellationToken? cancellationToken = null)
     {
         const string DeleteOldSql = "DELETE FROM BookAuthors WHERE BookId = @BookId AND AuthorId NOT IN (@AuthorIds)";
