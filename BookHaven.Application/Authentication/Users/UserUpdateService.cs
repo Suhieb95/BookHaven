@@ -8,7 +8,7 @@ public class UserUpdateService(IUnitOfWork _unitOfWork, IFileService _fileServic
 {
     public async Task<Result<bool>> RemoveProfilePicture(Guid id, CancellationToken? cancellationToken = null)
     {
-        User? currentUser = (await _unitOfWork.Users.GetAll(new GetUserById(id), cancellationToken)).FirstOrDefault();
+        User? currentUser = await _unitOfWork.Users.GetBy(new GetUserById(id), cancellationToken);
         if (currentUser is null)
             return Result<bool>.Failure(new("User Doesn't Exists.", NotFound, "User Not Found"));
 
@@ -22,7 +22,7 @@ public class UserUpdateService(IUnitOfWork _unitOfWork, IFileService _fileServic
     }
     public async Task<Result<bool>> Update(InternalUserUpdateRequest request, CancellationToken? cancellationToken = default)
     {
-        User? currentUser = (await _unitOfWork.Users.GetAll(new GetUserByEmailAddress(request.EmailAddress), cancellationToken)).FirstOrDefault();
+        User? currentUser = await _unitOfWork.Users.GetBy(new GetUserByEmailAddress(request.EmailAddress), cancellationToken);
         if (currentUser is null)
             return Result<bool>.Failure(new("User Doesn't Exists.", NotFound, "User Not Found"));
 

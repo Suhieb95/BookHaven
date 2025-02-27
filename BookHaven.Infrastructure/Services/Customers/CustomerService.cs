@@ -2,11 +2,9 @@ using BookHaven.Application.Interfaces.Database;
 using BookHaven.Application.Interfaces.Services;
 using BookHaven.Domain.DTOs.Auth;
 using BookHaven.Domain.DTOs.Customers;
-using BookHaven.Domain.Entities;
-using BookHaven.Domain.Specification;
 using BookHaven.Infrastructure.Mappings.Person;
 namespace BookHaven.Infrastructure.Services.Customers;
-public class CustomerService(ISqlDataAccess _sqlDataAccess, IDateTimeProvider _dateTimeProvider) : ICustomerService
+public class CustomerService(ISqlDataAccess _sqlDataAccess, IDateTimeProvider _dateTimeProvider) : GenericSpecificationReadRepository(_sqlDataAccess), ICustomerService
 {
     public async Task<Guid> Add(CustomerRegisterRequest request, CancellationToken? cancellationToken)
     {
@@ -21,8 +19,6 @@ public class CustomerService(ISqlDataAccess _sqlDataAccess, IDateTimeProvider _d
         const string Sql = "SPUpdateCustomer";
         await _sqlDataAccess.SaveData(Sql, entity.ToParameter(), StoredProcedure, cancellationToken);
     }
-    public async Task<List<Customer>> GetAll(Specification specification, CancellationToken? cancellationToken = null)
-        => await _sqlDataAccess.LoadData<Customer>(specification.ToSql(), specification.Parameters, cancellationToken: cancellationToken);
     public async Task SaveEmailConfirmationToken(EmailConfirmationResult emailConfirmationResult, CancellationToken? cancellationToken)
     {
         const string Sql = @"UPDATE Customers SET VerifyEmailTokenExpiry = @VerifyEmailTokenExpiry, VerifyEmailToken = @VerifyEmailToken WHERE Id = @Id";

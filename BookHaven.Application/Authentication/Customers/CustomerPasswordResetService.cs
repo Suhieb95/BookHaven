@@ -3,6 +3,7 @@ using BookHaven.Application.Interfaces.Services;
 using BookHaven.Domain.DTOs.Auth;
 using BookHaven.Domain.Specification;
 using BookHaven.Domain.Specification.Customers;
+
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Options;
 
@@ -28,7 +29,7 @@ public class CustomerPasswordResetService(IUnitOfWork _unitOfWork, IOptions<Emai
     {
         Customer? customer = await GetCustomer(new GetCustomerByEmailAddress(emailAddress), cancellationToken);
         if (customer is null || customer is not null and { IsActive: false })
-            return Result<bool>.Failure(new("Customer Doesn't With this Exists.", BadRequest, "Invalid Customer"));
+            return Result<bool>.Failure(new Error("Customer Doesn't With this Exists.", BadRequest, "Invalid Customer"));
 
         ResetPasswordResult resetPassword = _jwtTokenGenerator.GeneratePasswordResetToken(emailAddress);
         await _unitOfWork.Customers.SavePassowordResetToken(resetPassword, cancellationToken);
@@ -39,13 +40,13 @@ public class CustomerPasswordResetService(IUnitOfWork _unitOfWork, IOptions<Emai
     {
         Customer? customer = await GetCustomer(new GetCustomerById(id), cancellationToken);
         if (customer is null || customer is not null and { IsActive: false })
-            return Result<bool>.Failure(new("Customer With this Email Address Doesn't Exists.", BadRequest, "Invalid Customer"));
+            return Result<bool>.Failure(new Error("Customer With this Email Address Doesn't Exists.", BadRequest, "Invalid Customer"));
 
         if (!customer!.HasValidRestPasswordToken())
-            return Result<bool>.Failure(new("Token Has Expired, Please request password change again.", BadRequest, "Invalid Token"));
+            return Result<bool>.Failure(new Error("Token Has Expired, Please request password change again.", BadRequest, "Invalid Token"));
 
         return Result<bool>.Success(true);
     }
-    private async Task<Customer?> GetCustomer(Specification specification, CancellationToken? cancellationToken)
-        => (await _unitOfWork.Customers.GetAll(specification, cancellationToken)).FirstOrDefault();
+    private async Task<T?> GetCustomer<T>(Specification<T> specification, CancellationToken? cancellationToken)
+        => await _unitOfWork.Customers.GetBy(specification, cancellationToken);
 }

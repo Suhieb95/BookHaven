@@ -3,12 +3,11 @@ using BookHaven.Application.Interfaces.Database;
 using BookHaven.Application.Interfaces.Services;
 using BookHaven.Domain.DTOs.Auth;
 using BookHaven.Domain.DTOs.Users;
-using BookHaven.Domain.Entities;
 using BookHaven.Domain.Enums;
-using BookHaven.Domain.Specification;
 using BookHaven.Infrastructure.Mappings.Person;
+
 namespace BookHaven.Infrastructure.Services.Users;
-public class UserService(ISqlDataAccess _sqlDataAccess, IDateTimeProvider _dateTimeProvider, IRedisCacheService _redisCacheService) : IUserService
+public class UserService(ISqlDataAccess _sqlDataAccess, IDateTimeProvider _dateTimeProvider, IRedisCacheService _redisCacheService) : GenericSpecificationReadRepository(_sqlDataAccess), IUserService
 {
     public async Task<Guid> Add(InternalUserRegisterRequest request, CancellationToken? cancellationToken = null)
     {
@@ -23,8 +22,6 @@ public class UserService(ISqlDataAccess _sqlDataAccess, IDateTimeProvider _dateT
         const string Sql = "SPUpdateUser";
         await _sqlDataAccess.SaveData(Sql, request.ToParameter(), StoredProcedure, cancellationToken);
     }
-    public async Task<List<User>> GetAll(Specification param, CancellationToken? cancellationToken = null)
-        => await _sqlDataAccess.LoadData<User>(param.ToSql(), param.Parameters, cancellationToken: cancellationToken);
     public async Task LastLogin(string emailAddress, UserType personType = UserType.Internal)
     {
         string sql = $"UPDATE {personType.GetEnumValue()} SET LastLogin = @LastLogin WHERE EmailAddress = @EmailAddress";

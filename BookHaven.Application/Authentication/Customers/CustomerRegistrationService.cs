@@ -2,7 +2,9 @@ using BookHaven.Application.Authentication.Common;
 using BookHaven.Application.Interfaces.Services;
 using BookHaven.Domain.DTOs.Auth;
 using BookHaven.Domain.DTOs.Customers;
+using BookHaven.Domain.Specification;
 using BookHaven.Domain.Specification.Customers;
+
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Options;
 
@@ -24,8 +26,7 @@ public class CustomerRegistrationService(IUnitOfWork _iUnitOfWork, IJwtTokenGene
     }
     public async Task<Result<bool>> ConfirmEmailAddress(Guid id, CancellationToken? cancellationToken = null)
     {
-        List<Customer>? res = await _iUnitOfWork.Customers.GetAll(new GetCustomerById(id), cancellationToken);
-        Customer? currentUser = res.FirstOrDefault();
+        Customer? currentUser = await GetUser(new GetCustomerById(id), cancellationToken);
         if (currentUser is null)
             return Result<bool>.Failure(new Error("User Doesn't Exists.", BadRequest, "Invalid User"));
 
@@ -40,8 +41,7 @@ public class CustomerRegistrationService(IUnitOfWork _iUnitOfWork, IJwtTokenGene
        => request.SetPassword(_passwordHasher.Hash(request.Password));
     private async Task SendEmailConfirmationToken(string emailAddress, Guid result, CancellationToken? cancellationToken)
     {
-        List<Customer>? res = await _iUnitOfWork.Customers.GetAll(new GetCustomerByEmailAddress(emailAddress), cancellationToken);
-        Customer? currentUser = res.FirstOrDefault();
+        Customer? currentUser = await GetUser(new GetCustomerByEmailAddress(emailAddress), cancellationToken);
         if (currentUser is not null && currentUser.HasValidEmailConfirmationToken())
             return;
 
@@ -51,11 +51,9 @@ public class CustomerRegistrationService(IUnitOfWork _iUnitOfWork, IJwtTokenGene
     }
     private async Task<bool> IsEmailAddressInUse(string emailAddress, CancellationToken? cancellationToken)
     {
-        List<Customer> res = await _iUnitOfWork.Customers.GetAll(new GetCustomerByEmailAddress(emailAddress), cancellationToken);
-        Customer? currentUser = res.FirstOrDefault();
-        if (currentUser is not null and { IsActive: true })
-            return true;
-
-        return false;
+        Customer? currentUser = await GetUser(new GetCustomerByEmailAddress(emailAddress), cancellationToken);
+        return currentUser is not null and { IsActive: true };
     }
+    private async Task<T?> GetUser<T>(Specification<T> specification, CancellationToken? cancellationToken)
+       => await _iUnitOfWork.Customers.GetBy(specification, cancellationToken);
 }

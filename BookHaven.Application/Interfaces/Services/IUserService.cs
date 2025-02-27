@@ -1,9 +1,9 @@
 using BookHaven.Domain.DTOs.Auth;
 using BookHaven.Domain.DTOs.Users;
 using BookHaven.Domain.Enums;
-using BookHaven.Domain.Specification;
+
 namespace BookHaven.Application.Interfaces.Services;
-public interface IUserService : IGenericReadWithParamRepository<List<User>, Specification>, IGenericWriteRepository<InternalUserRegisterRequest, InternalUserUpdateRequest, Guid>
+public interface IUserService : IGenericSpecificationReadRepository, IGenericWriteRepository<InternalUserRegisterRequest, InternalUserUpdateRequest, Guid>
 {
     Task LastLogin(string emailAddress, UserType personType = UserType.Internal);
     Task SaveEmailConfirmationToken(EmailConfirmationResult emailConfirmationResult, CancellationToken? cancellationToken);

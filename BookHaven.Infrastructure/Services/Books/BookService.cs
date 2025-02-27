@@ -7,9 +7,10 @@ using BookHaven.Domain.Specification;
 using BookHaven.Domain.Specification.Authors;
 using BookHaven.Domain.Specification.Genres;
 using BookHaven.Infrastructure.Mappings.Book;
+
 namespace BookHaven.Infrastructure.Services.Books;
 public class BookService(ISqlDataAccess _sqlDataAccess, IUnitOfWork _unitOfWork, IMssqlDbTransaction _mssqlDbTransaction)
-    : IBookService
+    : GenericSpecificationReadRepository(_sqlDataAccess), IBookService
 {
     public async Task<PaginatedResponse<BookResponse>> GetPaginated(PaginationParam param, CancellationToken? cancellationToken = default)
     {
@@ -43,10 +44,6 @@ public class BookService(ISqlDataAccess _sqlDataAccess, IUnitOfWork _unitOfWork,
 
         return response;
     }
-    public async Task<List<TResult>> GetAll<TResult>(Specification<TResult> param, CancellationToken? cancellationToken = default)
-       => await _sqlDataAccess.LoadData(param, cancellationToken: cancellationToken);
-    public async Task<TResult?> GetBy<TResult>(Specification<TResult> param, CancellationToken? cancellationToken = null)
-      => await _sqlDataAccess.LoadFirstOrDefault(param, cancellationToken: cancellationToken);
     public async Task<int> Add(CreateBookRequest request, CancellationToken? cancellationToken = default)
     {
         try
@@ -87,7 +84,7 @@ public class BookService(ISqlDataAccess _sqlDataAccess, IUnitOfWork _unitOfWork,
         const string Sql = "DELETE FROM Books WHERE Id = @Id";
         await _sqlDataAccess.SaveData<int>(Sql, new { id }, cancellationToken: cancellationToken);
     }
-    public async Task<BookResponse> GetById(Specification param, CancellationToken? cancellationToken = null)
+    public async Task<BookResponse> GetByIdWithDetails(Specification param, CancellationToken? cancellationToken = null)
     {
         (List<string> images, BookResponse? book) = await _sqlDataAccess.FetchListAndSingleAsync<string, BookResponse>(param.ToSql(),
                                  cancellationToken, param.Parameters, param.CommandType)!;

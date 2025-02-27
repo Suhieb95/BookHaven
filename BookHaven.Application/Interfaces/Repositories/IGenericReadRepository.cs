@@ -10,10 +10,10 @@ public interface IGenericReadPaginatedRepository<T, P> where T : class
 }
 public interface IGenericReadByIdRepository<T, U> where T : class?
 {
-    Task<T> GetById(U param, CancellationToken? cancellationToken = default);
+    Task<T> GetByIdWithDetails(U param, CancellationToken? cancellationToken = default);
 }
 public interface IGenericSpecificationReadRepository
 {
-    Task<TResult?> GetBy<TResult>(Specification<TResult> param, CancellationToken? cancellationToken = default);
-    Task<List<TResult>> GetAll<TResult>(Specification<TResult> param, CancellationToken? cancellationToken = default);
+    Task<List<TResult>> GetAll<TResult>(Specification<TResult> param, CancellationToken? cancellationToken = null);
+    Task<TResult?> GetBy<TResult>(Specification<TResult> param, CancellationToken? cancellationToken = null);
 }

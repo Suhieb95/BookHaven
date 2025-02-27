@@ -1,5 +1,7 @@
+using BookHaven.Domain.Entities;
+
 namespace BookHaven.Domain.Specification.Users;
-public class GetUserById : Specification
+public class GetUserById : Specification<User>
 {
     public GetUserById(Guid id)
     {

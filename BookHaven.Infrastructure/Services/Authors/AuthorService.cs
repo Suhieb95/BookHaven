@@ -2,9 +2,8 @@ using BookHaven.Application.Interfaces.Database;
 using BookHaven.Application.Interfaces.Services;
 using BookHaven.Domain.DTOs.Books;
 using BookHaven.Domain.Entities;
-using BookHaven.Domain.Specification;
 namespace BookHaven.Infrastructure.Services.Authors;
-public class AuthorService(ISqlDataAccess _sqlDataAccess, IMssqlDbTransaction _mssqlDbTransaction) : IAuthorService
+public class AuthorService(ISqlDataAccess _sqlDataAccess, IMssqlDbTransaction _mssqlDbTransaction) : GenericSpecificationReadRepository(_sqlDataAccess), IAuthorService
 {
     private readonly string _upsertAuthor = "UpsertAuthor";
     public async Task<int> Add(Author entity, CancellationToken? cancellationToken = null)
@@ -16,10 +15,6 @@ public class AuthorService(ISqlDataAccess _sqlDataAccess, IMssqlDbTransaction _m
     }
     public async Task Update(Author entity, CancellationToken? cancellationToken = null)
         => await _sqlDataAccess.SaveData(_upsertAuthor, entity, StoredProcedure, cancellationToken);
-    public async Task<List<T>> GetAll<T>(Specification<T> specification, CancellationToken? cancellationToken = default)
-        => await _sqlDataAccess.LoadData(specification, cancellationToken);
-    public async Task<TResult?> GetBy<TResult>(Specification<TResult> specification, CancellationToken? cancellationToken = null)
-            => await _sqlDataAccess.LoadFirstOrDefault(specification, cancellationToken);
     public async Task UpdateBookAuthors(UpdateBookAuthorsRequest request, CancellationToken? cancellationToken = null)
     {
         const string DeleteOldSql = "DELETE FROM BookAuthors WHERE BookId = @BookId AND AuthorId NOT IN (@AuthorIds)";

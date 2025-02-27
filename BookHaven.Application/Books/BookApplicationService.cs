@@ -3,6 +3,7 @@ using BookHaven.Application.Interfaces.Services;
 using BookHaven.Domain.DTOs;
 using BookHaven.Domain.DTOs.Books;
 using BookHaven.Domain.Specification.Books;
+
 using static BookHaven.Application.Helpers.Extensions;
 
 namespace BookHaven.Application.Books;
@@ -14,7 +15,7 @@ public class BookApplicationService(IUnitOfWork _iUnitOfWork, IFileService _file
         if (res is null)
             return Result<BookResponse>.Failure(new Error("Book Doesn't Exists.", NotFound, "Not Found"));
 
-        BookResponse? book = await _iUnitOfWork.Books.GetById(new GetBookByIdWithImages(id), cancellationToken);
+        BookResponse? book = await _iUnitOfWork.Books.GetByIdWithDetails(new GetBookByIdWithImages(id), cancellationToken);
         book.CalculateDiscountedPrice();
 
         if (!book.ImageUrls.IsEmpty())
@@ -74,7 +75,7 @@ public class BookApplicationService(IUnitOfWork _iUnitOfWork, IFileService _file
         if (res is null)
             return Result<bool>.Failure(new Error("Book Doesn't Exists.", NotFound, "Not Found"));
 
-        bool isUsed = (await _iUnitOfWork.Books.GetAll(new GetBookUsed(id), cancellationToken)).FirstOrDefault();
+        bool isUsed = await _iUnitOfWork.Books.GetBy(new GetBookUsed(id), cancellationToken);
         if (isUsed)
             return Result<bool>.Failure(new("Selected Book Cannot Be deleted, because it's being used.", BadRequest, "Book In use"));
 
@@ -87,7 +88,7 @@ public class BookApplicationService(IUnitOfWork _iUnitOfWork, IFileService _file
         if (res is null)
             return Result<bool>.Failure(new Error("Book Doesn't Exists.", NotFound, "Not Found"));
 
-        BookResponse? book = (await _iUnitOfWork.Books.GetAll(new GetBookByNameSpecification(request.Title), cancellationToken)).FirstOrDefault();
+        BookResponse? book = await _iUnitOfWork.Books.GetBy(new GetBookByNameSpecification(request.Title), cancellationToken);
         if (book is not null)
             return Result<bool>.Failure(new("Book with selected Title already Exists.", Conflict, "Title Exists"));
 

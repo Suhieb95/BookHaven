@@ -5,6 +5,7 @@ using BookHaven.Domain.Specification;
 using BookHaven.Domain.Specification.Users;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Options;
+
 namespace BookHaven.Application.Authentication.Users;
 public class UserResetPassword(IUnitOfWork _unitOfWork, IOptions<EmailSettings> emailSettings, IPasswordHasher _passwordHasher, INotificationService _notificationService, IWebHostEnvironment _env, IJwtTokenGenerator _jwtTokenGenerator) : IUserResetPassword
 {
@@ -17,14 +18,14 @@ public class UserResetPassword(IUnitOfWork _unitOfWork, IOptions<EmailSettings> 
 
         request.SetPassword(_passwordHasher.Hash(request.Password));
         await _unitOfWork.Users.UpdatePassowordResetToken(request, cancellationToken);
-        User? user = await GetUsers(new GetUserById(request.UserId), cancellationToken);
+        User? user = await GetUser(new GetUserById(request.UserId), cancellationToken);
         await EmailHelpers.SendPasswordChangedNotify(user!.EmailAddress, _emailSettings.ResetPasswordURL, _env, cancellationToken, _notificationService);
 
         return Result<bool>.Success(true);
     }
     public async Task<Result<bool>> ResetPassword(string emailAddress, CancellationToken? cancellationToken = null)
     {
-        User? user = await GetUsers(new GetUserByEmailAddress(emailAddress), cancellationToken);
+        User? user = await GetUser(new GetUserByEmailAddress(emailAddress), cancellationToken);
         if (user is null || user is not null and { IsVerified: false })
             return Result<bool>.Failure(new("User Doesn't With this Exists.", BadRequest, "Invalid User"));
 
@@ -36,15 +37,15 @@ public class UserResetPassword(IUnitOfWork _unitOfWork, IOptions<EmailSettings> 
 
     public async Task<Result<bool>> VerifyToken(Guid id, CancellationToken? cancellationToken = null)
     {
-        User? user = await GetUsers(new GetUserById(id), cancellationToken);
+        User? user = await GetUser(new GetUserById(id), cancellationToken);
         if (user is null || user is not null and { IsVerified: false })
-            return Result<bool>.Failure(new("User Doesn't Exists.", BadRequest, "Invalid User"));
+            return Result<bool>.Failure(new Error("User Doesn't Exists.", BadRequest, "Invalid User"));
 
         if (!user!.HasValidRestPasswordToken())
-            return Result<bool>.Failure(new("Token Has Expired, Please request password change again.", BadRequest, "Invalid Token"));
+            return Result<bool>.Failure(new Error("Token Has Expired, Please request password change again.", BadRequest, "Invalid Token"));
 
         return Result<bool>.Success(true);
     }
-    private async Task<User?> GetUsers(Specification specification, CancellationToken? cancellationToken)
-       => (await _unitOfWork.Users.GetAll(specification, cancellationToken)).FirstOrDefault();
+    private async Task<T?> GetUser<T>(Specification<T> specification, CancellationToken? cancellationToken)
+       => await _unitOfWork.Users.GetBy(specification, cancellationToken);
 }
