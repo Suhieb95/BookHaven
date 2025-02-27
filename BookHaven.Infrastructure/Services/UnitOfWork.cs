@@ -9,14 +9,22 @@ using BookHaven.Infrastructure.Services.Genres;
 using BookHaven.Infrastructure.Services.Users;
 
 namespace BookHaven.Infrastructure.Services;
-internal class UnitOfWork(ISqlDataAccess _sqlDataAccess, IDateTimeProvider _dateTimeProvider, IRedisCacheService _redisCacheService, IMssqlDbTransaction _mssqlDbTransaction)
+internal class UnitOfWork(ISqlDataAccess sqlDataAccess, IDateTimeProvider dateTimeProvider, IRedisCacheService redisCacheService, IMssqlDbTransaction mssqlDbTransaction)
     : IUnitOfWork
 {
     // Data Access Services
-    public ICustomerService Customers => new CustomerService(_sqlDataAccess, _dateTimeProvider);
-    public IUserService Users => new UserService(_sqlDataAccess, _dateTimeProvider, _redisCacheService);
-    public IGenreService Genres => new GenreService(_sqlDataAccess, _mssqlDbTransaction);
-    public IAuthorService Authors => new AuthorService(_sqlDataAccess, _mssqlDbTransaction);
-    public IBookImagesService BookImages => new BookImagesService(_sqlDataAccess);
-    public IBookService Books => new BookService(_sqlDataAccess, Authors, Genres, _mssqlDbTransaction);
+    private ICustomerService? _customers;
+    private IUserService? _users;
+    private IGenreService? _genres;
+    private IAuthorService? _authors;
+    private IBookImagesService? _bookImages;
+    private IBookService? _books;
+
+    // Lazy Initialization for Services
+    public ICustomerService Customers => _customers ??= new CustomerService(sqlDataAccess, dateTimeProvider);
+    public IUserService Users => _users ??= new UserService(sqlDataAccess, dateTimeProvider, redisCacheService);
+    public IGenreService Genres => _genres ??= new GenreService(sqlDataAccess, mssqlDbTransaction);
+    public IAuthorService Authors => _authors ??= new AuthorService(sqlDataAccess, mssqlDbTransaction);
+    public IBookImagesService BookImages => _bookImages ??= new BookImagesService(sqlDataAccess);
+    public IBookService Books => _books ??= new BookService(sqlDataAccess, this, mssqlDbTransaction);
 }

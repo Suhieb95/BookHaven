@@ -3,7 +3,9 @@ using BookHaven.Application.Interfaces.Services;
 using BookHaven.Infrastructure.Services;
 using BookHaven.Infrastructure.Services.EmailService;
 using BookHaven.Infrastructure.Services.Genres;
+
 using Microsoft.Extensions.DependencyInjection;
+
 namespace BookHaven.Infrastructure.DependencyInjections;
 internal static class ServiceDependencyInjection
 {
@@ -15,7 +17,6 @@ internal static class ServiceDependencyInjection
         services.AddScoped<INotificationService, NotificationService>();
         services.AddScoped<IFileService, FileService>();
         services.AddScoped<IGenreService, GenreService>();
-
         return services;
     }
 }

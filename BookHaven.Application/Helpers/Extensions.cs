@@ -72,5 +72,4 @@ public static class Extensions
     public static bool IsEmpty<T>(this T?[]? array) => array?.Length == 0 && array is null;
     public static bool IsEmptyList<T>(ICollection<T> list) => list.Count == 0;
     public static bool IsNotEmptyList<T>(ICollection<T> list) => list.Count > 0;
-
 }

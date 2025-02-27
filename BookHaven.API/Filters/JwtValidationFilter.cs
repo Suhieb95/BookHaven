@@ -42,5 +42,6 @@ public class JwtValidationFilter(IOptions<JwtSettings> jwtSettings) : IActionFil
             context.Result = new UnauthorizedObjectResult(problem);
         }
     }
+    
     public void OnActionExecuted(ActionExecutedContext context) { }
 }

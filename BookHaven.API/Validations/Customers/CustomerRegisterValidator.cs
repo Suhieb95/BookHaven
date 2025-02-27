@@ -17,6 +17,5 @@ public class CustomerRegisterValidator : AbstractValidator<CustomerRegisterReque
                                                         .MinimumLength(4)
                                                         .WithMessage("User Name has to be at Least 4 characters Long.")
                                                         .Matches(@"^\S+$").WithMessage("User Name cannot contain spaces.");
-
     }
 }

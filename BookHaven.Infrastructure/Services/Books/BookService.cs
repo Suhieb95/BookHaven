@@ -1,4 +1,5 @@
 using BookHaven.Application.Interfaces.Database;
+using BookHaven.Application.Interfaces.Repositories;
 using BookHaven.Application.Interfaces.Services;
 using BookHaven.Domain.DTOs;
 using BookHaven.Domain.DTOs.Books;
@@ -7,7 +8,7 @@ using BookHaven.Domain.Specification.Authors;
 using BookHaven.Domain.Specification.Genres;
 using BookHaven.Infrastructure.Mappings.Book;
 namespace BookHaven.Infrastructure.Services.Books;
-public class BookService(ISqlDataAccess _sqlDataAccess, IAuthorService _authorService, IGenreService _genreService, IMssqlDbTransaction _mssqlDbTransaction)
+public class BookService(ISqlDataAccess _sqlDataAccess, IUnitOfWork _unitOfWork, IMssqlDbTransaction _mssqlDbTransaction)
     : IBookService
 {
     public async Task<PaginatedResponse<BookResponse>> GetPaginated(PaginationParam param, CancellationToken? cancellationToken = default)
@@ -53,8 +54,8 @@ public class BookService(ISqlDataAccess _sqlDataAccess, IAuthorService _authorSe
             const string Sql = "SPCreateBook";
             await _mssqlDbTransaction.InitilizeTransaction();
             int result = await _mssqlDbTransaction.SaveDataInTransaction<int>(Sql, request.ToParameter(), StoredProcedure, cancellationToken);
-            await _authorService.UpdateBookAuthors(new(result, request.Authors));
-            await _genreService.UpdateBookGenres(new(result, request.Genres));
+            await _unitOfWork.Authors.UpdateBookAuthors(new(result, request.Authors));
+            await _unitOfWork.Genres.UpdateBookGenres(new(result, request.Genres));
             _mssqlDbTransaction.CommitTransaction();
             return result;
         }
@@ -71,8 +72,8 @@ public class BookService(ISqlDataAccess _sqlDataAccess, IAuthorService _authorSe
             const string Sql = "SPUpdateBook";
             await _mssqlDbTransaction.InitilizeTransaction();
             await _mssqlDbTransaction.SaveDataInTransaction(Sql, entity.ToParameter(), StoredProcedure, cancellationToken);
-            await _authorService.UpdateBookAuthors(new(entity.Id, entity.Authors));
-            await _genreService.UpdateBookGenres(new(entity.Id, entity.Genres));
+            await _unitOfWork.Authors.UpdateBookAuthors(new(entity.Id, entity.Authors));
+            await _unitOfWork.Genres.UpdateBookGenres(new(entity.Id, entity.Genres));
             _mssqlDbTransaction.CommitTransaction();
         }
         catch
@@ -99,7 +100,7 @@ public class BookService(ISqlDataAccess _sqlDataAccess, IAuthorService _authorSe
     }
     private async Task GetBookAuthorsAndGenres(BookResponse book, CancellationToken? cancellationToken = default)
     {
-        book.Authors = await _authorService.GetAll(new GetAuthorsByBookId(book.Id), cancellationToken);
-        book.Genres = await _genreService.GetAll(new GetGenresByBookId(book.Id), cancellationToken);
+        book.Authors = await _unitOfWork.Authors.GetAll(new GetAuthorsByBookId(book.Id), cancellationToken);
+        book.Genres = await _unitOfWork.Genres.GetAll(new GetGenresByBookId(book.Id), cancellationToken);
     }
 }

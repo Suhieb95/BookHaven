@@ -47,7 +47,7 @@ internal static class DependencyInjection
 
         services.AddAuthorizationBuilder()
             .AddPolicy(CustomPolicies.ExcludeNewUserPolicy, policy =>
-                        policy.Requirements.Add(new ExcludeNewUserRequirement("New User")));
+                        policy.Requirements.Add(new ExcludeNewUserRequirement(CustomRoles.NewUser)));
 
         return services;
     }
