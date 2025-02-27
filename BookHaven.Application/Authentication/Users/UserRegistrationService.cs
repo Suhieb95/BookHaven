@@ -36,9 +36,8 @@ public class UserRegistrationService(IUnitOfWork _unitOfWork, IWebHostEnvironmen
         if (user is not null and { IsActive: true })
             return Result<bool>.Failure(new Error("User with this Email Address Already Exists.", BadRequest, "User Exists"));
 
-        bool isDuplicateUserName = await _unitOfWork.Users.GetBy(new IsInternalUserUserNameUnique(request.UserName), cancellationToken);
-        if (isDuplicateUserName)
-            return Result<bool>.Failure(new Error("User Name already exists.", BadRequest, "Invalid User Name"));
+        (bool flowControl, Result<bool>? result) = await CheckUserNameExistence.ValidateUserName<bool>(_unitOfWork, request.UserName, userType: UserType.Internal, cancellationToken: cancellationToken);
+        if (flowControl == false) return result!;
 
         Guid id = await _unitOfWork.Users.Add(request, cancellationToken);
         await SendEmailConfirmationLink(cancellationToken, id);

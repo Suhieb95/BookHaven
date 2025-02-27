@@ -1,3 +1,4 @@
+using BookHaven.Application.Authentication.Common;
 using BookHaven.Application.Interfaces.Services;
 using BookHaven.Domain.DTOs;
 using BookHaven.Domain.DTOs.Customers;
@@ -26,9 +27,8 @@ public class CustomerUpdateService(IUnitOfWork _unitOfWork, IFileService _fileSe
         if (currentUser is null)
             return Result<bool>.Failure(new Error("Customer Doesn't Exists.", NotFound, "Customer Not Found"));
 
-        bool isDuplicateUserName = await _unitOfWork.Customers.GetBy(new IsCustomerUserNameUnique(request.UserName, currentUser.Id), cancellationToken);
-        if (isDuplicateUserName)
-            return Result<bool>.Failure(new Error("User Name already exists.", BadRequest, "Invalid User Name"));
+        (bool flowControl, Result<bool>? result) = await CheckUserNameExistence.ValidateUserName<bool>(_unitOfWork, request.UserName, currentUser.Id, cancellationToken: cancellationToken);
+        if (flowControl == false) return result!;
 
         if (request.Image is not null)
         {
