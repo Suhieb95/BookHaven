@@ -1,4 +1,4 @@
-using BookHaven.Application.Authentication;
+using BookHaven.Application.Authentication.AuthRequirements;
 namespace BookHaven.API.Handlers;
 internal class PermissionAuthoriztionHandler : AuthorizationHandler<PermissionRequirement>
 {

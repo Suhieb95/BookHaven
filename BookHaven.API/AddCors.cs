@@ -1,3 +1,5 @@
+using Microsoft.Extensions.Options;
+
 namespace BookHaven.API;
 internal static class AddCors
 {
@@ -5,13 +7,11 @@ internal static class AddCors
     {
         ArgumentNullException.ThrowIfNull(services);
 
-        var anyCors = new AnyCorsPolicy();
-        configureManager.Bind(AnyCorsPolicy.SectionName, anyCors);
-        services.AddSingleton(anyCors);
+        AnyCorsPolicy anyCors = configureManager.GetSection(AnyCorsPolicy.SectionName).Get<AnyCorsPolicy>()!;
 
-        var specifiedOrigin = new SpecifiedOriginCorsPolicy();
+        SpecifiedOriginCorsPolicy? specifiedOrigin = new();
         configureManager.Bind(SpecifiedOriginCorsPolicy.SectionName, specifiedOrigin);
-        services.AddSingleton(specifiedOrigin);
+        services.AddSingleton(Options.Create(specifiedOrigin));
 
         services.AddCors(opt =>
         {

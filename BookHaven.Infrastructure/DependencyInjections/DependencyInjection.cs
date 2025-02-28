@@ -1,4 +1,4 @@
-using CloudinaryDotNet;
+using Account = CloudinaryDotNet.Account;
 using BookHaven.Application.Interfaces.Services;
 using BookHaven.Domain.Entities;
 using BookHaven.Infrastructure.DataAccess;
@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Http.Timeouts;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using Stripe;
 
 namespace BookHaven.Infrastructure.DependencyInjections;
 public static class DependencyInjection
@@ -49,7 +50,12 @@ public static class DependencyInjection
         services.Configure<RefreshJwtSettings>(configuration.GetSection(RefreshJwtSettings.SectionName));
         services.Configure<EmailSettings>(configuration.GetSection(EmailSettings.SectionName));
         services.Configure<IpProvider>(configuration.GetSection(IpProvider.SectionName));
-        services.Configure<StripeSettings>(configuration.GetSection(StripeSettings.SectionName));
+
+        StripeSettings stripeSettings = new();
+        configuration.Bind(StripeSettings.SectionName, stripeSettings);
+        services.AddSingleton(Options.Create(stripeSettings));
+
+        StripeConfiguration.ApiKey = stripeSettings.Secretkey;
     }
     private static IServiceCollection AddCloudinary(this IServiceCollection services, IConfiguration configuration)
     {
@@ -57,9 +63,9 @@ public static class DependencyInjection
 
         CloudinarySettings cloudinarySettings = configuration.GetSection(CloudinarySettings.SectionName).Get<CloudinarySettings>()!;
         Account cloudinaryAccount = new(
-            cloudinarySettings.CloudName,
-            cloudinarySettings.ApiKey,
-            cloudinarySettings.ApiSecret);
+             cloudinarySettings.CloudName,
+             cloudinarySettings.ApiKey,
+             cloudinarySettings.ApiSecret);
 
         services.AddSingleton(Options.Create(cloudinaryAccount));
         return services;

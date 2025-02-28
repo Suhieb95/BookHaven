@@ -1,112 +1,90 @@
+using BookHaven.API.Common.Constants;
+
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
-using Stripe;
+
 using Stripe.Checkout;
 
 namespace BookHaven.API.Controllers;
-[AllowAnonymous]
-public class CheckoutController(IOptions<StripeSettings> stripeSettings) : BaseController
+
+[AllowAnonymous] // To be changed
+public class CheckoutController(IOptions<StripeSettings> stripeSettings, IOptions<SpecifiedOriginCorsPolicy> specifiedOriginCorsPolicy, IWebHostEnvironment _env) : BaseController
 {
     private readonly StripeSettings _stripeSettings = stripeSettings.Value;
-    [HttpPost]
-    public async Task<IActionResult> Index()
+    private readonly string _clientURL = _env.IsDevelopment()
+                                        ? specifiedOriginCorsPolicy.Value.LocalURL! + "/"
+                                        : specifiedOriginCorsPolicy.Value.ProductionURL!;
+
+    [HttpPost(ApiEndPoints.Stripe.CreateSession)]
+    public async Task<ActionResult> CheckoutOrder(Product product)
     {
-        var json = await new StreamReader(HttpContext.Request.Body).ReadToEndAsync();
+        string? publicKey = _stripeSettings.PublishableKey;
+        var referer = Request.Headers.Referer.ToString();
+        if (_clientURL != referer)
+            return Forbid();
 
-        try
-        {
-            var stripeEvent = EventUtility.ParseEvent(json);
-
-            // Handle the event
-            // If on SDK version < 46, use class Events instead of EventTypes
-            if (stripeEvent.Type == EventTypes.PaymentIntentSucceeded)
-            {
-                var paymentIntent = stripeEvent.Data.Object as PaymentIntent;
-                // Then define and call a method to handle the successful payment intent.
-                // handlePaymentIntentSucceeded(paymentIntent);
-            }
-            else if (stripeEvent.Type == EventTypes.PaymentMethodAttached)
-            {
-                var paymentMethod = stripeEvent.Data.Object as PaymentMethod;
-                // Then define and call a method to handle the successful attachment of a PaymentMethod.
-                // handlePaymentMethodAttached(paymentMethod);
-            }
-            // ... handle other event types
-            else
-            {
-                // Unexpected event type
-                Console.WriteLine("Unhandled event type: {0}", stripeEvent.Type);
-            }
-            return Ok();
-        }
-        catch (StripeException e)
-        {
-            return BadRequest(e);
-        }
+        var sessionId = await CreateCheckoutSession(product);
+        return string.IsNullOrEmpty(sessionId)
+            ? StatusCode(500, "Failed to create Stripe checkout session.")
+            : Ok(new { SessionId = sessionId, PubKey = publicKey });
     }
 
-    [HttpPost("confirm-payment")]
-    public async Task<IActionResult> ConfirmPayment([FromBody] ConfirmPaymentRequest request)
+    [HttpGet(ApiEndPoints.Stripe.CheckoutSuccess)]
+    public async Task<ActionResult> CheckoutSuccess([FromQuery] string sessionId)
     {
-        StripeConfiguration.ApiKey = _stripeSettings.Secretkey;
+        var sessionService = new SessionService();
+        var session = await sessionService.GetAsync(sessionId);
 
-        var service = new SessionService();
-        Session session = await service.GetAsync(request.SessionId);
+        var total = session.AmountTotal;
+        var customerEmail = session.CustomerDetails.Email;
 
-        if (session.PaymentStatus == "paid")
-        {
-            // Handle success (e.g., update order status, notify user, etc.)
-            return Ok(new { message = "Payment successful" });
-        }
+        // Save order details to database here...
 
-        return BadRequest(new { message = "Payment failed" });
+        return Ok(new { total, customerEmail });
     }
-    [HttpPost("create-session")]
-    public async Task<ActionResult> CreateCheckoutSession([FromBody] CheckoutSessionRequest request)
+    private async Task<string> CreateCheckoutSession(Product product)
     {
-        StripeConfiguration.ApiKey = _stripeSettings.Secretkey;
-
         var options = new SessionCreateOptions
         {
+            SuccessUrl = $"{_clientURL}checkout/success?sessionId={{CHECKOUT_SESSION_ID}}",
+            CancelUrl = $"{_clientURL}checkout/cancel",
             PaymentMethodTypes = ["card"],
-            LineItems = request.LineItems.Select(item => new SessionLineItemOptions
-            {
-                PriceData = new SessionLineItemPriceDataOptions
+            LineItems =
+            [
+                new()
                 {
-                    Currency = "usd",
-                    ProductData = new SessionLineItemPriceDataProductDataOptions
+                    PriceData = new SessionLineItemPriceDataOptions
                     {
-                        Name = item.Name,
+                        UnitAmount = product.Price *100 , // Convert to fills
+                        Currency = "AED",
+                        ProductData = new SessionLineItemPriceDataProductDataOptions
+                        {
+                            Name = product.Title,
+                            Description = product.Description,
+                            Images = [product.ImageUrl]
+                        },
                     },
-                    UnitAmount = (long)item.Price * 100, // Stripe expects price in cents
+                    Quantity = 1,
                 },
-                Quantity = item.Quantity,
-            }).ToList(),
+            ],
             Mode = "payment",
-            SuccessUrl = $"{request.SuccessUrl}?session_id={{CHECKOUT_SESSION_ID}}",
-            CancelUrl = request.CancelUrl,
+            CustomerEmail = product.CustomerEmail, // Prefill the customer's email
+
         };
 
         var service = new SessionService();
-        Session session = await service.CreateAsync(options);
-
-        return Ok(new { id = session.Id });
+        var session = await service.CreateAsync(options);
+        return session.Id;
     }
 }
-public class ConfirmPaymentRequest
-{
-    public string SessionId { get; set; } = default!;
-}
-public class CheckoutSessionRequest
-{
-    public List<LineItem> LineItems { get; set; } = default!;
-    public string SuccessUrl { get; set; } = default!;
-    public string CancelUrl { get; set; } = default!;
-}
 
-public class LineItem
+
+public class Product
 {
-    public string Name { get; set; } = default!;
-    public decimal Price { get; set; }
-    public int Quantity { get; set; }
+    public string Id { get; set; } = Guid.NewGuid().ToString();
+    public string Title { get; set; } = string.Empty;
+    public string? Description { get; set; }
+    public string? ImageUrl { get; set; }
+    public long Price { get; set; }
+    public string CustomerEmail { get; set; } = default!;
 }

@@ -1,5 +1,6 @@
 using System.Security.Claims;
-using BookHaven.Application.Authentication;
+
+using BookHaven.Application.Authentication.AuthRequirements;
 namespace BookHaven.API.Handlers;
 public class ExcludeNewUserAuthoriztionHandler : AuthorizationHandler<ExcludeNewUserRequirement>
 {

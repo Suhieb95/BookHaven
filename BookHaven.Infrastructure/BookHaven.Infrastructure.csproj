@@ -19,6 +19,7 @@
     <PackageReference Include="AspNetCore.HealthChecks.SqlServer" Version="9.0.0" />
     <PackageReference Include="Hangfire" Version="1.8.18" />
     <PackageReference Include="MongoDB.Driver" Version="3.2.1" />
+    <PackageReference Include="Stripe.net" Version="47.4.0" />
     <PackageReference Include="CloudinaryDotNet" Version="1.27.4" />
     <PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="9.0.2" />
   </ItemGroup>

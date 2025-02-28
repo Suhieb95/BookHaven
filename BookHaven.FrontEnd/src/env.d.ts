@@ -12,6 +12,7 @@ interface ImportMetaEnv {
   readonly VITE_TURNSTILE_SITEKEY: string;
   readonly VITE_GOOGLE_CLIENTID: string;
   readonly VITE_UTM_TRACKER: string;
+  readonly VITE_STRIPE_KEY: string;
 }
 
 interface ImportMeta {

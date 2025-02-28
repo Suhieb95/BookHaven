@@ -4,7 +4,6 @@ using BookHaven.API.Common;
 using BookHaven.API.Common.Constants;
 using BookHaven.API.Filters;
 using BookHaven.API.Handlers;
-using BookHaven.Application.Authentication;
 using BookHaven.Application.DependencyInjection;
 using BookHaven.Infrastructure.DependencyInjections;
 using Microsoft.AspNetCore.Http.Features;
@@ -13,6 +12,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Versioning;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.OpenApi.Models;
+using BookHaven.Application.Authentication.AuthRequirements;
 
 namespace BookHaven.API;
 internal static class DependencyInjection
@@ -101,6 +101,7 @@ internal static class DependencyInjection
     {
         services.AddSwaggerGen(c =>
         {
+            c.SwaggerDoc("v1", new OpenApiInfo { Title = "BookHaven", Version = "v1" });
             c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
             {
                 In = ParameterLocation.Header,
@@ -111,7 +112,6 @@ internal static class DependencyInjection
                 Scheme = "bearer"
             });
 
-            // Add security requirement to all API operations in Swagger UI
             c.AddSecurityRequirement(new OpenApiSecurityRequirement
             {
                 {

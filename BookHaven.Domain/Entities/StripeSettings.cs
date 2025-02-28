@@ -2,6 +2,6 @@ namespace BookHaven.Domain.Entities;
 public class StripeSettings
 {
     public const string SectionName = "Stripe";
-    public required string PublishableKey { get; init; }
-    public required string Secretkey { get; init; }
+    public string PublishableKey { get; set; } = default!;
+    public string Secretkey { get; set; } = default!;
 }

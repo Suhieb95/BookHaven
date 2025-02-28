@@ -1,14 +1,19 @@
+import { BrowserRouter as Router, Routes, Route } from "react-router";
+import CheckoutButton from "./CheckoutButton";
+import SuccessPage from "./SuccessPage";
+import CancelPage from "./CancelPage";
+
 function App() {
   return (
-    <section>
-      <h1 className="bg-red">Hello Word!, This is a test page.</h1>
-      <p>
-        <dfn>
-          <abbr>BookHaven</abbr>
-        </dfn>{" "}
-        is a mouse devs project.
-      </p>
-    </section>
+    <Router>
+      <Routes>
+        <Route path="/">
+          <Route path="" index element={<CheckoutButton />} />
+          <Route path="checkout/success" element={<SuccessPage />} />
+          <Route path="checkout/cancel" element={<CancelPage />} />
+        </Route>
+      </Routes>
+    </Router>
   );
 }
 

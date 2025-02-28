@@ -1,4 +1,5 @@
-using BookHaven.Application.Authentication;
+using BookHaven.Application.Authentication.AuthRequirements;
+
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.DependencyInjection;
 namespace BookHaven.Application.DependencyInjection;
