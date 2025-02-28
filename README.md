@@ -12,7 +12,8 @@ Welcome to **BookHaven**, an advanced online library store designed to simplify 
 - **Top Books Sold**: Suggest books based on Most sold books.
 - **User Authentication**: Secure login and registration using JWT and cookie-based sessions.
 - **Search & Filter**: Search books by title, author, genre, etc.
-
+- **Stripe Payment Gateway Integration**: Seamlessly Make payments, and get your order processed.
+  
 ## Tech Stack
 
 
