@@ -30,6 +30,7 @@ Welcome to **BookHaven**, an advanced online library store designed to simplify 
 ### Backend:
 - **C# Web API**: RESTful APIs to handle all business logic.
 - **SQL Server (MSSQL)**: For managing database and storing all related data for books, customers, and transactions.
+- **Redis**: For Caching Data.
 - **Authentication**: JWT (JSON Web Tokens), Cookie-based session management.
 
 ### Database Schema
