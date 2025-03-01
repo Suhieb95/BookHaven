@@ -87,7 +87,7 @@ internal static class EmailHelpers
     {
         string? ipAddress = _httpContextAccessor.HttpContext?.GetServerVariable("HTTP_X_FORWARDED_FOR") ?? _httpContextAccessor.HttpContext?.Connection.RemoteIpAddress?.ToString();
         string? ipAddressWithoutPort = ipAddress?.Split(':')[0];
-        IpApiResponse? ipApiResponse = await _IPApiClient.Get(ipAddressWithoutPort, cancellationToken ?? CancellationToken.None);
+        IPApiResponse? ipApiResponse = await _IPApiClient.Get(ipAddressWithoutPort, cancellationToken ?? CancellationToken.None);
         return $"{ipApiResponse?.Country} - {ipApiResponse?.City}";
     }
 }

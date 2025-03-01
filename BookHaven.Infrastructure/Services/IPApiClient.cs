@@ -8,12 +8,12 @@ public class IPApiClient(IOptions<IpProvider> ipProvider, IHttpClientFactory htt
 {
     private readonly IpProvider _IpProvider = ipProvider.Value;
     private readonly IHttpClientFactory _httpClient = httpClient;
-    public async Task<IpApiResponse?> Get(string? ipAddress, CancellationToken ct)
+    public async Task<IPApiResponse?> Get(string? ipAddress, CancellationToken ct)
     {
         HttpClient? client = _httpClient.CreateClient();
         client.BaseAddress = new Uri(_IpProvider.Provider);
 
-        IpApiResponse? response = await client.GetFromJsonAsync<IpApiResponse>($"/json/{ipAddress}", ct);
+        IPApiResponse? response = await client.GetFromJsonAsync<IPApiResponse>($"/json/{ipAddress}", ct);
         return response;
     }
 }
