@@ -4,17 +4,16 @@ using BookHaven.Domain.DTOs.Auth;
 using BookHaven.Domain.Entities;
 using Microsoft.Extensions.Options;
 namespace BookHaven.Infrastructure.Services;
-public class IPApiClient : IIPApiClient
+public class IPApiClient(IOptions<IpProvider> ipProvider, IHttpClientFactory httpClient) : IIPApiClient
 {
-    private readonly IpProvider _IpProvider;
-    private readonly HttpClient _httpClient;
-    public IPApiClient(IOptions<IpProvider> ipProvider, HttpClient httpClient)
-        => (_IpProvider, _httpClient) = (ipProvider.Value, httpClient);
+    private readonly IpProvider _IpProvider = ipProvider.Value;
+    private readonly IHttpClientFactory _httpClient = httpClient;
     public async Task<IpApiResponse?> Get(string? ipAddress, CancellationToken ct)
     {
-        var route = $"{_IpProvider.Provider}/json/{ipAddress}";
-        var response = await _httpClient.GetFromJsonAsync<IpApiResponse>(route, ct);
+        HttpClient? client = _httpClient.CreateClient();
+        client.BaseAddress = new Uri(_IpProvider.Provider);
+
+        IpApiResponse? response = await client.GetFromJsonAsync<IpApiResponse>($"/json/{ipAddress}", ct);
         return response;
     }
 }
-

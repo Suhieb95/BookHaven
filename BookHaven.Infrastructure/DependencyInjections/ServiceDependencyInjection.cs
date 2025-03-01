@@ -1,5 +1,7 @@
 using BookHaven.Application.Interfaces.Repositories;
 using BookHaven.Application.Interfaces.Services;
+using BookHaven.Domain.DTOs;
+using BookHaven.Domain.Entities;
 using BookHaven.Infrastructure.Services;
 using BookHaven.Infrastructure.Services.EmailService;
 using BookHaven.Infrastructure.Services.Genres;
@@ -18,6 +20,7 @@ internal static class ServiceDependencyInjection
         services.AddScoped<IFileService, FileService>();
         services.AddScoped<IGenreService, GenreService>();
         services.AddScoped<IGenericSpecificationReadRepository, GenericSpecificationReadRepository>();
+        services.AddScoped<IPaymentService<Result<StripeCheckoutResponse>, Product>, StripePaymentService>();
         return services;
     }
 }

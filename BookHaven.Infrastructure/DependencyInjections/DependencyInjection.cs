@@ -47,7 +47,7 @@ public static class DependencyInjection
     {
         ArgumentNullException.ThrowIfNull(services);
 
-            services.Configure<AllowedAgent>(configuration.GetSection(AllowedAgent.SectionName));
+        services.Configure<AllowedAgent>(configuration.GetSection(AllowedAgent.SectionName));
         services.Configure<RefreshJwtSettings>(configuration.GetSection(RefreshJwtSettings.SectionName));
         services.Configure<EmailSettings>(configuration.GetSection(EmailSettings.SectionName));
         services.Configure<IpProvider>(configuration.GetSection(IpProvider.SectionName));

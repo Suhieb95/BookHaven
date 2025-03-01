@@ -4,7 +4,7 @@ using Extensions = BookHaven.Application.Helpers.Extensions;
 namespace BookHaven.API.Validations.Book;
 public class CreateBookRequestValidator : AbstractValidator<CreateBookRequest>
 {
-    private readonly int currentYear = DateTime.Now.Year;
+    private readonly int _currentYear = DateTime.Now.Year;
     public CreateBookRequestValidator()
     {
         RuleFor(x => x.Images).ForEach(x =>
@@ -15,8 +15,8 @@ public class CreateBookRequestValidator : AbstractValidator<CreateBookRequest>
                     .WithMessage("Invalid ISBN. Must be a valid ISBN-10 or ISBN-13.");
         RuleFor(x => x.PublishedYear).GreaterThanOrEqualTo((short)1600)
                                                 .WithMessage("Published year must be greater than or equal to 1600.")
-                                                .LessThanOrEqualTo((short)currentYear)
-                                                .WithMessage($"Published year must be less than or equal to {currentYear}.");
+                                                .LessThanOrEqualTo((short)_currentYear)
+                                                .WithMessage($"Published year must be less than or equal to {_currentYear}.");
         RuleFor(x => x.Authors).Must(x => x.Count > 0).WithMessage("Authors cannot be empty.");
         RuleFor(x => x.Genres).Must(x => x.Count > 0).WithMessage("Genres cannot be empty.");
     }
