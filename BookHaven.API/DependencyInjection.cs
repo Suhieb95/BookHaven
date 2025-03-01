@@ -39,6 +39,7 @@ internal static class DependencyInjection
         services.AddControllers(options =>
         {
             options.Filters.Add<JwtValidationFilter>();
+            options.Filters.Add<UserAgentFilter>();
         });
 
         services.AddScoped<LastLoginFilter>();

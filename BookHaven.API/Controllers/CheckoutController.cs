@@ -16,7 +16,7 @@ public class CheckoutController(IOptions<StripeSettings> stripeSettings, IOption
                                         : specifiedOriginCorsPolicy.Value.ProductionURL!;
 
     [HttpPost(ApiEndPoints.Stripe.CreateSession)]
-    public async Task<ActionResult> CheckoutOrder(Product product)
+    public async Task<IActionResult> CheckoutOrder(ProductRequest product)
     {
         string? publicKey = _stripeSettings.PublishableKey;
         var referer = Request.Headers.Referer.ToString();
@@ -30,7 +30,7 @@ public class CheckoutController(IOptions<StripeSettings> stripeSettings, IOption
     }
 
     [HttpGet(ApiEndPoints.Stripe.CheckoutSuccess)]
-    public async Task<ActionResult> CheckoutSuccess([FromQuery] string sessionId)
+    public async Task<IActionResult> CheckoutSuccess([FromQuery] string sessionId)
     {
         var sessionService = new SessionService();
         var session = await sessionService.GetAsync(sessionId);
@@ -42,7 +42,7 @@ public class CheckoutController(IOptions<StripeSettings> stripeSettings, IOption
 
         return Ok(new { total, customerEmail });
     }
-    private async Task<string> CreateCheckoutSession(Product product)
+    private async Task<string> CreateCheckoutSession(ProductRequest product)
     {
         var options = new SessionCreateOptions
         {
@@ -79,7 +79,7 @@ public class CheckoutController(IOptions<StripeSettings> stripeSettings, IOption
 }
 
 
-public class Product
+public class ProductRequest
 {
     public string Id { get; set; } = Guid.NewGuid().ToString();
     public string Title { get; set; } = string.Empty;
