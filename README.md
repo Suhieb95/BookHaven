@@ -12,7 +12,8 @@ Welcome to **BookHaven**, an advanced online library store designed to simplify 
 - **Top Books Sold**: Suggest books based on Most sold books.
 - **User Authentication**: Secure login and registration using JWT and cookie-based sessions.
 - **Search & Filter**: Search books by title, author, genre, etc.
-
+- **Stripe Payment Gateway Integration**: Seamlessly Make payments, and get your order processed.
+  
 ## Tech Stack
 
 
@@ -29,6 +30,7 @@ Welcome to **BookHaven**, an advanced online library store designed to simplify 
 ### Backend:
 - **C# Web API**: RESTful APIs to handle all business logic.
 - **SQL Server (MSSQL)**: For managing database and storing all related data for books, customers, and transactions.
+- **Redis**: For Caching Data.
 - **Authentication**: JWT (JSON Web Tokens), Cookie-based session management.
 
 ### Database Schema
