@@ -4,8 +4,10 @@ using Microsoft.AspNetCore.Http;
 
 namespace BookHaven.Infrastructure.Services;
 
-public class IdentityService(IHttpContextAccessor _IhttpContextAccessor) : IIdentityService
+public class IdentityService(IHttpContextAccessor IhttpContextAccessor) : IIdentityService
 {
+    private readonly IHttpContextAccessor _IhttpContextAccessor = IhttpContextAccessor;
+
     public Guid? GetCurrentLoggedInUser()
     {
         //The "D" format specifier stands for "32 digits separated by hyphens."

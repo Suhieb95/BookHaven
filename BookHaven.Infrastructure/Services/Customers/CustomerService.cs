@@ -3,8 +3,11 @@ using BookHaven.Application.Interfaces.Services;
 using BookHaven.Domain.DTOs.Customers;
 using BookHaven.Infrastructure.Mappings.Person;
 namespace BookHaven.Infrastructure.Services.Customers;
-public class CustomerService(ISqlDataAccess _sqlDataAccess, IDateTimeProvider _dateTimeProvider) : GenericSpecificationReadRepository(_sqlDataAccess), ICustomerService
+public class CustomerService(ISqlDataAccess sqlDataAccess, IDateTimeProvider dateTimeProvider)
+         : GenericSpecificationReadRepository(sqlDataAccess), ICustomerService
 {
+    private readonly ISqlDataAccess _sqlDataAccess = sqlDataAccess;
+    private readonly IDateTimeProvider _dateTimeProvider = dateTimeProvider;
     public async Task<Guid> Add(CustomerRegisterRequest request, CancellationToken? cancellationToken)
     {
         const string Sql = "SPCreateCustomer";

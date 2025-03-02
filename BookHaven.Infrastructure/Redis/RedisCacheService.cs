@@ -5,8 +5,10 @@ using BookHaven.Application.Interfaces.Services;
 using StackExchange.Redis;
 
 namespace BookHaven.Infrastructure.Redis;
-public class RedisCacheService(IDatabase _db) : IRedisCacheService
+public class RedisCacheService(IDatabase db) : IRedisCacheService
 {
+    private readonly IDatabase _db = db;
+
     public async Task<bool> Delete(string key)
         => !string.IsNullOrEmpty(key) && await _db.KeyDeleteAsync(key);
     public async Task<T?> Get<T>(string key)

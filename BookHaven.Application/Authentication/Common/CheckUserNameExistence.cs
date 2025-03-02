@@ -5,19 +5,6 @@ using BookHaven.Domain.Specification.Users;
 namespace BookHaven.Application.Authentication.Common;
 internal static class CheckUserNameExistence
 {
-    private static async Task<bool> IsUserNameUnique(
-        IUnitOfWork unitOfWork,
-        string userName,
-        Guid? id,
-        UserType userType,
-        CancellationToken cancellationToken)
-        => userType switch
-        {
-            UserType.Internal => await unitOfWork.Users.GetBy(new IsInternalUserUserNameUnique(userName, id), cancellationToken),
-            UserType.Customer => await unitOfWork.Customers.GetBy(new IsCustomerUserNameUnique(userName, id), cancellationToken),
-            _ => throw new ArgumentOutOfRangeException($"Invalid UserType: {userType}")
-        };
-
     internal static async Task<(bool, Result<T>?)> ValidateUserName<T>(
         IUnitOfWork unitOfWork,
         string userName,
@@ -25,7 +12,7 @@ internal static class CheckUserNameExistence
         UserType userType = UserType.Customer,
         CancellationToken? cancellationToken = default)
     {
-        cancellationToken ??= CancellationToken.None; 
+        cancellationToken ??= CancellationToken.None;
 
         bool isDuplicateUserName = await IsUserNameUnique(unitOfWork, userName, id, userType, cancellationToken.Value);
 
@@ -37,4 +24,16 @@ internal static class CheckUserNameExistence
 
         return (true, null);
     }
+    private static async Task<bool> IsUserNameUnique(
+       IUnitOfWork unitOfWork,
+       string userName,
+       Guid? id,
+       UserType userType,
+       CancellationToken cancellationToken)
+       => userType switch
+       {
+           UserType.Internal => await unitOfWork.Users.GetBy(new IsInternalUserUserNameUnique(userName, id), cancellationToken),
+           UserType.Customer => await unitOfWork.Customers.GetBy(new IsCustomerUserNameUnique(userName, id), cancellationToken),
+           _ => throw new ArgumentOutOfRangeException($"Invalid UserType: {userType}")
+       };
 }

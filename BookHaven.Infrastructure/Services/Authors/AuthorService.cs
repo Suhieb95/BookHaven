@@ -3,8 +3,10 @@ using BookHaven.Application.Interfaces.Services;
 using BookHaven.Domain.DTOs.Books;
 using BookHaven.Domain.Entities;
 namespace BookHaven.Infrastructure.Services.Authors;
-public class AuthorService(ISqlDataAccess _sqlDataAccess, IMssqlDbTransaction _mssqlDbTransaction) : GenericSpecificationReadRepository(_sqlDataAccess), IAuthorService
+public class AuthorService(ISqlDataAccess sqlDataAccess, IMssqlDbTransaction mssqlDbTransaction) : GenericSpecificationReadRepository(sqlDataAccess), IAuthorService
 {
+    private readonly ISqlDataAccess _sqlDataAccess = sqlDataAccess;
+    private readonly IMssqlDbTransaction _mssqlDbTransaction = mssqlDbTransaction;
     private readonly string _upsertAuthor = "UpsertAuthor";
     public async Task<int> Add(Author entity, CancellationToken? cancellationToken = null)
         => await _sqlDataAccess.SaveData<int>(_upsertAuthor, entity, StoredProcedure, cancellationToken);

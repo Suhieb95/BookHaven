@@ -1,8 +1,8 @@
 namespace BookHaven.Domain.DTOs.BaseModels;
-public abstract class LoginRequestBase
+public abstract class LoginBaseRequest
 {
-    public LoginRequestBase() { }
-    public LoginRequestBase(string emailAddress, string password)
+    public LoginBaseRequest() { }
+    public LoginBaseRequest(string emailAddress, string password)
     {
         EmailAddress = emailAddress;
         Password = password;

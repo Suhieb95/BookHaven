@@ -1,8 +1,9 @@
 ﻿using BookHaven.Domain.DTOs;
 using BookHaven.Domain.Specification.Genres;
 namespace BookHaven.Application.Genres;
-public class GenreApplicationService(IUnitOfWork _unitOfWork) : IGenreApplicationService
+public class GenreApplicationService(IUnitOfWork unitOfWork) : IGenreApplicationService
 {
+    private readonly IUnitOfWork _unitOfWork = unitOfWork;
     public async Task<Result<int>> Add(Genre entity, CancellationToken? cancellationToken = null)
     {
         Genre? usedGenre = await _unitOfWork.Genres.GetBy(new GetGenreByName(entity.Name), cancellationToken);

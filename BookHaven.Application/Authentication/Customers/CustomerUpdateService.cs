@@ -5,8 +5,12 @@ using BookHaven.Domain.DTOs.Customers;
 using BookHaven.Domain.Specification.Customers;
 
 namespace BookHaven.Application.Authentication.Customers;
-public class CustomerUpdateService(IUnitOfWork _unitOfWork, IFileService _fileService, IPasswordHasher _passwordHasher) : ICustomerUpdateService
+public class CustomerUpdateService(IUnitOfWork unitOfWork, IFileService fileService, IPasswordHasher passwordHasher) : ICustomerUpdateService
 {
+    private readonly IUnitOfWork _unitOfWork = unitOfWork;
+    private readonly IFileService _fileService = fileService;
+    private readonly IPasswordHasher _passwordHasher = passwordHasher;
+
     public async Task<Result<bool>> RemoveProfilePicture(Guid id, CancellationToken? cancellationToken = null)
     {
         Customer? currentUser = (await _unitOfWork.Customers.GetAll(new GetCustomerById(id), cancellationToken)).FirstOrDefault();

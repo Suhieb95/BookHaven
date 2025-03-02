@@ -6,8 +6,12 @@ using BookHaven.Domain.Enums;
 using BookHaven.Domain.Specification.Users;
 
 namespace BookHaven.Application.Authentication.Users;
-public class UserUpdateService(IUnitOfWork _unitOfWork, IFileService _fileService, IPasswordHasher _passwordHasher) : IUserUpdateService
+public class UserUpdateService(IUnitOfWork unitOfWork, IFileService fileService, IPasswordHasher passwordHasher) : IUserUpdateService
 {
+    private readonly IUnitOfWork _unitOfWork = unitOfWork;
+    private readonly IFileService _fileService = fileService;
+    private readonly IPasswordHasher _passwordHasher = passwordHasher;
+
     public async Task<Result<bool>> RemoveProfilePicture(Guid id, CancellationToken? cancellationToken = null)
     {
         User? currentUser = await _unitOfWork.Users.GetBy(new GetUserById(id), cancellationToken);

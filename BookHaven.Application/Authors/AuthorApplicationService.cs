@@ -1,7 +1,8 @@
 using BookHaven.Domain.Specification.Authors;
 namespace BookHaven.Application.Authors;
-public class AuthorApplicationService(IUnitOfWork _unitOfWork) : IAuthorApplicationService
+public class AuthorApplicationService(IUnitOfWork unitOfWork) : IAuthorApplicationService
 {
+    private readonly IUnitOfWork _unitOfWork = unitOfWork;
     public async Task<Result<int>> Create(Author request, CancellationToken? cancellationToken = null)
     {
         int result = await _unitOfWork.Authors.Add(request, cancellationToken);

@@ -4,8 +4,10 @@ using BookHaven.Domain.DTOs.Auth;
 using BookHaven.Domain.Enums;
 
 namespace BookHaven.Infrastructure.Services.Auth;
-public class UserSecurityService(ISqlDataAccess _sqlDataAccess) : IUserSecurityService
+public class UserSecurityService(ISqlDataAccess sqlDataAccess) : IUserSecurityService
 {
+    private readonly ISqlDataAccess _sqlDataAccess = sqlDataAccess;
+
     public async Task SaveEmailConfirmationToken(EmailConfirmationResult emailConfirmationResult, CancellationToken? cancellationToken, UserType userType = UserType.Customer)
     {
         string sql = $@"UPDATE {GetTableName(userType)} SET VerifyEmailTokenExpiry = @VerifyEmailTokenExpiry, VerifyEmailToken = @VerifyEmailToken WHERE Id = @Id";

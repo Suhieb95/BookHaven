@@ -9,10 +9,19 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 
 namespace BookHaven.Application.Authentication.Users;
-public class UserLoginService(IUnitOfWork _unitOfWork, IOptions<EmailSettings> emailSettings, IPasswordHasher _passwordHasher, INotificationService _notificationService, IWebHostEnvironment _env, IJwtTokenGenerator _jwtTokenGenerator, IFileService _fileService, IIPApiClient _IPApiClient, IDateTimeProvider _dateTimeProvider, IHttpContextAccessor _httpContextAccessor)
+public class UserLoginService(IUnitOfWork unitOfWork, IOptions<EmailSettings> emailSettings, IPasswordHasher passwordHasher, INotificationService notificationService, IWebHostEnvironment env, IJwtTokenGenerator jwtTokenGenerator, IFileService fileService, IIPApiClient IPApiClient, IDateTimeProvider dateTimeProvider, IHttpContextAccessor httpContextAccessor)
     : IUserLoginService
 {
     private readonly EmailSettings _emailSettings = emailSettings.Value;
+    private readonly IUnitOfWork _unitOfWork = unitOfWork;
+    private readonly IJwtTokenGenerator _jwtTokenGenerator = jwtTokenGenerator;
+    private readonly INotificationService _notificationService = notificationService;
+    private readonly IIPApiClient _iPApiClient = IPApiClient;
+    private readonly IWebHostEnvironment _env = env;
+    private readonly IPasswordHasher _passwordHasher = passwordHasher;
+    private readonly IFileService _fileService = fileService;
+    private readonly IDateTimeProvider _dateTimeProvider = dateTimeProvider;
+    private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
     public async Task<Result<InternalUserLoginResponse>> Login(InternalUserLoginRequest request, CancellationToken? cancellationToken = default)
     {
         User? currentUser = (await _unitOfWork.Users.GetAll(new GetUserByEmailAddress(request.EmailAddress), cancellationToken)).FirstOrDefault();
@@ -26,7 +35,7 @@ public class UserLoginService(IUnitOfWork _unitOfWork, IOptions<EmailSettings> e
         (string[] roles, string[] permissions) = await AddUserPermissionsAndRoles(currentUser.Id, cancellationToken);
         string token = _jwtTokenGenerator.GenerateAccessToken(currentUser, UserType.Internal, roles, permissions);
         string refreshToken = _jwtTokenGenerator.GenerateRefreshToken(currentUser, UserType.Internal);
-        await EmailHelpers.SendNotifyLoginEmail(currentUser.EmailAddress, _emailSettings.SuccessURL, _dateTimeProvider, _env, cancellationToken, _notificationService, _httpContextAccessor, _IPApiClient);
+        await EmailHelpers.SendNotifyLoginEmail(currentUser.EmailAddress, _emailSettings.SuccessURL, _dateTimeProvider, _env, cancellationToken, _notificationService, _httpContextAccessor, _iPApiClient);
 
         InternalUserLoginResponse response = new(
             currentUser.EmailAddress,

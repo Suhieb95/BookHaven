@@ -8,10 +8,15 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Options;
 
 namespace BookHaven.Application.Authentication.Customers;
-public class CustomerPasswordResetService(IUnitOfWork _unitOfWork, IOptions<EmailSettings> emailSettings, IPasswordHasher _passwordHasher, INotificationService _notificationService, IWebHostEnvironment _env, IJwtTokenGenerator _jwtTokenGenerator)
+public class CustomerPasswordResetService(IUnitOfWork unitOfWork, IOptions<EmailSettings> emailSettings, IPasswordHasher passwordHasher, INotificationService notificationService, IWebHostEnvironment env, IJwtTokenGenerator jwtTokenGenerator)
     : ICustomerPasswordResetService
 {
     private readonly EmailSettings _emailSettings = emailSettings.Value;
+    private readonly IUnitOfWork _unitOfWork = unitOfWork;
+    private readonly IJwtTokenGenerator _jwtTokenGenerator = jwtTokenGenerator;
+    private readonly INotificationService _notificationService = notificationService;
+    private readonly IWebHostEnvironment _env = env;
+    private readonly IPasswordHasher _passwordHasher = passwordHasher;
     public async Task<Result<bool>> ChangePassword(PasswordChangeRequest request, CancellationToken? cancellationToken)
     {
         Result<bool> result = await VerifyToken(request.Id, cancellationToken);

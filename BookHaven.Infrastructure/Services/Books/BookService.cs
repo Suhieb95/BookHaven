@@ -8,9 +8,14 @@ using BookHaven.Domain.Specification.Genres;
 using BookHaven.Infrastructure.Mappings.Book;
 
 namespace BookHaven.Infrastructure.Services.Books;
-public class BookService(ISqlDataAccess _sqlDataAccess, IAuthorService _authorService, IGenreService _genreService, IMssqlDbTransaction _mssqlDbTransaction)
-    : GenericSpecificationReadRepository(_sqlDataAccess), IBookService
+public class BookService(ISqlDataAccess sqlDataAccess, IAuthorService authorService, IGenreService genreService, IMssqlDbTransaction mssqlDbTransaction)
+    : GenericSpecificationReadRepository(sqlDataAccess), IBookService
 {
+    private readonly ISqlDataAccess _sqlDataAccess = sqlDataAccess;
+    private readonly IAuthorService _authorService = authorService;
+    private readonly IGenreService _genreService = genreService;
+    private readonly IMssqlDbTransaction _mssqlDbTransaction = mssqlDbTransaction;
+
     public async Task<PaginatedResponse<BookResponse>> GetPaginated(PaginationParam param, CancellationToken? cancellationToken = default)
     {
         (List<BookResponse> books, PaginationDetails? paginationDetails) = await _sqlDataAccess.FetchListAndSingleAsync<BookResponse, PaginationDetails>

@@ -3,8 +3,9 @@ using BookHaven.Application.Interfaces.Services;
 using BookHaven.Domain.DTOs.Books;
 
 namespace BookHaven.Infrastructure.Services.BookImages;
-public class BookImagesService(ISqlDataAccess _sqlDataAccess) : IBookImagesService
+public class BookImagesService(ISqlDataAccess sqlDataAccess) : IBookImagesService
 {
+    private readonly ISqlDataAccess _sqlDataAccess = sqlDataAccess;
     public async Task Add(CreateBookImage createBookImage, CancellationToken? cancellationToken = null)
     {
         const string Sql = "INSERT INTO BookImages (ImageUrl, BookId) VALUES (@ImageUrl, @BookId)";

@@ -5,8 +5,10 @@ using BookHaven.Domain.DTOs.Books;
 using BookHaven.Domain.Entities;
 
 namespace BookHaven.Infrastructure.Services.Genres;
-public class GenreService(ISqlDataAccess _sqlDataAccess, IMssqlDbTransaction _mssqlDbTransaction) : GenericSpecificationReadRepository(_sqlDataAccess), IGenreService
+public class GenreService(ISqlDataAccess sqlDataAccess, IMssqlDbTransaction mssqlDbTransaction) : GenericSpecificationReadRepository(sqlDataAccess), IGenreService
 {
+    private readonly ISqlDataAccess _sqlDataAccess = sqlDataAccess;
+    private readonly IMssqlDbTransaction _mssqlDbTransaction = mssqlDbTransaction;
     public async Task<int> Add(Genre entity, CancellationToken? cancellationToken = null)
         => await _sqlDataAccess.SaveData<int>("SPCreateGenre", new { entity.Name }, StoredProcedure, cancellationToken);
     public async Task Delete(int id, CancellationToken? cancellationToken = null)

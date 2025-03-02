@@ -6,8 +6,12 @@ using BookHaven.Domain.Enums;
 using BookHaven.Infrastructure.Mappings.Person;
 
 namespace BookHaven.Infrastructure.Services.Users;
-public class UserService(ISqlDataAccess _sqlDataAccess, IDateTimeProvider _dateTimeProvider, IRedisCacheService _redisCacheService) : GenericSpecificationReadRepository(_sqlDataAccess), IUserService
+public class UserService(ISqlDataAccess sqlDataAccess, IDateTimeProvider dateTimeProvider, IRedisCacheService redisCacheService)
+    : GenericSpecificationReadRepository(sqlDataAccess), IUserService
 {
+    private readonly ISqlDataAccess _sqlDataAccess = sqlDataAccess;
+    private readonly IDateTimeProvider _dateTimeProvider = dateTimeProvider;
+    private readonly IRedisCacheService _redisCacheService = redisCacheService;
     public async Task<Guid> Add(InternalUserRegisterRequest request, CancellationToken? cancellationToken = null)
     {
         const string Sql = "SPCreateUser";
