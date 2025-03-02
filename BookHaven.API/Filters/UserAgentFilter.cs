@@ -14,7 +14,7 @@ public class UserAgentFilter(IWebHostEnvironment _env, IOptions<AllowedAgent> al
             return;
         }
 
-        string? agent = context.HttpContext.Request.Headers.UserAgent.ToString();
+        string agent = context.HttpContext.Request.Headers.UserAgent.ToString();
         if (IsInvalidAgent(agent))
         {
             context.Result = new ForbidResult();
@@ -23,6 +23,6 @@ public class UserAgentFilter(IWebHostEnvironment _env, IOptions<AllowedAgent> al
 
         await next();
     }
-    private bool IsInvalidAgent(string? agent)
+    private bool IsInvalidAgent(string agent)
         => string.IsNullOrEmpty(agent) || !_allowedAgent.Agents.Any(curr => curr.Contains(agent, StringComparison.CurrentCultureIgnoreCase));
 }
