@@ -25,6 +25,6 @@ public class RedisCacheService(IDatabase db) : IRedisCacheService
     {
         if (string.IsNullOrEmpty(key) || value is null) return;
         var serialized = JsonSerializer.Serialize(value);
-        await _db.StringSetAsync(key, serialized);
+        await _db.StringSetAsync(key, serialized, expiry);
     }
 }
