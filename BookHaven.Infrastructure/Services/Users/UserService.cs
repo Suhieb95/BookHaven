@@ -1,18 +1,16 @@
 using BookHaven.Application.Helpers;
 using BookHaven.Application.Interfaces.Database;
 using BookHaven.Application.Interfaces.Services;
-using BookHaven.Domain.DTOs;
 using BookHaven.Domain.DTOs.Users;
 using BookHaven.Domain.Enums;
 using BookHaven.Infrastructure.Mappings.Person;
 
 namespace BookHaven.Infrastructure.Services.Users;
-public class UserService(ISqlDataAccess sqlDataAccess, IDateTimeProvider dateTimeProvider, IRedisCacheService redisCacheService, ICacheValidator cacheValidator)
+public class UserService(ISqlDataAccess sqlDataAccess, IDateTimeProvider dateTimeProvider, ICacheValidator cacheValidator)
     : GenericSpecificationReadRepository(sqlDataAccess), IUserService
 {
     private readonly ISqlDataAccess _sqlDataAccess = sqlDataAccess;
     private readonly IDateTimeProvider _dateTimeProvider = dateTimeProvider;
-    private readonly IRedisCacheService _redisCacheService = redisCacheService;
     private readonly ICacheValidator _cacheValidator = cacheValidator;
     public async Task<Guid> Add(InternalUserRegisterRequest request, CancellationToken? cancellationToken = null)
     {
