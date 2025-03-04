@@ -1,6 +1,7 @@
 using BookHaven.Application.Interfaces.Services;
 using BookHaven.Domain.Entities;
 using BookHaven.Infrastructure.Redis;
+using BookHaven.Infrastructure.Services;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using StackExchange.Redis;
@@ -13,6 +14,7 @@ internal static class RedisDependencyInjection
         ArgumentNullException.ThrowIfNull(services);
 
         string connectionString = configuration.GetSection(ConnectionString.SectionName).GetValue<string>(ConnectionString.RedisConnection)!;
+        services.AddScoped<ICacheValidator, CacheValidator>();
         services.AddScoped<IRedisCacheService, RedisCacheService>();
         services.AddSingleton(opt => ConnectionMultiplexer.Connect(connectionString).GetDatabase()); // IDatabase
         services.AddStackExchangeRedisCache(opt =>

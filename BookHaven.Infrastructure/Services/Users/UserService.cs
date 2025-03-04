@@ -1,17 +1,19 @@
 using BookHaven.Application.Helpers;
 using BookHaven.Application.Interfaces.Database;
 using BookHaven.Application.Interfaces.Services;
+using BookHaven.Domain.DTOs;
 using BookHaven.Domain.DTOs.Users;
 using BookHaven.Domain.Enums;
 using BookHaven.Infrastructure.Mappings.Person;
 
 namespace BookHaven.Infrastructure.Services.Users;
-public class UserService(ISqlDataAccess sqlDataAccess, IDateTimeProvider dateTimeProvider, IRedisCacheService redisCacheService)
+public class UserService(ISqlDataAccess sqlDataAccess, IDateTimeProvider dateTimeProvider, IRedisCacheService redisCacheService, ICacheValidator cacheValidator)
     : GenericSpecificationReadRepository(sqlDataAccess), IUserService
 {
     private readonly ISqlDataAccess _sqlDataAccess = sqlDataAccess;
     private readonly IDateTimeProvider _dateTimeProvider = dateTimeProvider;
     private readonly IRedisCacheService _redisCacheService = redisCacheService;
+    private readonly ICacheValidator _cacheValidator = cacheValidator;
     public async Task<Guid> Add(InternalUserRegisterRequest request, CancellationToken? cancellationToken = null)
     {
         const string Sql = "SPCreateUser";
@@ -32,30 +34,20 @@ public class UserService(ISqlDataAccess sqlDataAccess, IDateTimeProvider dateTim
     }
     public async Task<string[]> GetUserRoles(Guid id, CancellationToken? cancellationToken)
     {
-        string key = $"{id}-roles";
-        string[]? permissions = await _redisCacheService.Get<string[]>(key);
-        if (permissions is not null && permissions.Length > 0)
-            return permissions;
-
         const string Sql = "SPGetUserRoles";
-        List<string>? res = await _sqlDataAccess.LoadData<string>(Sql, new { id }, StoredProcedure, cancellationToken);
-        if (res.Count > 0)
-            await _redisCacheService.Set(key, res, TimeSpan.FromDays(7));
-
-        return [.. res];
+        string key = $"{id}-roles";
+        List<string> rolesResult = await _cacheValidator.Validate(key,
+          async () => await _sqlDataAccess.LoadData<string>(Sql, new { id }, StoredProcedure, cancellationToken),
+          TimeSpan.FromDays(7));
+        return [.. rolesResult];
     }
     public async Task<string[]> GetUserPermissions(Guid id, CancellationToken? cancellationToken)
     {
-        string key = $"{id}-permissions";
-        string[]? permissions = await _redisCacheService.Get<string[]>(key);
-        if (permissions is not null && permissions.Length > 0)
-            return permissions;
-
         const string Sql = "SPGetUserPermissions";
-        List<string>? res = await _sqlDataAccess.LoadData<string>(Sql, new { id }, StoredProcedure, cancellationToken);
-        if (res.Count > 0)
-            await _redisCacheService.Set(key, res, TimeSpan.FromDays(7));
-
-        return [.. res];
+        string key = $"{id}-permissions";
+        List<string>? permissions = await _cacheValidator.Validate(key,
+          async () => await _sqlDataAccess.LoadData<string>(Sql, new { id }, StoredProcedure, cancellationToken),
+          TimeSpan.FromDays(7));
+        return [.. permissions];
     }
 }

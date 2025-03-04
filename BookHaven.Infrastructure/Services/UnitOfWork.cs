@@ -10,12 +10,13 @@ using BookHaven.Infrastructure.Services.Genres;
 using BookHaven.Infrastructure.Services.Users;
 
 namespace BookHaven.Infrastructure.Services;
-internal class UnitOfWork(ISqlDataAccess sqlDataAccess, IDateTimeProvider dateTimeProvider, IRedisCacheService redisCacheService, IMssqlDbTransaction mssqlDbTransaction)
+internal class UnitOfWork(ISqlDataAccess sqlDataAccess, IDateTimeProvider dateTimeProvider, IRedisCacheService redisCacheService, ICacheValidator cacheValidator, IMssqlDbTransaction mssqlDbTransaction)
     : IUnitOfWork
 {
     private readonly ISqlDataAccess _sqlDataAccess = sqlDataAccess;
     private readonly IDateTimeProvider _dateTimeProvider = dateTimeProvider;
     private readonly IRedisCacheService _redisCacheService = redisCacheService;
+    private readonly ICacheValidator _cacheValidator = cacheValidator;
     private readonly IMssqlDbTransaction _mssqlDbTransaction = mssqlDbTransaction;
 
     // Data Access Services
@@ -29,7 +30,7 @@ internal class UnitOfWork(ISqlDataAccess sqlDataAccess, IDateTimeProvider dateTi
 
     // Lazy Initialization for Services
     public ICustomerService Customers => _customers ??= new CustomerService(_sqlDataAccess, _dateTimeProvider);
-    public IUserService Users => _users ??= new UserService(_sqlDataAccess, _dateTimeProvider, _redisCacheService);
+    public IUserService Users => _users ??= new UserService(_sqlDataAccess, _dateTimeProvider, _redisCacheService, _cacheValidator);
     public IGenreService Genres => _genres ??= new GenreService(_sqlDataAccess, _mssqlDbTransaction);
     public IAuthorService Authors => _authors ??= new AuthorService(_sqlDataAccess, _mssqlDbTransaction);
     public IBookImagesService BookImages => _bookImages ??= new BookImagesService(_sqlDataAccess);
