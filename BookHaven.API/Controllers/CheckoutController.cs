@@ -1,5 +1,5 @@
 using BookHaven.API.Common.Constants;
-
+using BookHaven.Infrastructure.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 
@@ -12,7 +12,7 @@ public class CheckoutController(IOptions<StripeSettings> stripeSettings, IOption
 {
     private readonly StripeSettings _stripeSettings = stripeSettings.Value;
     private readonly string _clientURL = _env.IsDevelopment()
-                                        ? specifiedOriginCorsPolicy.Value.LocalURL! + "/"
+                                        ? specifiedOriginCorsPolicy.Value.LocalURL!
                                         : specifiedOriginCorsPolicy.Value.ProductionURL!;
 
     [HttpPost(ApiEndPoints.Stripe.CreateSession)]
@@ -20,7 +20,7 @@ public class CheckoutController(IOptions<StripeSettings> stripeSettings, IOption
     {
         string? publicKey = _stripeSettings.PublishableKey;
         var referer = Request.Headers.Referer.ToString();
-        if (_clientURL != referer)
+        if (_clientURL + "/" != referer)
             return Forbid();
 
         var sessionId = await CreateCheckoutSession(product);
@@ -34,7 +34,6 @@ public class CheckoutController(IOptions<StripeSettings> stripeSettings, IOption
     {
         var sessionService = new SessionService();
         var session = await sessionService.GetAsync(sessionId);
-
         var total = session.AmountTotal;
         var customerEmail = session.CustomerDetails.Email;
 
@@ -42,34 +41,16 @@ public class CheckoutController(IOptions<StripeSettings> stripeSettings, IOption
 
         return Ok(new { total, customerEmail });
     }
-    private async Task<string> CreateCheckoutSession(ProductRequest product)
+    private async Task<string> CreateCheckoutSession(ProductRequest request)
     {
         var options = new SessionCreateOptions
         {
             SuccessUrl = $"{_clientURL}checkout/success?sessionId={{CHECKOUT_SESSION_ID}}",
             CancelUrl = $"{_clientURL}checkout/cancel",
             PaymentMethodTypes = ["card"],
-            LineItems =
-            [
-                new()
-                {
-                    PriceData = new SessionLineItemPriceDataOptions
-                    {
-                        UnitAmount = product.Price *100 , // Convert to fills
-                        Currency = "AED",
-                        ProductData = new SessionLineItemPriceDataProductDataOptions
-                        {
-                            Name = product.Title,
-                            Description = product.Description,
-                            Images = [product.ImageUrl]
-                        },
-                    },
-                    Quantity = 1,
-                },
-            ],
+            LineItems = ProductRequest.ToLineItems(request.Products),
             Mode = "payment",
-            CustomerEmail = product.CustomerEmail, // Prefill the customer's email
-
+            CustomerEmail = request.CustomerEmail, // Prefill the customer's email
         };
 
         var service = new SessionService();
@@ -78,13 +59,32 @@ public class CheckoutController(IOptions<StripeSettings> stripeSettings, IOption
     }
 }
 
-
 public class ProductRequest
 {
-    public string Id { get; set; } = Guid.NewGuid().ToString();
-    public string Title { get; set; } = string.Empty;
-    public string? Description { get; set; }
-    public string? ImageUrl { get; set; }
-    public long Price { get; set; }
+    public List<Product> Products { get; set; } = default!;
     public string CustomerEmail { get; set; } = default!;
+    public static List<SessionLineItemOptions> ToLineItems(List<Product> products)
+    {
+        List<SessionLineItemOptions> sessionLineItemOptions = [];
+        foreach (Product product in products)
+            sessionLineItemOptions.Add(
+                  new SessionLineItemOptions()
+                  {
+                      PriceData = new SessionLineItemPriceDataOptions
+                      {
+                          UnitAmount = product.Price * 100, // Convert to fills
+                          Currency = "AED",
+                          ProductData = new SessionLineItemPriceDataProductDataOptions
+                          {
+                              Name = product.Title,
+                              Description = product.Description,
+                              Images = [product.ImageUrl]
+                          },
+                      },
+                      Quantity = product.Quantity,
+                  }
+            );
+
+        return sessionLineItemOptions;
+    }
 }
