@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router";
+import { useLocation } from "react-router";
+
 interface OrderDetails {
   total: number;
   customerEmail: string;
@@ -10,6 +12,7 @@ const SuccessPage = () => {
   const sessionId = searchParams.get("sessionId");
   const [orderDetails, setOrderDetails] = useState<OrderDetails | null>(null);
   const [loading, setLoading] = useState(true);
+  const location = useLocation();
 
   useEffect(() => {
     if (sessionId) {
@@ -28,6 +31,7 @@ const SuccessPage = () => {
           console.error("Error fetching order details:", error);
           setLoading(false);
         });
+      window.history.replaceState({}, document.title, location.pathname);
     }
   }, [sessionId]);
 
