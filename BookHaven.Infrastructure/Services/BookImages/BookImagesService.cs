@@ -11,7 +11,7 @@ public class BookImagesService(ISqlDataAccess sqlDataAccess) : IBookImagesServic
         const string Sql = "INSERT INTO BookImages (ImageUrl, BookId) VALUES (@ImageUrl, @BookId)";
         await _sqlDataAccess.SaveData<int>(Sql, createBookImage, cancellationToken: cancellationToken);
     }
-    public async Task Delete(UpdateBookImagesResult request, CancellationToken? cancellationToken = null)
+    public async Task Delete(DeleteBookImageRequest request, CancellationToken? cancellationToken = null)
     {
         IEnumerable<Task>? tasks = request.Paths.Select(p => DeleteBookImage(request.BookId, p, cancellationToken));
         await Task.WhenAll(tasks);

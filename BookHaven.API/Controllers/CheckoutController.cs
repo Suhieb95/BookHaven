@@ -12,15 +12,15 @@ public class CheckoutController(IOptions<StripeSettings> stripeSettings, IOption
 {
     private readonly StripeSettings _stripeSettings = stripeSettings.Value;
     private readonly string _clientURL = _env.IsDevelopment()
-                                        ? specifiedOriginCorsPolicy.Value.LocalURL!
-                                        : specifiedOriginCorsPolicy.Value.ProductionURL!;
+                                        ? specifiedOriginCorsPolicy.Value.LocalURL! + "/"
+                                        : specifiedOriginCorsPolicy.Value.ProductionURL! + "/";
 
     [HttpPost(ApiEndPoints.Stripe.CreateSession)]
     public async Task<IActionResult> CheckoutOrder(ProductRequest product)
     {
         string? publicKey = _stripeSettings.PublishableKey;
         var referer = Request.Headers.Referer.ToString();
-        if (_clientURL + "/" != referer)
+        if (_clientURL != referer)
             return Forbid();
 
         var sessionId = await CreateCheckoutSession(product);
@@ -48,7 +48,7 @@ public class CheckoutController(IOptions<StripeSettings> stripeSettings, IOption
             SuccessUrl = $"{_clientURL}checkout/success?sessionId={{CHECKOUT_SESSION_ID}}",
             CancelUrl = $"{_clientURL}checkout/cancel",
             PaymentMethodTypes = ["card"],
-            LineItems = ProductRequest.ToLineItems(request.Products),
+            LineItems = [.. ProductRequest.ToLineItems(request.Products)],
             Mode = "payment",
             CustomerEmail = request.CustomerEmail, // Prefill the customer's email
         };
@@ -63,28 +63,23 @@ public class ProductRequest
 {
     public List<Product> Products { get; set; } = default!;
     public string CustomerEmail { get; set; } = default!;
-    public static List<SessionLineItemOptions> ToLineItems(List<Product> products)
+    public static IEnumerable<SessionLineItemOptions> ToLineItems(List<Product> products)
     {
-        List<SessionLineItemOptions> sessionLineItemOptions = [];
         foreach (Product product in products)
-            sessionLineItemOptions.Add(
-                  new SessionLineItemOptions()
-                  {
-                      PriceData = new SessionLineItemPriceDataOptions
-                      {
-                          UnitAmount = product.Price * 100, // Convert to fills
-                          Currency = "AED",
-                          ProductData = new SessionLineItemPriceDataProductDataOptions
-                          {
-                              Name = product.Title,
-                              Description = product.Description,
-                              Images = [product.ImageUrl]
-                          },
-                      },
-                      Quantity = product.Quantity,
-                  }
-            );
-
-        return sessionLineItemOptions;
+            yield return new SessionLineItemOptions()
+            {
+                PriceData = new SessionLineItemPriceDataOptions
+                {
+                    UnitAmount = product.Price * 100, // Convert to fills
+                    Currency = "AED",
+                    ProductData = new SessionLineItemPriceDataProductDataOptions
+                    {
+                        Name = product.Title,
+                        Description = product.Description,
+                        Images = [product.ImageUrl]
+                    },
+                },
+                Quantity = product.Quantity,
+            };
     }
 }

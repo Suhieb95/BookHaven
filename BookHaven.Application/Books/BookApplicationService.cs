@@ -99,7 +99,7 @@ public class BookApplicationService(IUnitOfWork unitOfWork, IFileService fileSer
     }
     public async Task<Result<bool>> DeleteBookImages(DeleteBookImageRequest request, CancellationToken? cancellationToken = null)
     {
-        BookResponse? res = await GetById(request.Id, cancellationToken);
+        BookResponse? res = await GetById(request.BookId, cancellationToken);
         if (res is null)
             return Result<bool>.Failure(new Error("Book Doesn't Exists.", NotFound, "Not Found"));
 
@@ -107,7 +107,7 @@ public class BookApplicationService(IUnitOfWork unitOfWork, IFileService fileSer
             return Result<bool>.Failure(new Error("Not Images were Selected", BadRequest, "Empty Paths"));
 
         string[] publicIds = GetPublicIds(request.Paths);
-        await _unitOfWork.BookImages.Delete(new UpdateBookImagesResult(request.Id, publicIds), cancellationToken);
+        await _unitOfWork.BookImages.Delete(new DeleteBookImageRequest(request.BookId, publicIds), cancellationToken);
 
         IEnumerable<Task<bool>>? imagesTasks = publicIds.Select(_fileService.Delete);
         await Task.WhenAll(imagesTasks);
